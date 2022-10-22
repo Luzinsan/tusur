@@ -1,0 +1,5 @@
+[packages]
+numpy = "~=1.23.3"
+imageio = "~=2.21.3"
+sympy = "~=1.11.1"
+matplotlib = "~=3.5.3"
