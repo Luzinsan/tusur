@@ -18,10 +18,12 @@ CMD_RETR = b"RETR readme.txt\r\r"
 ####################################### Stage #1: INITIALIZATION SERVER  ###############################################
 def recv_all(socket_manager):
     answer = socket_manager.recv(1024).decode('utf-8')
-    print(answer, end='')
-    while answer[3] == '-':
+    print("1: ", answer, end='')
+    count = 1
+    while re.search(r"ddd ", answer):
         answer = socket_manager.recv(1024).decode('utf-8')
-        print(answer, end='')
+        print(count, answer, end='')
+        count += 1
     return answer
 
 
@@ -50,7 +52,7 @@ def init_user(socket_manager):
     #print(socket_manager.recv(1024).decode('utf-8'), end='')
     # Пароль пользователя для входа на сервер.
     socket_manager.send(CMD_PASS)
-    response_handler(socket_manager)
+    #response_handler(socket_manager)
     dpg.delete_item("connect")
 
 
@@ -62,7 +64,7 @@ def response_handler(socket_manager):
     # while answer[3] == '-':
     #     answer = socket_manager.recv(1024).decode('utf-8')
     #     print(answer, end='')
-
+    print(answer, end='')
     match answer[0]:
         case '2':
             dpg.add_text("Connection successful.", tag='success', before="answers")
