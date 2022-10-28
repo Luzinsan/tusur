@@ -19,8 +19,8 @@ CMD_RETR = b"RETR readme.txt\r\r"
 def recv_all(socket_manager):
     answer = socket_manager.recv(1024).decode('utf-8')
     print("1: ", answer, end='')
-    count = 1
-    while re.search(r"ddd ", answer):
+    count = 2
+    while not re.search(r'\d{3} ', answer):
         answer = socket_manager.recv(1024).decode('utf-8')
         print(count, answer, end='')
         count += 1
@@ -32,7 +32,6 @@ def init_server(sender, app_data, user_data):
     try:
         socket_manager.connect((dpg.get_value(ftp_server_id), dpg.get_value(ftp_port_id)))
         buffer_init = recv_all(socket_manager)
-        #buffer_init = socket_manager.recv(1024).decode("utf-8")
         dpg.add_text(buffer_init[4:], tag='connect', before=sep)
     except:
         dpg.add_text("Incorrect Server or PORT", tag='err', before=sep)
@@ -49,22 +48,16 @@ def init_user(socket_manager):
     # Имя пользователя для входа на сервер.
     socket_manager.send(CMD_USER)
     recv_all(socket_manager)
-    #print(socket_manager.recv(1024).decode('utf-8'), end='')
+
     # Пароль пользователя для входа на сервер.
     socket_manager.send(CMD_PASS)
-    #response_handler(socket_manager)
+    response_handler(socket_manager)
     dpg.delete_item("connect")
 
 
 ############################################# Stahe #3: RESPONSE HANDLER ###############################################
 def response_handler(socket_manager):
     answer = recv_all(socket_manager)
-    # answer = socket_manager.recv(1024).decode('utf-8')
-    # print(answer)
-    # while answer[3] == '-':
-    #     answer = socket_manager.recv(1024).decode('utf-8')
-    #     print(answer, end='')
-    print(answer, end='')
     match answer[0]:
         case '2':
             dpg.add_text("Connection successful.", tag='success', before="answers")
