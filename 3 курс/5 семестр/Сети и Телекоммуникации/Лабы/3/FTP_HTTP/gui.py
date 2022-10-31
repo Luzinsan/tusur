@@ -133,19 +133,17 @@ def recv_all_to_gui(socket_data):
     print("recv_all: ", socket_data)
 
     # socket_data.setblocking(False)
-    answer = None
-    fmt = "B" * 7 + "I" * 21
-    while getTCPInfo(socket_data):
-        answer = socket_data.recv(1024).decode('utf-8')
-        print(answer)
-        time.sleep(2.0)
+    # answer = None
+    # fmt = "B" * 7 + "I" * 21
+    # while getTCPInfo(socket_data):
+    answer = socket_data.recv(1024).decode('utf-8')
+    print(answer)
     # try:
     #     pass
     # except Exception as err:
     #     socket_data.setblocking(True)
 
     dpg.add_text(answer, tag='list', parent="Main")
-    time.sleep(2.0)
     #
     # while not re.search(r'\d{3} ', answer):
     #     answer = socket_data.recv(1024).decode('utf-8')
@@ -155,8 +153,7 @@ def recv_all_to_gui(socket_data):
     return answer
 
 
-def output_list(sender, app_data, user_data):
-    #  Войти в пассивный режим. Сервер вернёт адрес и порт, к которому нужно подключиться, чтобы забрать данные
+def send_cmd(sender, app_data, user_data):
     socket_manager, socket_data = dpg.get_item_user_data("auth")
 
     # socket_manager.send(CMD_STRU)
@@ -164,7 +161,7 @@ def output_list(sender, app_data, user_data):
     dpg.delete_item('list')
     cmd = (dpg.get_value("cmd") + "\r\n").encode("utf-8")
     socket_manager.send(cmd)
-    pasv = recv_all_to_gui(socket_data)
+    pasv = recv_all_to_gui(socket_manager)
 
     # socket_manager.send(CMD_CWD)
     # pasv = recv_all_to_gui(socket_manager)
@@ -178,7 +175,7 @@ with dpg.window(label="Main", tag="Main", autosize=True):
         with dpg.menu(label="Connection"):
             dpg.add_menu_item(label="Log in", callback=lambda: dpg.configure_item("auth", show=True))
     dpg.add_input_text(label="COMMAND", tag="cmd")
-    dpg.add_button(label="GET", width=75, callback=output_list)
+    dpg.add_button(label="GET", width=75, callback=send_cmd)
 
     # dpg.add_button(label="FETCH FLAGS", callback=lambda: dpg.configure_item("flags", show=True))
     # dpg.add_button(label="FETCH BODIES", callback=lambda: dpg.configure_item("bodies", show=True))

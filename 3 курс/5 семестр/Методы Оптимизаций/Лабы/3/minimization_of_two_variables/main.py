@@ -11,16 +11,19 @@ if __name__ == '__main__':
         expression = file.readline()
         transformations = (standard_transformations + (implicit_multiplication_application,))
         function: Expr = parse_expr(expression, transformations=transformations)
-        x_0 = list(map(int, file.readline().split()))
-        delta = int(file.readline())
-        alpha = float(file.readline())
-        eps_x = float(file.readline())
-        eps_y = float(file.readline())
+        x_0 = list(map(int, file.readline().split()))  # начальная точка
+        delta = int(file.readline())  # длина ребра симплекса
+        alpha = float(file.readline())  # коэффициент сжатия
+        eps_x = float(file.readline())  # точность по аргументу x
+        eps_y = float(file.readline())  # точность по аргументу y
 
     print(f"{function=}\n{x_0=}\n{delta=}\n{alpha=}\n{eps_x=}\n{eps_y=}")
     n = 2
+    # Симплекс 0
     V = np.ones((n + 1, n))
-    V[0] = x_0
+    V[0] = x_0  # Инициализация нулевой строки начальным приближением
+
+    #  p_n и g_n будет изменяться (от delta)
     p_n = delta * (sqrt(n + 1) + n - 1) / (n * sqrt(2))
     g_n = p_n - delta * sqrt(2) / 2
     # g_n = delta * (sqrt(n + 1) - 1) / (n * sqrt(2))
@@ -30,14 +33,18 @@ if __name__ == '__main__':
                 V[row][column] = V[0][column] + p_n
             else:
                 V[row][column] = V[0][column] + g_n
-    print(V)
-    x_approx_prev = np.array([sum(V[:, i])/(n + 1) for i in range(n)])
-    x_approx = x_approx_prev*2
-    print(x_approx_prev)
-    F_approx_prev = function.subs({x1: x_approx_prev[0], x2: x_approx_prev[1]})
-    F_approx = F_approx_prev*2
-    print(F_approx_prev)
-    F_x = np.ones(n + 1)
+    print(f"{V=}")
+    # начальное приближение точки минимума - геометрический центр симплекса
+    x_approx_prev = [sum(V[i])/(n + 1) for i in range(n)]
+    print(f"{x_approx_prev=}")
+    # x_approx = x_approx_prev*2
+    # print(x_approx_prev)
+    F_x = [function.subs({x1: V[i][0], x2: V[i][1]}) for i in range(n)]
+    print(f"{F_x}")
+    p = F_x.argmax()
+    # F_approx = F_approx_prev*2
+    #print(F_approx_prev)
+    # F_x = np.ones(n + 1)
     while (sum(x_approx - x_approx_prev) >= eps_x) or (abs(F_approx - F_approx_prev) >= eps_y):
         for index in range(n + 1):
             F_x[index] = function.subs({x1: V[index][0], x2: V[index][1]})
