@@ -2,31 +2,30 @@ import dearpygui.dearpygui as dpg
 from socket import *
 import re
 import time
-import struct
 
 DEFAULT_SERVER = "ftp.pureftpd.org"
 DEFAULT_LOGIN = "anonymous"
 DEFAULT_PASS = "anonymous"
 DEFAULT_PORT = 21  # сетевой порт для управляющего соединения
+TIMEOUT = 5.0
 
 dpg.create_context()
-CMD_PASV = b"PASV\r\n"
-
-CMD_LIST = b"NLST\r\n"
-CMD_QUIT = b"QUIT\r\n"
-CMD_CWD = b"CWD /docs/\r\n"
-CMD_HELP = b"HELP\r\n"
-CMD_RETR = b"RETR readme.txt\r\r"
-CMD_STRU = b"STRU P\r\n"
 
 
+# CMD_LIST = b"NLST\r\n"
+# CMD_QUIT = b"QUIT\r\n"
+# CMD_CWD = b"CWD /docs/\r\n"
+# CMD_HELP = b"HELP\r\n"
+# CMD_RETR = b"RETR readme.txt\r\r"
+# CMD_STRU = b"STRU P\r\n"
 
- # region ####################################### Stage #1: INITIALIZATION SERVER  ######################################
+
+# region ####################################### Stage #1: INITIALIZATION SERVER  ######################################
 def recv_all(socket_manager):
-    answer = socket_manager.recv(1024).decode('utf-8')
-    print(answer, end='')
-    while not re.search(r'\d{3} ', answer):
+    while True:
         answer = socket_manager.recv(1024).decode('utf-8')
+        if re.search(r'\d{3} ', answer):
+            break
         print(answer, end='')
     return answer
 
@@ -35,138 +34,141 @@ def init_server(sender, app_data, user_data):
     socket_manager = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)  # управляющее соединение
     try:
         # соединяемся с сервером для передачи управляющих команд
-        socket_manager.connect((dpg.get_value(ftp_server_id), dpg.get_value(ftp_port_id)))
+        socket_manager.connect((dpg.get_value('host'), dpg.get_value('port')))
         buffer_init = recv_all(socket_manager)
-        dpg.add_text(buffer_init[4:], tag='connect', before=sep)
-    except Exception as error:
-        dpg.add_text(error + "Incorrect Server or PORT", tag='err', before=sep)
-        time.sleep(2.0)
+        dpg.add_text("1: Connected to host successful", tag='connect', before='sep')
+        dpg.set_item_user_data("auth", [socket_manager])
+    except:
+        dpg.add_text("Incorrect HOST or PORT", tag='err', before='sep')
+        time.sleep(TIMEOUT)
         dpg.delete_item("err")
         socket_manager.close()
         return
-    init_user(socket_manager)
     dpg.delete_item("connect")
+    # аутентификация пользователя
+    init_user(socket_manager)
+    etc_data_server(socket_manager)
+
+
+def etc_data_server(socket_manager):
+    # определяем систему хоста
+    update_text(socket_manager, b"SYST\r\n", 'system')
+    # определяем текущую директорию
+    update_text(socket_manager, b"PWD\r\n", 'path')
+    # текущая кодировка
+    update_text(socket_manager, b"TYPE I\r\n", 'type')
     socket_data = init_pasv(socket_manager)
-    dpg.set_item_user_data("auth", [socket_manager, socket_data])
-    response_handler("220" if socket_data else "520", socket_data)
+    output_list(socket_manager, socket_data)
 
 
-############################################ Stage #2: INITIALIZATION USER #############################################
+def update_text(socket_manager, cmd: bytes, tag: str):
+    socket_manager.send(cmd)
+    response = socket_manager.recv(1024).decode('utf-8')
+    dpg.set_value(tag, response[3:])
+    return response[:3]
+
+
+def output_list(socket_manager, socket_data):
+    socket_manager.send(b"LIST\r\n")
+    while socket_data:
+        ftp_list = socket_data.recv(1024).decode('utf-8')
+        print(ftp_list)
+        dpg.add_text(ftp_list, parent='list')
+
+
+########################################## Stage #2: AUTHENTIFICATION USER #############################################
+def send_recv_cmd(socket_manager: socket, cmd: bytes, tag: str = 'response', before: str = '') -> str:
+    """ Посылает команду на подключенных хост, выводит в GUI ответ (tag='response') и возвращает код ответа
+
+    :param socket_manager: сокет управляющего соединения
+    :param cmd: отправляемая команда на подключенный сервер
+    :param tag: tag добавляемого в GUI ответа
+    :param before: tag элемента, перед которым выводится ответ (если '', то вывод в консоль)
+    :return: код ответа
+    """
+    socket_manager.send(cmd)
+    res = recv_all(socket_manager)
+    if before == '':
+        print(res[3:])
+    else:
+        dpg.add_text(res[3:], tag=tag, before=before)
+    return res[:3]
+
+
 def init_user(socket_manager):
-    CMD_USER = f"USER {dpg.get_value(login_id)}\r\n".encode("utf-8")
-    CMD_PASS = f"PASS {dpg.get_value(password_id)}\r\n".encode("utf-8")
+    CMD_USER = f"USER {dpg.get_value('user')}\r\n".encode("utf-8")
+    CMD_PASS = f"PASS {dpg.get_value('pass')}\r\n".encode("utf-8")
     # Имя пользователя для входа на сервер.
-    socket_manager.send(CMD_USER)
-    recv_all(socket_manager)
+    send_recv_cmd(socket_manager, CMD_USER, 'user_auth', 'pass')
     # Пароль пользователя для входа на сервер.
-    socket_manager.send(CMD_PASS)
-    recv_all(socket_manager)
+    res = send_recv_cmd(socket_manager, CMD_PASS, 'pass_user', 'answers')
+    if res == '230':  # если аутентификация прошла успешно, закрываем окно
+        dpg.add_text("Authorization successful", tag='success', before="answers")
+        time.sleep(TIMEOUT)
+        dpg.configure_item('auth', show=False)
+        dpg.delete_item('success')
+    time.sleep(TIMEOUT)
+    dpg.delete_item('pass_user')
+    dpg.delete_item('user_auth')
 
 
 def init_pasv(socket_manager):
     #  Войти в пассивный режим. Сервер вернёт адрес и порт, к которому нужно подключиться, чтобы забрать данные
-    socket_manager.send(CMD_PASV)
+    socket_manager.send(b"PASV\r\n")
     pasv = recv_all(socket_manager)
     # ищем подстроку соответствующую регулярному выражению
     match = re.search(r"(\d+,\d+,\d+,\d+,\d+,\d+)", pasv)
     # разбиваем через запятую получая список чисел соответствующих ip port
     match = re.split(r",", match[0])
-    ip = ".".join(match[0:4])
+    ip = ".".join(match[:4])
     port = int(match[4]) * 256 + int(match[5])
+    dpg.set_value('ip_port', f"ip: {ip}\tport: {port}")
     print(f"ip {ip} port {port}")
 
     socket_data = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
-    print(socket_data)
     try:
         socket_data.connect((ip, port))
-        dpg.add_text("Connection OK", tag='text_socket_data', before='answers')
-        # time.sleep(2.0)
-        dpg.delete_item("text_socket_data")
         return socket_data
     except:
-        dpg.add_text("Discard Connection", tag='text_socket_data', before='answers')
-        # time.sleep(2.0)
-        dpg.delete_item("text_socket_data")
+        dpg.add_text("Discard Connection", tag='discard_socket_data', before='path')
+        time.sleep(TIMEOUT)
+        dpg.delete_item("discard_socket_data")
         socket_data.close()
 
 
+# endregion ################################################ END AUTHORIZATION ######################################################
 
-############################################# Stahe #3: RESPONSE HANDLER ###############################################
-def response_handler(answer, socket):
-    match answer[0]:
-        case '2':
-            dpg.add_text("Connection successful.", tag='success', before="answers")
-            # time.sleep(2.0)
-            dpg.configure_item('auth', show=False)
-            dpg.delete_item("success")
-        case '3' | '5':
-            dpg.add_text("Incorrect login or password.", tag='incorrect', before="answers")
-            # time.sleep(2.0)
-            dpg.delete_item("incorrect")
-            socket.close()
-################################################ END AUTHORIZATION #####################################################
 
-# endregion
+def move_to(sender, app_data, user_data):
+    dpg.delete_item('list', children_only=True)
+    socket_manager, directory = user_data[0], user_data[1]
+    socket_data = init_pasv(socket_manager)
+    output_list(socket_data)
+
+
+def download(sender, app_data, user_data):
+    socket_manager, directory = user_data[0], user_data[1]
+    socket_data = init_pasv(socket_manager)
+    socket_data.send(b"RETR {directory}\r\n")
+    file = open("download", 'w')
+    while socket_data:
+        ftp_list = socket_data.recv(1024).decode('utf-8')
+        file.write(ftp_list)
+    file.close()
 
 
 ############################################# AUTHORIZATION ############################################################
 with dpg.window(label="AUTHORIZATION", modal=True, show=False, tag="auth", no_title_bar=True, autosize=True):
-    ftp_server_id = dpg.add_input_text(label="Server", default_value=DEFAULT_SERVER)
-    ftp_port_id = dpg.add_input_int(label="PORT", default_value=DEFAULT_PORT)
-    sep = dpg.add_separator()
-    login_id = dpg.add_input_text(label="login", default_value=DEFAULT_LOGIN)
-    password_id = dpg.add_input_text(label="password", default_value=DEFAULT_PASS, password=True)
+    dpg.add_input_text(label=":HOST", tag='host', default_value=DEFAULT_SERVER)
+    dpg.add_input_int(label=":PORT", tag='port', default_value=DEFAULT_PORT)
+    dpg.add_separator(tag='sep')
+    dpg.add_input_text(label=":user", tag='user', default_value=DEFAULT_LOGIN)
+    dpg.add_input_text(label=":password", tag='pass', default_value=DEFAULT_PASS, password=True)
     with dpg.group(horizontal=True, tag="answers"):
-        dpg.add_button(label="Save", width=75, callback=init_server)
+        dpg.add_button(label="Connect", width=75, callback=init_server)
         dpg.add_button(label="Cancel", width=75, callback=lambda: dpg.configure_item("auth", show=False))
 ########################################################################################################################
 
-
-def getTCPInfo(s):
-    fmt = "B"*7+"I"*21
-    x = struct.unpack(fmt, s.getsockopt(IPPROTO_TCP, TCP_INFO, 92))
-    print(x)
-    return len(x)
-
-
-def recv_all_to_gui(socket_data):
-    print("recv_all: ", socket_data)
-
-    # socket_data.setblocking(False)
-    # answer = None
-    # fmt = "B" * 7 + "I" * 21
-    # while getTCPInfo(socket_data):
-    answer = socket_data.recv(1024).decode('utf-8')
-    print(answer)
-    # try:
-    #     pass
-    # except Exception as err:
-    #     socket_data.setblocking(True)
-
-    dpg.add_text(answer, tag='list', parent="Main")
-    #
-    # while not re.search(r'\d{3} ', answer):
-    #     answer = socket_data.recv(1024).decode('utf-8')
-    #     print(answer)
-    #     counter += 1
-    #     dpg.add_text(answer, tag='list', parent="Main")
-    return answer
-
-
-def send_cmd(sender, app_data, user_data):
-    socket_manager, socket_data = dpg.get_item_user_data("auth")
-
-    # socket_manager.send(CMD_STRU)
-    # pasv = recv_all_to_gui(socket_data)
-    dpg.delete_item('list')
-    cmd = (dpg.get_value("cmd") + "\r\n").encode("utf-8")
-    socket_manager.send(cmd)
-    pasv = recv_all_to_gui(socket_manager)
-
-    # socket_manager.send(CMD_CWD)
-    # pasv = recv_all_to_gui(socket_manager)
-    # socket_manager.send(CMD_LIST)
-    # pasv = recv_all_to_gui(socket_data)
 
 
 ################################################# MAIN ################################################################
@@ -174,11 +176,25 @@ with dpg.window(label="Main", tag="Main", autosize=True):
     with dpg.menu_bar():
         with dpg.menu(label="Connection"):
             dpg.add_menu_item(label="Log in", callback=lambda: dpg.configure_item("auth", show=True))
-    dpg.add_input_text(label="COMMAND", tag="cmd")
-    dpg.add_button(label="GET", width=75, callback=send_cmd)
+    dpg.add_text(label=":System of Host", tag='system')  # система хоста
+    dpg.add_text(label=":IP/PORT of Host", tag='ip_port')  # после перехода в пассивный режим определяем IP и PORT хоста
+    dpg.add_text(label=":TYPE data", tag='type')  # переключаемся в бинарный режим
+    dpg.add_text(label=":PATH", tag='path')  # текущая директория хоста
 
-    # dpg.add_button(label="FETCH FLAGS", callback=lambda: dpg.configure_item("flags", show=True))
-    # dpg.add_button(label="FETCH BODIES", callback=lambda: dpg.configure_item("bodies", show=True))
+    dpg.add_spacer(tag='list')  # список файлов текущей директории
+
+    with dpg.group(horizontal=True, tag="move_to"):
+        dpg.add_input_text(label=":PATH", tag='move_to_path', width=75)
+        dpg.add_button(label="MOVE", width=75, callback=move_to, before='move_to_path',
+                       user_data=[dpg.get_item_user_data('auth'),
+                                  dpg.get_item_user_data('move_to_path')])
+
+    with dpg.group(horizontal=True, tag="download"):
+        dpg.add_button(label="DOWNLOAD", width=75, callback=download, user_data=[dpg.get_item_user_data('auth'),
+                                                                                 dpg.get_item_user_data(
+                                                                                     'move_to_path')])
+        dpg.add_input_text(label=":FILE", tag='download_file', width=75)
+
 ########################################################################################################################
 dpg.create_viewport(title='FTP CLIENT', width=1080, height=920)
 dpg.set_global_font_scale(1.25)
