@@ -7,7 +7,7 @@ import struct
 DEFAULT_SERVER = "ftp.pureftpd.org"
 DEFAULT_LOGIN = "anonymous"
 DEFAULT_PASS = "anonymous"
-DEFAULT_PORT = 21
+DEFAULT_PORT = 21  # сетевой порт для управляющего соединения
 
 dpg.create_context()
 CMD_PASV = b"PASV\r\n"
@@ -32,18 +32,20 @@ def recv_all(socket_manager):
 
 
 def init_server(sender, app_data, user_data):
-    socket_manager = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
+    socket_manager = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)  # управляющее соединение
     try:
+        # соединяемся с сервером для передачи управляющих команд
         socket_manager.connect((dpg.get_value(ftp_server_id), dpg.get_value(ftp_port_id)))
         buffer_init = recv_all(socket_manager)
         dpg.add_text(buffer_init[4:], tag='connect', before=sep)
     except Exception as error:
-        dpg.add_text("Incorrect Server or PORT", tag='err', before=sep)
-        # time.sleep(2.0)
+        dpg.add_text(error + "Incorrect Server or PORT", tag='err', before=sep)
+        time.sleep(2.0)
         dpg.delete_item("err")
         socket_manager.close()
         return
     init_user(socket_manager)
+    dpg.delete_item("connect")
     socket_data = init_pasv(socket_manager)
     dpg.set_item_user_data("auth", [socket_manager, socket_data])
     response_handler("220" if socket_data else "520", socket_data)
@@ -56,11 +58,9 @@ def init_user(socket_manager):
     # Имя пользователя для входа на сервер.
     socket_manager.send(CMD_USER)
     recv_all(socket_manager)
-
     # Пароль пользователя для входа на сервер.
     socket_manager.send(CMD_PASS)
-    answer = recv_all(socket_manager)
-    dpg.delete_item("connect")
+    recv_all(socket_manager)
 
 
 def init_pasv(socket_manager):
