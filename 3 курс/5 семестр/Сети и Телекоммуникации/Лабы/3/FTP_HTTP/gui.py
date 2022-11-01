@@ -24,7 +24,7 @@ dpg.create_context()
 def recv_all(socket_manager):
     while True:
         answer = socket_manager.recv(1024).decode('utf-8')
-        match = re.search(r'\d{3}\s.+', answer)
+        match = re.search(r'\d{3}\s.*', answer)
         if match:
             print(match)
             break
@@ -71,6 +71,7 @@ def update_text(socket_manager, cmd: bytes, tag: str):
 
 
 def output_list(socket_manager, socket_data):
+    dpg.delete_item('list', children_only=True)
     socket_manager.send(b"LIST\r\n")
     recv_all(socket_manager)  # Подтверждение установки соединения
 
@@ -80,12 +81,13 @@ def output_list(socket_manager, socket_data):
     dpg.set_value('numdir', num_dir)
 
     count = 0
+    ftp_list = []
     while count < num_dir:
-        ftp_list = socket_data.recv(1024).decode('utf-8')
-        print(ftp_list)
-        dpg.add_text(ftp_list, parent='list')
-        count += len(ftp_list.splitlines())
+        ftp_list += socket_data.recv(1024).decode('utf-8').splitlines()
+        count += len(ftp_list)
         print(count)
+    dpg.configure_item('list', items=ftp_list, num_items=num_dir)
+    print(ftp_list)
 
 
 ########################################## Stage #2: AUTHENTICATION USER #############################################
@@ -191,9 +193,9 @@ with dpg.window(label="Main", tag="Main", autosize=True):
     dpg.add_text(label=":IP/PORT of Host", tag='ip_port')  # после перехода в пассивный режим определяем IP и PORT хоста
     dpg.add_text(label=":TYPE data", tag='type')  # переключаемся в бинарный режим
     dpg.add_text(label=":PATH", tag='path')  # текущая директория хоста
-    dpg.add_text(label=":Lines", tag='numdir')  # количество директорий/файлов в текущем каталоге
+    dpg.add_text(label=":Number of Lines", tag='numdir')  # количество директорий/файлов в текущем каталоге
 
-    dpg.add_spacer(tag='list')  # список файлов текущей директории
+    dpg.add_listbox(tag='list')  # список файлов текущей директории
 
     with dpg.group(horizontal=True, tag="move_to"):
         dpg.add_input_text(label=":PATH", tag='move_to_path', width=75)
