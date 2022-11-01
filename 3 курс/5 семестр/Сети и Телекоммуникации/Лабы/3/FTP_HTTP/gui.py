@@ -171,13 +171,20 @@ def move_to(sender, app_data, user_data):
 
 def download(sender, app_data, user_data):
     socket_manager, file = dpg.get_item_user_data('auth'),  dpg.get_value('download_file')
+    socket_manager.send(f"SIZE {file}\r\n")
+    response = recv_all(socket_manager)[4:]
+    size_file = int(re.search(r'\d+', response)[0])  # Получаем размер файла в байтах
+    # dpg.set_value('numdir', num_dir)
     socket_data = init_pasv(socket_manager)
     socket_data.send(b"RETR {directory}\r\n")
+    recv_all(socket_manager)
     file = open(f"{file}", 'w')
-    while socket_data:
-        ftp_list = socket_data.recv(1024).decode('utf-8')
-        file.write(ftp_list)
+    while size_file > 0:
+        file_data = socket_data.recv(1024).decode('utf-8')
+        size_file -= 1024
+        file.write(file_data)
     file.close()
+    recv_all(socket_manager)
 
 
 def on_exit(sender, app_data, user_data):
