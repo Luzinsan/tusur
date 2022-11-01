@@ -24,10 +24,12 @@ dpg.create_context()
 def recv_all(socket_manager):
     while True:
         answer = socket_manager.recv(1024).decode('utf-8')
-        if re.search(r'\d{3} ', answer):
+        match = re.search(r'\d{3}\s.+', answer)
+        if match:
+            print(match)
             break
         print(answer, end='')
-    return answer
+    return match[0]
 
 
 def init_server(sender, app_data, user_data):
@@ -70,13 +72,23 @@ def update_text(socket_manager, cmd: bytes, tag: str):
 
 def output_list(socket_manager, socket_data):
     socket_manager.send(b"LIST\r\n")
-    while socket_data:
+    recv_all(socket_manager)  # Подтверждение установки соединения
+
+    response = recv_all(socket_manager)[4:]  # Получаем количество строк в текущей директории
+    num_dir = int(re.search(r'\d+', response)[0])  # Узнаём кол-во директорий/файлов
+    print(num_dir)
+    dpg.set_value('numdir', num_dir)
+
+    count = 0
+    while count < num_dir:
         ftp_list = socket_data.recv(1024).decode('utf-8')
         print(ftp_list)
         dpg.add_text(ftp_list, parent='list')
+        count += len(ftp_list.splitlines())
+        print(count)
 
 
-########################################## Stage #2: AUTHENTIFICATION USER #############################################
+########################################## Stage #2: AUTHENTICATION USER #############################################
 def send_recv_cmd(socket_manager: socket, cmd: bytes, tag: str = 'response', before: str = '') -> str:
     """ Посылает команду на подключенных хост, выводит в GUI ответ (tag='response') и возвращает код ответа
 
@@ -117,7 +129,7 @@ def init_pasv(socket_manager):
     socket_manager.send(b"PASV\r\n")
     pasv = recv_all(socket_manager)
     # ищем подстроку соответствующую регулярному выражению
-    match = re.search(r"(\d+,\d+,\d+,\d+,\d+,\d+)", pasv)
+    match = re.search(r'(\d+,\d+,\d+,\d+,\d+,\d+)', pasv)
     # разбиваем через запятую получая список чисел соответствующих ip port
     match = re.split(r",", match[0])
     ip = ".".join(match[:4])
@@ -143,7 +155,7 @@ def move_to(sender, app_data, user_data):
     dpg.delete_item('list', children_only=True)
     socket_manager, directory = user_data[0], user_data[1]
     socket_data = init_pasv(socket_manager)
-    output_list(socket_data)
+    output_list(socket_data, socket_data)
 
 
 def download(sender, app_data, user_data):
@@ -170,7 +182,6 @@ with dpg.window(label="AUTHORIZATION", modal=True, show=False, tag="auth", no_ti
 ########################################################################################################################
 
 
-
 ################################################# MAIN ################################################################
 with dpg.window(label="Main", tag="Main", autosize=True):
     with dpg.menu_bar():
@@ -180,6 +191,7 @@ with dpg.window(label="Main", tag="Main", autosize=True):
     dpg.add_text(label=":IP/PORT of Host", tag='ip_port')  # после перехода в пассивный режим определяем IP и PORT хоста
     dpg.add_text(label=":TYPE data", tag='type')  # переключаемся в бинарный режим
     dpg.add_text(label=":PATH", tag='path')  # текущая директория хоста
+    dpg.add_text(label=":Lines", tag='numdir')  # количество директорий/файлов в текущем каталоге
 
     dpg.add_spacer(tag='list')  # список файлов текущей директории
 
