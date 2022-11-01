@@ -7,7 +7,7 @@ DEFAULT_SERVER = "ftp.pureftpd.org"
 DEFAULT_LOGIN = "anonymous"
 DEFAULT_PASS = "anonymous"
 DEFAULT_PORT = 21  # сетевой порт для управляющего соединения
-TIMEOUT = 5.0
+TIMEOUT = 0.0
 
 dpg.create_context()
 
@@ -26,7 +26,7 @@ def recv_all(socket_manager):
         answer = socket_manager.recv(1024).decode('utf-8')
         match = re.search(r'\d{3}\s.*', answer)
         if match:
-            print(match)
+            print(match[0])
             break
         print(answer, end='')
     return match[0]
@@ -37,57 +37,64 @@ def init_server(sender, app_data, user_data):
     try:
         # соединяемся с сервером для передачи управляющих команд
         socket_manager.connect((dpg.get_value('host'), dpg.get_value('port')))
-        buffer_init = recv_all(socket_manager)
+        recv_all(socket_manager)
         dpg.add_text("1: Connected to host successful", tag='connect', before='sep')
-        dpg.set_item_user_data("auth", [socket_manager])
+        time.sleep(TIMEOUT)
+        dpg.delete_item("connect")
+        dpg.set_item_user_data("auth", socket_manager)
     except:
         dpg.add_text("Incorrect HOST or PORT", tag='err', before='sep')
         time.sleep(TIMEOUT)
         dpg.delete_item("err")
         socket_manager.close()
         return
-    dpg.delete_item("connect")
+    etc_server_data(socket_manager)
+    update_dir(socket_manager)
+
+
+def etc_server_data(socket_manager):
     # аутентификация пользователя
     init_user(socket_manager)
-    etc_data_server(socket_manager)
-
-
-def etc_data_server(socket_manager):
-    # определяем систему хоста
-    update_text(socket_manager, b"SYST\r\n", 'system')
-    # определяем текущую директорию
-    update_text(socket_manager, b"PWD\r\n", 'path')
     # текущая кодировка
     update_text(socket_manager, b"TYPE I\r\n", 'type')
+    # определяем систему хоста
+    update_text(socket_manager, b"SYST\r\n", 'system')
+
+
+def update_dir(socket_manager):
+    # определяем текущую директорию
+    update_text(socket_manager, b"PWD\r\n", 'path')
     socket_data = init_pasv(socket_manager)
     output_list(socket_manager, socket_data)
+    socket_data.close()
 
 
 def update_text(socket_manager, cmd: bytes, tag: str):
     socket_manager.send(cmd)
-    response = socket_manager.recv(1024).decode('utf-8')
+    response = recv_all(socket_manager)
     dpg.set_value(tag, response[3:])
     return response[:3]
 
 
 def output_list(socket_manager, socket_data):
-    dpg.delete_item('list', children_only=True)
-    socket_manager.send(b"LIST\r\n")
-    recv_all(socket_manager)  # Подтверждение установки соединения
+    print('\n\t\tOUTPUT_LIST')
+    dpg.configure_item('list', items=[])
 
+    socket_manager.send(b"LIST\r\n")
+    recv_all(socket_manager)  # Подтверждаем соединение с сервером для передачи списка
     response = recv_all(socket_manager)[4:]  # Получаем количество строк в текущей директории
     num_dir = int(re.search(r'\d+', response)[0])  # Узнаём кол-во директорий/файлов
-    print(num_dir)
     dpg.set_value('numdir', num_dir)
 
     count = 0
     ftp_list = []
+    print("READING...")
     while count < num_dir:
         ftp_list += socket_data.recv(1024).decode('utf-8').splitlines()
         count += len(ftp_list)
         print(count)
     dpg.configure_item('list', items=ftp_list, num_items=num_dir)
-    print(ftp_list)
+    print("\t\tOutputting list DONE\n")
 
 
 ########################################## Stage #2: AUTHENTICATION USER #############################################
@@ -102,9 +109,7 @@ def send_recv_cmd(socket_manager: socket, cmd: bytes, tag: str = 'response', bef
     """
     socket_manager.send(cmd)
     res = recv_all(socket_manager)
-    if before == '':
-        print(res[3:])
-    else:
+    if before != '':
         dpg.add_text(res[3:], tag=tag, before=before)
     return res[:3]
 
@@ -150,14 +155,18 @@ def init_pasv(socket_manager):
         socket_data.close()
 
 
-# endregion ################################################ END AUTHORIZATION ######################################################
+# endregion ################################################ END AUTHORIZATION #########################################
 
 
 def move_to(sender, app_data, user_data):
-    dpg.delete_item('list', children_only=True)
-    socket_manager, directory = user_data[0], user_data[1]
-    socket_data = init_pasv(socket_manager)
-    output_list(socket_data, socket_data)
+    socket_manager, directory = dpg.get_item_user_data('auth'),  dpg.get_value('move_to_path')
+    # переходим в указанную директорию
+    if send_recv_cmd(socket_manager, f"CWD {directory}\r\n".encode('utf-8')) == '250':
+        update_dir(socket_manager)
+        dpg.set_value('move_to_path', '')
+    else:
+        dpg.set_value('move_to_path', 'Invalid directory')
+    print(f"Moving to {directory} done")
 
 
 def download(sender, app_data, user_data):
@@ -169,6 +178,12 @@ def download(sender, app_data, user_data):
         ftp_list = socket_data.recv(1024).decode('utf-8')
         file.write(ftp_list)
     file.close()
+
+
+def on_exit(sender, app_data, user_data):
+    socket_manager = dpg.get_item_user_data('auth')
+    socket_manager.close()
+    print("socket_manager closed successfully")
 
 
 ############################################# AUTHORIZATION ############################################################
@@ -199,19 +214,15 @@ with dpg.window(label="Main", tag="Main", autosize=True):
 
     with dpg.group(horizontal=True, tag="move_to"):
         dpg.add_input_text(label=":PATH", tag='move_to_path', width=75)
-        dpg.add_button(label="MOVE", width=75, callback=move_to, before='move_to_path',
-                       user_data=[dpg.get_item_user_data('auth'),
-                                  dpg.get_item_user_data('move_to_path')])
+        dpg.add_button(label="MOVE", width=75, callback=move_to, before='move_to_path')
 
     with dpg.group(horizontal=True, tag="download"):
-        dpg.add_button(label="DOWNLOAD", width=75, callback=download, user_data=[dpg.get_item_user_data('auth'),
-                                                                                 dpg.get_item_user_data(
-                                                                                     'move_to_path')])
+        dpg.add_button(label="DOWNLOAD", width=75, callback=download)
         dpg.add_input_text(label=":FILE", tag='download_file', width=75)
-
 ########################################################################################################################
 dpg.create_viewport(title='FTP CLIENT', width=1080, height=920)
 dpg.set_global_font_scale(1.25)
+dpg.set_exit_callback(on_exit)
 dpg.setup_dearpygui()
 dpg.show_viewport()
 dpg.set_primary_window("Main", True)
