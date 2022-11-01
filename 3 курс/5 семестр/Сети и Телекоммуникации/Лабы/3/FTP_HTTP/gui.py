@@ -3,11 +3,11 @@ from socket import *
 import re
 import time
 
-DEFAULT_SERVER = "ftp.pureftpd.org"
+DEFAULT_SERVER = "ftp.slackware.com"
 DEFAULT_LOGIN = "anonymous"
 DEFAULT_PASS = "anonymous"
 DEFAULT_PORT = 21  # сетевой порт для управляющего соединения
-TIMEOUT = 0.0
+TIMEOUT = 2.0
 
 dpg.create_context()
 
@@ -24,11 +24,10 @@ dpg.create_context()
 def recv_all(socket_manager):
     while True:
         answer = socket_manager.recv(1024).decode('utf-8')
+        print(answer, end='')
         match = re.search(r'\d{3}\s.*', answer)
         if match:
-            print(match[0])
             break
-        print(answer, end='')
     return match[0]
 
 
@@ -78,22 +77,20 @@ def update_text(socket_manager, cmd: bytes, tag: str):
 
 def output_list(socket_manager, socket_data):
     print('\n\t\tOUTPUT_LIST')
-    dpg.configure_item('list', items=[])
-
     socket_manager.send(b"LIST\r\n")
     recv_all(socket_manager)  # Подтверждаем соединение с сервером для передачи списка
-    response = recv_all(socket_manager)[4:]  # Получаем количество строк в текущей директории
-    num_dir = int(re.search(r'\d+', response)[0])  # Узнаём кол-во директорий/файлов
-    dpg.set_value('numdir', num_dir)
-
+    recv_all(socket_manager)  # Подтверждение о выводе списка директорий/файлов
     count = 0
     ftp_list = []
     print("READING...")
-    while count < num_dir:
-        ftp_list += socket_data.recv(1024).decode('utf-8').splitlines()
-        count += len(ftp_list)
-        print(count)
-    dpg.configure_item('list', items=ftp_list, num_items=num_dir)
+    while True:
+        curr_list = socket_data.recv(1024).decode('utf-8').splitlines()
+        count = count + len(curr_list)
+        ftp_list += curr_list
+        if len(curr_list) == 0:
+            break
+    dpg.set_value('numdir', count)
+    dpg.configure_item('list', items=ftp_list)
     print("\t\tOutputting list DONE\n")
 
 
@@ -164,31 +161,52 @@ def move_to(sender, app_data, user_data):
     if send_recv_cmd(socket_manager, f"CWD {directory}\r\n".encode('utf-8')) == '250':
         update_dir(socket_manager)
         dpg.set_value('move_to_path', '')
+        print(f"Moving to {directory} done")
     else:
         dpg.set_value('move_to_path', 'Invalid directory')
-    print(f"Moving to {directory} done")
 
 
 def download(sender, app_data, user_data):
-    socket_manager, file = dpg.get_item_user_data('auth'),  dpg.get_value('download_file')
-    socket_manager.send(f"SIZE {file}\r\n")
-    response = recv_all(socket_manager)[4:]
-    size_file = int(re.search(r'\d+', response)[0])  # Получаем размер файла в байтах
-    # dpg.set_value('numdir', num_dir)
+    socket_manager, file_name = dpg.get_item_user_data('auth'),  dpg.get_value('download_file')
     socket_data = init_pasv(socket_manager)
-    socket_data.send(b"RETR {directory}\r\n")
-    recv_all(socket_manager)
-    file = open(f"{file}", 'w')
+    socket_manager.send(f"RETR {file_name}\r\n".encode('utf-8'))
+    response = recv_all(socket_manager)  # подтверждение соединения (и возвращение размера файла)
+    if response[:3] != '150':
+        dpg.set_value('download_file', "Invalid File")
+        socket_data.close()
+        return
+    match = re.search(r'\d+.\d+', response[4:])
+    print(match)
+    if match:
+        size_file = round(float(match[0])*1024)  # Получаем размер файла в байтах
+    else:
+        size_file = 1024
+    print(size_file)
+    file = open(f"{file_name}", 'w')
     while size_file > 0:
-        file_data = socket_data.recv(1024).decode('utf-8')
-        size_file -= 1024
-        file.write(file_data)
+        try:
+            file_data = socket_data.recv(1024).decode('utf-8')
+            file.write(file_data)
+            size_file -= 1024
+            print(size_file)
+        except Exception as err:
+            dpg.set_value('download_file', "Disable to download")
+            print(err)
+            file.close()
+            recv_all(socket_manager)  # узнаём состояние загрузки
+            socket_data.close()
+            return
     file.close()
-    recv_all(socket_manager)
+    recv_all(socket_manager)  # узнаём успешность загрузки
+    downloaded_files.append(file_name)
+    dpg.configure_item('downloaded', items=downloaded_files)
+    dpg.set_value('download_file', '')
+    socket_data.close()
 
 
 def on_exit(sender, app_data, user_data):
     socket_manager = dpg.get_item_user_data('auth')
+    send_recv_cmd(socket_manager, b"QUIT\r\n")
     socket_manager.close()
     print("socket_manager closed successfully")
 
@@ -211,23 +229,38 @@ with dpg.window(label="Main", tag="Main", autosize=True):
     with dpg.menu_bar():
         with dpg.menu(label="Connection"):
             dpg.add_menu_item(label="Log in", callback=lambda: dpg.configure_item("auth", show=True))
-    dpg.add_text(label=":System of Host", tag='system')  # система хоста
-    dpg.add_text(label=":IP/PORT of Host", tag='ip_port')  # после перехода в пассивный режим определяем IP и PORT хоста
-    dpg.add_text(label=":TYPE data", tag='type')  # переключаемся в бинарный режим
-    dpg.add_text(label=":PATH", tag='path')  # текущая директория хоста
-    dpg.add_text(label=":Number of Lines", tag='numdir')  # количество директорий/файлов в текущем каталоге
+    dpg.add_input_text(label=":System of Host", tag='system', readonly=True)  # система хоста
+    dpg.add_input_text(label=":IP/PORT of Host", tag='ip_port', readonly=True)  # после перехода в пассивный режим определяем IP и PORT хоста
+    dpg.add_input_text(label=":TYPE data", tag='type', readonly=True)  # переключаемся в бинарный режим
+    dpg.add_input_text(label=":PATH", tag='path', readonly=True)  # текущая директория хоста
+    dpg.add_input_text(label=":Number of Lines", tag='numdir', readonly=True)  # количество директорий/файлов в текущем каталоге
 
-    dpg.add_listbox(tag='list')  # список файлов текущей директории
+    dpg.add_listbox(tag='list', width=1820, num_items=20, tracked=True)  # список файлов текущей директории
 
-    with dpg.group(horizontal=True, tag="move_to"):
-        dpg.add_input_text(label=":PATH", tag='move_to_path', width=75)
-        dpg.add_button(label="MOVE", width=75, callback=move_to, before='move_to_path')
+    with dpg.group(horizontal=True, tag="move_to", indent=155):
+        dpg.add_button(label="MOVE", callback=move_to, width=75)
+        dpg.add_input_text(label=":PATH", tag='move_to_path', width=340)
 
-    with dpg.group(horizontal=True, tag="download"):
-        dpg.add_button(label="DOWNLOAD", width=75, callback=download)
-        dpg.add_input_text(label=":FILE", tag='download_file', width=75)
+    with dpg.group(horizontal=True, tag="download", indent=155):
+        dpg.add_button(label="DOWNLOAD", callback=download, width=75)
+        dpg.add_input_text(label=":FILE", tag='download_file', width=340)
+    downloaded_files = []
+    dpg.add_listbox(tag='downloaded', width=1820, items=downloaded_files)
 ########################################################################################################################
-dpg.create_viewport(title='FTP CLIENT', width=1080, height=920)
+with dpg.theme() as global_theme:
+    with dpg.theme_component(dpg.mvAll):
+        dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (77, 7, 143), category=dpg.mvThemeCat_Core)
+        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+    with dpg.theme_component(dpg.mvInputInt):
+        dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (30, 77, 70), category=dpg.mvThemeCat_Core)
+        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+    with dpg.theme_component(dpg.mvText):
+        dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (15, 61, 131), category=dpg.mvThemeCat_Core)
+        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+
+dpg.bind_theme(global_theme)
+########################################################################################################################
+dpg.create_viewport(title='FTP CLIENT', width=960, height=750)
 dpg.set_global_font_scale(1.25)
 dpg.set_exit_callback(on_exit)
 dpg.setup_dearpygui()
