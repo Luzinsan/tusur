@@ -170,10 +170,10 @@ def move_to(sender, app_data, user_data):
 
 
 def download(sender, app_data, user_data):
-    socket_manager, directory = user_data[0], user_data[1]
+    socket_manager, file = dpg.get_item_user_data('auth'),  dpg.get_value('download_file')
     socket_data = init_pasv(socket_manager)
     socket_data.send(b"RETR {directory}\r\n")
-    file = open("download", 'w')
+    file = open(f"{file}", 'w')
     while socket_data:
         ftp_list = socket_data.recv(1024).decode('utf-8')
         file.write(ftp_list)
