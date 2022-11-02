@@ -1,5 +1,3 @@
-
-
 import dearpygui.dearpygui as dpg
 from socket import *
 import re
@@ -12,14 +10,6 @@ DEFAULT_PORT = 21  # сетевой порт для управляющего с�
 TIMEOUT = 0.0
 
 dpg.create_context()
-
-
-# CMD_LIST = b"NLST\r\n"
-# CMD_QUIT = b"QUIT\r\n"
-# CMD_CWD = b"CWD /docs/\r\n"
-# CMD_HELP = b"HELP\r\n"
-# CMD_RETR = b"RETR readme.txt\r\r"
-# CMD_STRU = b"STRU P\r\n"
 
 
 # region ####################################### Stage #1: INITIALIZATION SERVER  ######################################

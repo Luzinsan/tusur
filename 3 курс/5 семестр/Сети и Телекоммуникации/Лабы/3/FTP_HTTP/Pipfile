@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 dearpygui = "*"
+http-parser = "*"
 
 [dev-packages]
 
