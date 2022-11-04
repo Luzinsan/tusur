@@ -1,24 +1,14 @@
 from sympy import *
 import numpy as np
 from sympy.parsing.sympy_parser import standard_transformations, implicit_multiplication_application
-
+from main import ExpressionMin
 
 x1, x2 = var('x_1 x_2')
 ITERATIONS = 50
 
 
-def simplex_method():
-    filename = "expr.txt"
-    with open(filename, "rt") as file:
-        expression = file.readline()
-        transformations = (standard_transformations + (implicit_multiplication_application,))
-        function: Expr = parse_expr(expression, transformations=transformations)
-        x_0 = list(map(int, file.readline().split()))  # начальная точка
-        delta = int(file.readline())  # длина ребра симплекса
-        alpha = float(file.readline())  # коэффициент сжатия
-        eps_x = float(file.readline())  # точность по аргументу x
-        eps_y = float(file.readline())  # точность по аргументу y
-
+def simplex_method(expr: ExpressionMin):
+    function, x_0, delta, alpha, eps_x, eps_y = expr.function, expr.x_0, expr.delta, expr.alpha, expr.eps_x, expr.eps_y
     print(f"{function=}\n{x_0=}\n{delta=}\n{alpha=}\n{eps_x=}\n{eps_y=}")
     n = 2
     # Симплекс 0
@@ -85,5 +75,3 @@ def simplex_method():
             F_approx_prev = F_approx_curr
 
     print(f"\n\n\n\tКонечное решение: {x_approx_curr}")
-
-simplex_method()
