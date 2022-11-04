@@ -1,13 +1,14 @@
 from sympy import *
 import numpy as np
 from sympy.parsing.sympy_parser import standard_transformations, implicit_multiplication_application
-import dearpygui.dearpygui as dpg
+
 
 x1, x2 = var('x_1 x_2')
 ITERATIONS = 50
 
-if __name__ == '__main__':
-    filename = "expression.txt"
+
+def simplex_method():
+    filename = "expr.txt"
     with open(filename, "rt") as file:
         expression = file.readline()
         transformations = (standard_transformations + (implicit_multiplication_application,))
@@ -84,3 +85,5 @@ if __name__ == '__main__':
             F_approx_prev = F_approx_curr
 
     print(f"\n\n\n\tКонечное решение: {x_approx_curr}")
+
+simplex_method()
