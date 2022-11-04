@@ -1,6 +1,7 @@
 from sympy import *
 import numpy as np
 from sympy.parsing.sympy_parser import standard_transformations, implicit_multiplication_application
+import dearpygui.dearpygui as dpg
 
 x1, x2 = var('x_1 x_2')
 ITERATIONS = 50
@@ -23,10 +24,10 @@ if __name__ == '__main__':
     V = np.ones((n + 1, n))
     V[0] = x_0  # Инициализация нулевой строки начальным приближением
 
-    #  p_n и g_n будет изменяться (от delta)
     p_n = delta * (sqrt(n + 1) + n - 1) / (n * sqrt(2))
+    print(f"{p_n.evalf()=}")
     g_n = p_n - delta * sqrt(2) / 2
-    # g_n = delta * (sqrt(n + 1) - 1) / (n * sqrt(2))
+    print(f"{g_n.evalf()=}")
     for row in range(1, n + 1):
         for column in range(n):
             if row-1 == column:
@@ -35,48 +36,51 @@ if __name__ == '__main__':
                 V[row][column] = V[0][column] + g_n
     print(f"{V=}")
     # начальное приближение точки минимума - геометрический центр симплекса
-    x_approx_prev = [sum(V[i])/(n + 1) for i in range(n)]
+    x_approx_prev = [sum(V[:, i])/(n + 1) for i in range(n)]
     print(f"{x_approx_prev=}")
-    # x_approx = x_approx_prev*2
-    # print(x_approx_prev)
-    F_x = [function.subs({x1: V[i][0], x2: V[i][1]}) for i in range(n)]
-    print(f"{F_x}")
-    p = F_x.argmax()
-    # F_approx = F_approx_prev*2
-    #print(F_approx_prev)
-    # F_x = np.ones(n + 1)
-    while (sum(x_approx - x_approx_prev) >= eps_x) or (abs(F_approx - F_approx_prev) >= eps_y):
-        for index in range(n + 1):
-            F_x[index] = function.subs({x1: V[index][0], x2: V[index][1]})
-            print(F_x[index])
-        print(F_x)
+    F_approx_prev = function.subs({x1: x_approx_prev[0], x2: x_approx_prev[1]})
+    print(f"{F_approx_prev=}")
+    while True:
+        F_x = np.array([function.subs({x1: V[i][0], x2: V[i][1]}) for i in range(n+1)])
+        print(f"{F_x=}")
         p = F_x.argmax()
-        F_max = F_x.max()
-        V[p] = (V[:p] + V[p + 1:]) * (2 / n) - V[p]
-        print(V)
-        #F_approx_prev = F_approx
-        F_approx = function.subs({x1: V[p][0], x2: V[p][1]})
-        print(F_approx, F_max)
-        if F_approx > F_max:
+        print(f"{p=}")
+
+        V_p = np.zeros(n)
+        for row in range(n + 1):
+            if row != p:
+                V_p += V[row]
+        V_p = V_p * (2 / n) - V[p]
+        print(f"{V_p}")
+
+        F_p = function.subs({x1: V_p[0], x2: V_p[1]})
+        if F_p <= F_x[p]:
+            # построить новый симплекс
+            V[p] = V_p
+            print(f"{V=}")
+        else:
+            # выполнить сжатие
             delta *= alpha
-            F_min = F_x.min()
+            print(f"{delta=}")
+            # индекс вершины с мин.знач
             m = F_x.argmin()
-        x_approx = [sum(V[:, i]) / (n + 1) for i in range(n)]
-        print(x_approx)
-        print(x_approx_prev)
-        print(np.sqrt(sum(pow(a - b, 2) for a, b in zip(x_approx_prev, x_approx))))
-        F_approx = function.subs({x1: x_approx[0], x2: x_approx[1]})
-        print(F_approx_prev)
-        print(F_approx)
-        print(abs(F_approx - F_approx_prev))
+            print(f"{m=}")
+            V = alpha * V + (1 - alpha) * V[m]
+            print(f"{V=}")
+        # начальное приближение точки минимума - геометрический центр симплекса
+        x_approx_curr = [sum(V[:, i]) / (n + 1) for i in range(n)]
+        print(f"{x_approx_curr=}")
+        F_approx_curr = function.subs({x1: x_approx_curr[0], x2: x_approx_curr[1]})
+        print(f"{F_approx_curr=}")
+        # Евклидова норма приближений точек оптимума
+        diff_x = np.sqrt(sum(pow(a - b, 2) for a, b in zip(x_approx_prev, x_approx_curr)))
+        print(f"{diff_x=}")
+        diff_y = abs(F_approx_curr - F_approx_prev)
+        print(f"{diff_y=}")
+        if diff_x < eps_x and diff_y < eps_y:  # условие останова
+            break
+        else:
+            x_approx_prev = x_approx_curr
+            F_approx_prev = F_approx_curr
 
-        x_approx_prev = x_approx
-
-        print(x_approx)
-
-        F_0 = function.subs({x1: x_0[0], x2: x_0[1]})
-        print(F_approx)
-
-
-
-
+    print(f"\n\n\n\tКонечное решение: {x_approx_curr}")
