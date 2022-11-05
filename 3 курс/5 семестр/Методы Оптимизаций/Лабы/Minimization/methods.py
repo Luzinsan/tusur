@@ -16,8 +16,8 @@ class ExpressionMin:
                 expression = file.readline()
                 transformations = (standard_transformations + (implicit_multiplication_application,))
                 self.function: Expr = parse_expr(expression, transformations=transformations)
-                self.x_0 = list(map(int, file.readline().split()))  # начальная точка
-                self.delta = int(file.readline())  # длина ребра симплекса
+                self.x_0 = list(map(float, file.readline().split()))  # начальная точка
+                self.delta = float(file.readline())  # длина ребра симплекса
                 self.alpha = float(file.readline())  # коэффициент сжатия
                 self.eps_x = float(file.readline())  # точность по аргументу x
                 self.eps_y = float(file.readline())  # точность по аргументу y
@@ -35,21 +35,9 @@ class ExpressionMin:
         return f"{self.function=}" + f"{self.x_0=}" + f"{self.delta=}" + f"{self.alpha=}" + f"{self.eps_x=}" + f"{self.eps_y=}"
 
 
-approxes = []
-
-
-def update_plot_data(sender, app_data, plot_data):
-    mouse_y = app_data[1]
-    if len(plot_data) > 100:
-        plot_data.pop(0)
-    plot_data.append(sin(mouse_y / 30))
-    dpg.set_value("plot", plot_data)
-
-
 def simplex_method(expr: ExpressionMin):
     function, x_0, delta, alpha, eps_x, eps_y = expr.function, expr.x_0, expr.delta, expr.alpha, expr.eps_x, expr.eps_y
     n = 2
-
     # Симплекс 0
     V = np.ones((n + 1, n))
     V[0] = x_0  # Инициализация нулевой строки начальным приближением

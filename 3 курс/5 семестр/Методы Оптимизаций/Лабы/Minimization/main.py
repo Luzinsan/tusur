@@ -41,7 +41,8 @@ def mode(sender, app_data, user_data):
             for i in range(dpg.get_value('dim')):
                 dpg.add_input_float(label=f":coordinate #{i}", tag=f'x_{i}', parent='next_sub-window',
                                     default_value=0.0)
-            dpg.add_input_float(label=":simplex edge length", tag='delta', parent='next_sub-window', default_value=1)
+            if dpg.get_value('method') == 'Simplex Method':
+                dpg.add_input_float(label=":simplex edge length", tag='delta', parent='next_sub-window', default_value=1)
             dpg.add_input_float(label=":compression ratio", tag='alpha', parent='next_sub-window', default_value=0.5)
             dpg.add_input_float(label=":x precision", tag='eps_x', parent='next_sub-window', default_value=0.001)
             dpg.add_input_float(label=":y precision", tag='eps_y', parent='next_sub-window', default_value=0.001)
@@ -52,6 +53,7 @@ def mode(sender, app_data, user_data):
 
 ################################################# MAIN ################################################################
 with dpg.window(label="Minimization", tag="Minimization", autosize=True):
+    dpg.add_text("Heuristic methods", color=(255,0,0))
     dpg.add_text("Choose method:")
     dpg.add_radio_button(tag='method',
                          items=["Simplex Method", "Hook Jeeves Method"], default_value="Simplex Method")
