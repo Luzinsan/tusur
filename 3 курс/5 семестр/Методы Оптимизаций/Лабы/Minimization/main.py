@@ -1,126 +1,33 @@
-import dearpygui.dearpygui as dpg
-from sympy import *
-import numpy as np
-from sympy.parsing.sympy_parser import standard_transformations, implicit_multiplication_application
+from methods import *
 
 dpg.create_context()
-dpg.create_viewport(title='Minimization', width=960, height=750)
 
-x1, x2 = var('x_1 x_2')
-ITERATIONS = 50
-
-
-class ExpressionMin:
-    def __init__(self, from_source) -> None:
-        if from_source == "from file":
-            filename = dpg.get_value('filename')
-            with open(filename, "rt") as file:
-                expression = file.readline()
-                transformations = (standard_transformations + (implicit_multiplication_application,))
-                self.function: Expr = parse_expr(expression, transformations=transformations)
-                self.x_0 = list(map(int, file.readline().split()))  # начальная точка
-                self.delta = int(file.readline())  # длина ребра симплекса
-                self.alpha = float(file.readline())  # коэффициент сжатия
-                self.eps_x = float(file.readline())  # точность по аргументу x
-                self.eps_y = float(file.readline())  # точность по аргументу y
-        elif from_source == "from field":
-            expression = dpg.get_value('expr')
-            transformations = (standard_transformations + (implicit_multiplication_application,))
-            self.function: Expr = parse_expr(expression, transformations=transformations)
-            self.x_0 = dpg.get_value('x_0')  # начальная точка
-            self.delta = dpg.get_value('delta')  # длина ребра симплекса
-            self.alpha = dpg.get_value('alpha')  # коэффициент сжатия
-            self.eps_x = dpg.get_value('eps_x')  # точность по аргументу x
-            self.eps_y = dpg.get_value('epx_y')  # точность по аргументу y
-
-    def __str__(self):
-        return f"{self.function=}" + f"{self.x_0=}" + f"{self.delta=}" + f"{self.alpha=}" + f"{self.eps_x=}" + f"{self.eps_y=}"
-
-    def __repr__(self):
-        print(f"{self.function=}", f"{self.x_0=}",
-              f"{self.delta=}", f"{self.alpha=}", f"{self.eps_x=}", f"{self.eps_y=}", sep="\n")
-
-
-def simplex_method(expr: ExpressionMin):
-    function, x_0, delta, alpha, eps_x, eps_y = expr.function, expr.x_0, expr.delta, expr.alpha, expr.eps_x, expr.eps_y
-    print(f"{function=}\n{x_0=}\n{delta=}\n{alpha=}\n{eps_x=}\n{eps_y=}")
-    n = 2
-    # Симплекс 0
-    V = np.ones((n + 1, n))
-    V[0] = x_0  # Инициализация нулевой строки начальным приближением
-
-    p_n = delta * (sqrt(n + 1) + n - 1) / (n * sqrt(2))
-    print(f"{p_n.evalf()=}")
-    g_n = p_n - delta * sqrt(2) / 2
-    print(f"{g_n.evalf()=}")
-    for row in range(1, n + 1):
-        for column in range(n):
-            if row - 1 == column:
-                V[row][column] = V[0][column] + p_n
-            else:
-                V[row][column] = V[0][column] + g_n
-    print(f"{V=}")
-    # начальное приближение точки минимума - геометрический центр симплекса
-    x_approx_prev = [sum(V[:, i]) / (n + 1) for i in range(n)]
-    print(f"{x_approx_prev=}")
-    F_approx_prev = function.subs({x1: x_approx_prev[0], x2: x_approx_prev[1]})
-    print(f"{F_approx_prev=}")
-    while True:
-        F_x = np.array([function.subs({x1: V[i][0], x2: V[i][1]}) for i in range(n + 1)])
-        print(f"{F_x=}")
-        p = F_x.argmax()
-        print(f"{p=}")
-
-        V_p = np.zeros(n)
-        for row in range(n + 1):
-            if row != p:
-                V_p += V[row]
-        V_p = V_p * (2 / n) - V[p]
-        print(f"{V_p}")
-
-        F_p = function.subs({x1: V_p[0], x2: V_p[1]})
-        if F_p <= F_x[p]:
-            # построить новый симплекс
-            V[p] = V_p
-            print(f"{V=}")
-        else:
-            # выполнить сжатие
-            delta *= alpha
-            print(f"{delta=}")
-            # индекс вершины с мин.знач
-            m = F_x.argmin()
-            print(f"{m=}")
-            V = alpha * V + (1 - alpha) * V[m]
-            print(f"{V=}")
-        # начальное приближение точки минимума - геометрический центр симплекса
-        x_approx_curr = [sum(V[:, i]) / (n + 1) for i in range(n)]
-        print(f"{x_approx_curr=}")
-        F_approx_curr = function.subs({x1: x_approx_curr[0], x2: x_approx_curr[1]})
-        print(f"{F_approx_curr=}")
-        # Евклидова норма приближений точек оптимума
-        diff_x = np.sqrt(sum(pow(a - b, 2) for a, b in zip(x_approx_prev, x_approx_curr)))
-        print(f"{diff_x=}")
-        diff_y = abs(F_approx_curr - F_approx_prev)
-        print(f"{diff_y=}")
-        if diff_x < eps_x and diff_y < eps_y:  # условие останова
-            break
-        else:
-            x_approx_prev = x_approx_curr
-            F_approx_prev = F_approx_curr
-
-    print(f"\n\n\n\tКонечное решение: {x_approx_curr}")
-def hook_jeeves_method(expr: ExpressionMin):
-    pass
 
 def output_solution(sender, app_data, user_data):
     expr = ExpressionMin(dpg.get_value('mode'))
-    # print(expr)
     method = dpg.get_value('method')
+    update_plot(expr.function)
     match method:
         case "Simplex Method":
-            simplex_method(expr)
+            result = simplex_method(expr)
+            print(f"\n\n\n\tКонечное решение: {result}")
         case "Hook Jeeves Method":
-            hook_jeeves_method(expr)
+            result = hook_jeeves_method(expr)
+            print(f"\n\n\n\tКонечное решение: {result}")
+
+
+# creating data
+sindatax = []
+sindatay = []
+for i in range(0, 500):
+    sindatax.append(i / 1000)
+    sindatay.append(0.5 + 0.5 * sin(50 * i / 1000))
+
+
+def update_plot(func: str):
+    dpg.set_value('plot', [sindatax, sindatay])
+    dpg.set_item_label('main_series', "0.5 + 0.5 * cos(x)")
+    dpg.set_value('crop_plot', [sindatax, sindatay])
 
 
 def mode(sender, app_data, user_data):
@@ -147,6 +54,11 @@ def mode(sender, app_data, user_data):
         dpg.add_child_window(label="Next", tag="next_sub-window", parent='init', autosize_x=True, autosize_y=True)
 
 
+def query(sender, app_data, user_data):
+    dpg.set_axis_limits("xaxis_tag2", app_data[0], app_data[1])
+    dpg.set_axis_limits("yaxis_tag2", app_data[2], app_data[3])
+
+
 ################################################# MAIN ################################################################
 with dpg.window(label="Minimization", tag="Minimization", autosize=True):
     dpg.add_text("Choose method:")
@@ -155,7 +67,18 @@ with dpg.window(label="Minimization", tag="Minimization", autosize=True):
     dpg.add_text("Choose mode:")
     dpg.add_radio_button(tag='mode', horizontal=True, callback=mode,
                          items=["from file", "from field"])
-    dpg.add_child_window(label="initiation data", tag='init', autosize_x=True, autosize_y=True)
+    dpg.add_child_window(label="initiation data", tag='init', autosize_x=True, height=300)
+    # Full Plot
+    with dpg.plot(tag='plot', no_title=True, height=200, callback=query, query=True, no_menus=True, width=-1):
+        dpg.add_plot_legend()
+        dpg.add_plot_axis(dpg.mvXAxis, label="x")
+        dpg.add_plot_axis(dpg.mvYAxis, label="y")
+        dpg.add_line_series(sindatax, sindatay, tag='main_series', parent=dpg.last_item())
+    # Crop plot
+    with dpg.plot(tag='crop_plot', no_title=True, height=200, no_menus=True, width=-1):
+        dpg.add_plot_axis(dpg.mvXAxis, label="x1", tag="xaxis_tag2")
+        dpg.add_plot_axis(dpg.mvYAxis, label="y1", tag="yaxis_tag2")
+        dpg.add_line_series(sindatax, sindatay, parent=dpg.last_item())
     dpg.add_separator(tag='preset')
     dpg.add_button(label="Search", tag='solution', callback=output_solution)
 
@@ -170,8 +93,10 @@ with dpg.theme() as global_theme:
         dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (15, 61, 131), category=dpg.mvThemeCat_Core)
         dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
 
-dpg.bind_theme(global_theme)
+
 ########################################################################################################################
+dpg.create_viewport(title='Minimization', width=960, height=750)
+dpg.bind_theme(global_theme)
 dpg.set_global_font_scale(1.25)
 dpg.setup_dearpygui()
 dpg.show_viewport()
