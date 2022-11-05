@@ -6,7 +6,6 @@ dpg.create_context()
 def output_solution(sender, app_data, user_data):
     expr = ExpressionMin(dpg.get_value('mode'))
     method = dpg.get_value('method')
-    update_plot(expr.function)
     match method:
         case "Simplex Method":
             result = simplex_method(expr)
@@ -14,20 +13,6 @@ def output_solution(sender, app_data, user_data):
         case "Hook Jeeves Method":
             result = hook_jeeves_method(expr)
             print(f"\n\n\n\tКонечное решение: {result}")
-
-
-# creating data
-sindatax = []
-sindatay = []
-for i in range(0, 500):
-    sindatax.append(i / 1000)
-    sindatay.append(0.5 + 0.5 * sin(50 * i / 1000))
-
-
-def update_plot(func: str):
-    dpg.set_value('plot', [sindatax, sindatay])
-    dpg.set_item_label('main_series', "0.5 + 0.5 * cos(x)")
-    dpg.set_value('crop_plot', [sindatax, sindatay])
 
 
 def mode(sender, app_data, user_data):
@@ -54,11 +39,6 @@ def mode(sender, app_data, user_data):
         dpg.add_child_window(label="Next", tag="next_sub-window", parent='init', autosize_x=True, autosize_y=True)
 
 
-def query(sender, app_data, user_data):
-    dpg.set_axis_limits("xaxis_tag2", app_data[0], app_data[1])
-    dpg.set_axis_limits("yaxis_tag2", app_data[2], app_data[3])
-
-
 ################################################# MAIN ################################################################
 with dpg.window(label="Minimization", tag="Minimization", autosize=True):
     dpg.add_text("Choose method:")
@@ -68,17 +48,6 @@ with dpg.window(label="Minimization", tag="Minimization", autosize=True):
     dpg.add_radio_button(tag='mode', horizontal=True, callback=mode,
                          items=["from file", "from field"])
     dpg.add_child_window(label="initiation data", tag='init', autosize_x=True, height=300)
-    # Full Plot
-    with dpg.plot(tag='plot', no_title=True, height=200, callback=query, query=True, no_menus=True, width=-1):
-        dpg.add_plot_legend()
-        dpg.add_plot_axis(dpg.mvXAxis, label="x")
-        dpg.add_plot_axis(dpg.mvYAxis, label="y")
-        dpg.add_line_series(sindatax, sindatay, tag='main_series', parent=dpg.last_item())
-    # Crop plot
-    with dpg.plot(tag='crop_plot', no_title=True, height=200, no_menus=True, width=-1):
-        dpg.add_plot_axis(dpg.mvXAxis, label="x1", tag="xaxis_tag2")
-        dpg.add_plot_axis(dpg.mvYAxis, label="y1", tag="yaxis_tag2")
-        dpg.add_line_series(sindatax, sindatay, parent=dpg.last_item())
     dpg.add_separator(tag='preset')
     dpg.add_button(label="Search", tag='solution', callback=output_solution)
 
