@@ -1,6 +1,7 @@
 import numpy as np
 from sympy import *
 import dearpygui.dearpygui as dpg
+
 from sympy.parsing.sympy_parser import standard_transformations, implicit_multiplication_application
 
 x1, x2 = var('x_1 x_2')
@@ -28,7 +29,7 @@ class ExpressionMin:
             self.delta = dpg.get_value('delta')  # длина ребра симплекса
             self.alpha = dpg.get_value('alpha')  # коэффициент сжатия
             self.eps_x = dpg.get_value('eps_x')  # точность по аргументу x
-            self.eps_y = dpg.get_value('epx_y')  # точность по аргументу y
+            self.eps_y = dpg.get_value('eps_y')  # точность по аргументу y
 
     def __str__(self):
         return f"{self.function=}" + f"{self.x_0=}" + f"{self.delta=}" + f"{self.alpha=}" + f"{self.eps_x=}" + f"{self.eps_y=}"
@@ -48,6 +49,7 @@ def update_plot_data(sender, app_data, plot_data):
 def simplex_method(expr: ExpressionMin):
     function, x_0, delta, alpha, eps_x, eps_y = expr.function, expr.x_0, expr.delta, expr.alpha, expr.eps_x, expr.eps_y
     n = 2
+
     # Симплекс 0
     V = np.ones((n + 1, n))
     V[0] = x_0  # Инициализация нулевой строки начальным приближением
@@ -63,8 +65,8 @@ def simplex_method(expr: ExpressionMin):
     # начальное приближение точки минимума - геометрический центр симплекса
     x_approx_prev = [sum(V[:, i]) / (n + 1) for i in range(n)]
     F_approx_prev = function.subs({x1: x_approx_prev[0], x2: x_approx_prev[1]})
-
-    while True:
+    iter = 0
+    while iter < ITERATIONS:
         F_x = np.array([function.subs({x1: V[i][0], x2: V[i][1]}) for i in range(n + 1)])
         p = F_x.argmax()
         V_p = np.zeros(n)
@@ -91,6 +93,9 @@ def simplex_method(expr: ExpressionMin):
         else:
             x_approx_prev = x_approx_curr
             F_approx_prev = F_approx_curr
+        iter +=1
+    if iter == ITERATIONS:
+        x_approx_curr = np.zeros(n)
     return x_approx_curr
 
 
