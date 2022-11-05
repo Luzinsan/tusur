@@ -11,8 +11,8 @@ ITERATIONS = 50
 
 
 class ExpressionMin:
-    def __init__(self, source) -> None:
-        if source == "from file":
+    def __init__(self, from_source) -> None:
+        if from_source == "from file":
             filename = dpg.get_value('filename')
             with open(filename, "rt") as file:
                 expression = file.readline()
@@ -23,7 +23,7 @@ class ExpressionMin:
                 self.alpha = float(file.readline())  # коэффициент сжатия
                 self.eps_x = float(file.readline())  # точность по аргументу x
                 self.eps_y = float(file.readline())  # точность по аргументу y
-        elif source == "from field":
+        elif from_source == "from field":
             expression = dpg.get_value('expr')
             transformations = (standard_transformations + (implicit_multiplication_application,))
             self.function: Expr = parse_expr(expression, transformations=transformations)
@@ -109,12 +109,18 @@ def simplex_method(expr: ExpressionMin):
             F_approx_prev = F_approx_curr
 
     print(f"\n\n\n\tКонечное решение: {x_approx_curr}")
-
+def hook_jeeves_method(expr: ExpressionMin):
+    pass
 
 def output_solution(sender, app_data, user_data):
     expr = ExpressionMin(dpg.get_value('mode'))
-    print(expr)
-    simplex_method(expr)
+    # print(expr)
+    method = dpg.get_value('method')
+    match method:
+        case "Simplex Method":
+            simplex_method(expr)
+        case "Hook Jeeves Method":
+            hook_jeeves_method(expr)
 
 
 def mode(sender, app_data, user_data):
@@ -138,7 +144,7 @@ def mode(sender, app_data, user_data):
             dpg.add_input_float(label=":y precision", tag='eps_y', parent='next_sub-window', default_value=0.001)
 
         dpg.add_button(label="Next", tag='next', parent='init', callback=next_data)
-        dpg.add_child_window(label="Next", tag="next_sub-window", parent='init')
+        dpg.add_child_window(label="Next", tag="next_sub-window", parent='init', autosize_x=True, autosize_y=True)
 
 
 ################################################# MAIN ################################################################
@@ -148,8 +154,8 @@ with dpg.window(label="Minimization", tag="Minimization", autosize=True):
                          items=["Simplex Method", "Hook Jeeves Method"], default_value="Simplex Method")
     dpg.add_text("Choose mode:")
     dpg.add_radio_button(tag='mode', horizontal=True, callback=mode,
-                         items=["from file", "from field"], default_value="from field")
-    dpg.add_child_window(label="initiation data", tag='init')
+                         items=["from file", "from field"])
+    dpg.add_child_window(label="initiation data", tag='init', autosize_x=True, autosize_y=True)
     dpg.add_separator(tag='preset')
     dpg.add_button(label="Search", tag='solution', callback=output_solution)
 
