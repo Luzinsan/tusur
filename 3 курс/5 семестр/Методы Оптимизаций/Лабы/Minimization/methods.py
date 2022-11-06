@@ -10,26 +10,44 @@ ITERATIONS = 50
 
 class ExpressionMin:
     def __init__(self, from_source) -> None:
+        method = dpg.get_value('method')
         if from_source == "from file":
             filename = dpg.get_value('filename')
             with open(filename, "rt") as file:
                 expression = file.readline()
                 transformations = (standard_transformations + (implicit_multiplication_application,))
-                self.function: Expr = parse_expr(expression, transformations=transformations)
-                self.x_0 = list(map(float, file.readline().split()))  # начальная точка
-                self.delta = float(file.readline())  # длина ребра симплекса
-                self.alpha = float(file.readline())  # коэффициент сжатия
-                self.eps_x = float(file.readline())  # точность по аргументу x
-                self.eps_y = float(file.readline())  # точность по аргументу y
+                self.function: Expr = parse_expr(expression, transformations=transformations)  # ƒ(x)
+                self.x_0 = np.array(list(map(float, file.readline().split())))  # начальная точка <print(f'𝒙⁰ = {x_0}')>
+                if method == 'Simplex Method':
+                    self.delta = float(file.readline())  # длина ребра симплекса
+                elif method == 'Hook Jeeves Method':
+                    self.delta = np.array(
+                        list((map(float,
+                                  file.readline().split()))))  # вектор приращения (величина шага) Δ <print(f"Δ⁰ = {delta}")>
+                self.alpha = float(file.readline())   # коэффициент сжатия (0 < 𝛂 < 1 для Симплекса)
+                                                      #                    (𝛂 > 1 для Хука Дживса)
+                                                      # <print(f"𝛂 = {alpha}")>
+                self.eps_x = float(file.readline())   # точность по аргументу x (εₓ) <print(f"εₓ = {eps_x}")>
+                self.eps_y = float(file.readline())   # точность по функции y (εᵧ) <print(f"εᵧ = {eps_y}")>
         elif from_source == "from field":
             expression = dpg.get_value('expr')
             transformations = (standard_transformations + (implicit_multiplication_application,))
             self.function: Expr = parse_expr(expression, transformations=transformations)
-            self.x_0 = dpg.get_value('x_0')  # начальная точка
-            self.delta = dpg.get_value('delta')  # длина ребра симплекса
+            n = dpg.get_value('dim')
+            self.x_0 = []
+            for i in range(n):
+                self.x_0.append(dpg.get_value(f'x_{i}'))
+            self.x_0 = np.array(self.x_0, dtype=float)
+            if method == 'Simplex Method':
+                self.delta = dpg.get_value('delta')  # длина ребра симплекса
+            elif method == 'Hook Jeeves Method':
+                self.delta = []  # вектор приращения (величина шага) Δ <print(f"Δ⁰ = {delta}")>
+                for i in range(n):
+                    self.delta.append(dpg.get_value(f'delta_{i}'))
+                self.delta = np.array(self.delta, dtype=float)
             self.alpha = dpg.get_value('alpha')  # коэффициент сжатия
-            self.eps_x = dpg.get_value('eps_x')  # точность по аргументу x
-            self.eps_y = dpg.get_value('eps_y')  # точность по аргументу y
+            self.eps_x = dpg.get_value('eps_x')  # точность по аргументу x (εₓ) <print(f"εₓ = {eps_x}")>
+            self.eps_y = dpg.get_value('eps_y')  # точность по функции y (εᵧ) <print(f"εᵧ = {eps_y}")>
 
     def __str__(self):
         return f"{self.function=}" + f"{self.x_0=}" + f"{self.delta=}" + f"{self.alpha=}" + f"{self.eps_x=}" + f"{self.eps_y=}"
@@ -100,18 +118,7 @@ def upper_index(base: str, index: int) -> str:
 
 
 def hook_jeeves_method(expr: ExpressionMin):
-    filename = "expr.txt"
-    with open(filename, "rt") as file:
-        expression = file.readline()
-        transformations = (standard_transformations + (implicit_multiplication_application,))
-        function: Expr = parse_expr(expression, transformations=transformations)  # ƒ(x)
-        x_0 = np.array(list(map(float, file.readline().split())))  # начальная точка <print(f'𝒙⁰ = {x_0}')>
-        delta = np.array(
-            list((map(float, file.readline().split()))))  # вектор приращения (величина шага) Δ <print(f"Δ⁰ = {delta}")>
-        alpha = float(file.readline())  # коэффициент сжатия (𝛂 > 1) <print(f"𝛂 = {alpha}")>
-        eps_x = float(file.readline())  # точность по аргументу x (εₓ) <print(f"εₓ = {eps_x}")>
-        eps_y = float(file.readline())  # точность по функции y (εᵧ) <print(f"εᵧ = {eps_y}")>
-
+    function, x_0, delta, alpha, eps_x, eps_y = expr.function, expr.x_0, expr.delta, expr.alpha, expr.eps_x, expr.eps_y
     n = 2
     e_i = np.eye(n)  # единичная матрица 𝐞
     x_approx_1 = x_0.copy()
@@ -205,4 +212,4 @@ def hook_jeeves_method(expr: ExpressionMin):
               f"ƒ({upper_index('x̅', k)}) = {f_approx_0}", sep='\n')
         if diff_x <= eps_x and diff_y <= eps_y:
             break
-
+    return x_approx_1

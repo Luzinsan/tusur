@@ -24,6 +24,7 @@ def output_solution(sender, app_data, user_data):
         case "Hook Jeeves Method":
             result = hook_jeeves_method(expr)
             print(f"\n\n\n\tКонечное решение: {result}")
+            dpg.set_value('result', result)
 
 
 def mode(sender, app_data, user_data):
@@ -35,17 +36,28 @@ def mode(sender, app_data, user_data):
         dpg.add_input_int(label="dimension", tag='dim', parent='init', default_value=2, readonly=True)
 
         def next_data():
+            method = dpg.get_value('method')
+            n = dpg.get_value('dim')
             dpg.delete_item('next_sub-window', children_only=True)
             dpg.add_input_text(label=":Expression", tag='expr', parent='next_sub-window',
-                               default_value="2 - (x_1**2 + x_2**2)**(1/3)")
-            for i in range(dpg.get_value('dim')):
-                dpg.add_input_float(label=f":coordinate #{i}", tag=f'x_{i}', parent='next_sub-window',
+                               default_value="(x_1 - x_2)**2 + (x_1**2 - x_2 + 2) ** 2")
+            for i in range(n):
+                dpg.add_input_float(label=f":coordinate->approximation #{i}", tag=f'x_{i}', parent='next_sub-window',
                                     default_value=0.0)
-            if dpg.get_value('method') == 'Simplex Method':
+            if method == 'Simplex Method':
                 dpg.add_input_float(label=":simplex edge length", tag='delta', parent='next_sub-window', default_value=1)
-            dpg.add_input_float(label=":compression ratio", tag='alpha', parent='next_sub-window', default_value=0.5)
-            dpg.add_input_float(label=":x precision", tag='eps_x', parent='next_sub-window', default_value=0.001)
-            dpg.add_input_float(label=":y precision", tag='eps_y', parent='next_sub-window', default_value=0.001)
+                dpg.add_input_float(label=":compression ratio", tag='alpha', parent='next_sub-window',
+                                    default_value=0.5, min_value=0.0, max_value=1.0)
+            elif dpg.get_value('method') == 'Hook Jeeves Method':
+                for i in range(n):
+                    dpg.add_input_float(label=f":coord->delta #{i}", tag=f'delta_{i}', parent='next_sub-window',
+                                        default_value=0.3)
+                dpg.add_input_float(label=":compression ratio", tag='alpha', parent='next_sub-window',
+                                    default_value=2.0, min_value=1.0)
+            dpg.add_input_float(label=":x precision", tag='eps_x', parent='next_sub-window',
+                                default_value=0.02, min_value=0.0)
+            dpg.add_input_float(label=":y precision", tag='eps_y', parent='next_sub-window',
+                                default_value=0.001, min_value=0.0)
 
         dpg.add_button(label="Next", tag='next', parent='init', callback=next_data)
         dpg.add_child_window(label="Next", tag="next_sub-window", parent='init', autosize_x=True, autosize_y=True)
@@ -55,7 +67,7 @@ def mode(sender, app_data, user_data):
 with dpg.window(label="Minimization", tag="Minimization", autosize=True):
     dpg.add_text("Heuristic methods", color=(255,0,0))
     dpg.add_text("Choose method:")
-    dpg.add_radio_button(tag='method',
+    dpg.add_radio_button(tag='method', callback=lambda: dpg.delete_item('init', children_only=True),
                          items=["Simplex Method", "Hook Jeeves Method"], default_value="Simplex Method")
     dpg.add_text("Choose mode:")
     dpg.add_radio_button(tag='mode', horizontal=True, callback=mode,
