@@ -86,7 +86,7 @@ for k in range(ITERATIONS):
     print(f"Базовая точка: {upper_index('𝒙ᵦ', k)} = {x_b}")
     f_x_b = function.subs({x1: x_b[0], x2: x_b[1]})
     j = 1
-    while True:
+    for j in range(1, ITERATIONS):
         # x_o - точка по образцу - шаг из полученной базовой точки вдоль прямой,
         # соединяющей эту точку с предыдущей базовой точкой
         x_o = x_p + j * (x_p - x_approx_1)
@@ -105,7 +105,8 @@ for k in range(ITERATIONS):
             x_b = x_o.copy()
             f_x_b = f_x_o
             j += 1
-
+    if j == ITERATIONS:
+        return np.zeros(n)
     x_approx_0 = x_approx_1.copy()
     f_approx_0 = f_approx_1
     x_approx_1 = x_o.copy()
