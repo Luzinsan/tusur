@@ -106,7 +106,7 @@ for k in range(ITERATIONS):
             f_x_b = f_x_o
             j += 1
     if j == ITERATIONS:
-        return np.zeros(n)
+        break
     x_approx_0 = x_approx_1.copy()
     f_approx_0 = f_approx_1
     x_approx_1 = x_o.copy()
