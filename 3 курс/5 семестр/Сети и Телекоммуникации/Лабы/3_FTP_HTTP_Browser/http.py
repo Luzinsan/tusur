@@ -4,11 +4,14 @@ from http_parser.reader import SocketReader
 from html.parser import HTMLParser
 
 http_server = 'example.org'
+# http_server = 'ipm.kstu.ru'
 cSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
 cSock.connect((http_server, 80))
 
-cSock.send(b"GET /index.html HTTP/1.0\r\n")
-cSock.send(b"HOST: example.org\r\n")
+# path = '/internet/index.php'
+path = '/index.html'
+cSock.send(f"GET {path} HTTP/1.0\r\n".encode('utf-8'))
+cSock.send(f"HOST: {http_server}\r\n".encode("utf-8"))
 cSock.send(b"\r\n")
 
 r = SocketReader(cSock)
