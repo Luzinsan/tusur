@@ -28,28 +28,3 @@ class tHTMLParser(HTMLParser):
 
 parser = tHTMLParser()
 parser.feed(body.decode('utf8'))
-
-
-
-# #!/usr/bin/env python
-# from socket import socket, AF_INET, SOCK_STREAM
-#
-# from http_parser.http import HttpStream
-# from http_parser.reader import SocketReader
-#
-#
-# def main():
-#     client_socket = socket(AF_INET, SOCK_STREAM)
-#     try:
-#         client_socket.connect(('gunicorn.org', 80))
-#         client_socket.send(b"GET / HTTP/1.1\r\nHost: gunicorn.org\r\n\r\n")
-#         r = SocketReader(client_socket)
-#         p = HttpStream(r)
-#         print(p.headers())
-#         print(p.body_file().read())
-#     finally:
-#         client_socket.close()
-#
-#
-# if __name__ == "__main__":
-#     main()
