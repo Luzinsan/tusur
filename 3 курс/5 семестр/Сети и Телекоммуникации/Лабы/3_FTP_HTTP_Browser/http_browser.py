@@ -6,8 +6,8 @@ from http_parser.http import HttpStream
 from http_parser.reader import SocketReader
 from html.parser import HTMLParser
 
-hostname = "www.example.com"
-path = "/"
+hostname = "docs.readthedocs.io"
+path = "/en/"
 DEFAULT_PORT = 443
 TIMEOUT = 0.0
 
@@ -17,73 +17,70 @@ sslcontext = create_default_context()
 
 class tHTMLParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
-        dpg.add_text(f"Start tag: {tag}", parent='content')
-        print("Start tag:", tag)
-        for attr in attrs:
-            print("     attr:", attr)
-            if attr[0] == 'href':
-                if re.search(r'(\w/.*\..*)', attr[1]):
-                    dpg.add_button(label=attr[1], parent='content', callback=download_source, user_data=attr[1])
-                    print("This is file")
-                else:
-                    dpg.add_button(label=attr[1], parent='content', callback=follow_link, user_data=attr[1])
-                print(attr[1])
-            else:
+        if tag == 'img':
+            dpg.add_text(f"{tag}: ", parent='content')
+            for attr in attrs:
                 dpg.add_text(f"     attr: {attr}", parent='content')
+        for attr in attrs:
+            if attr[0] == 'href':
+                dpg.add_button(label=attr[1], parent='content', callback=follow_link, user_data=attr[1])
 
 
-def download_source(sender, app_data, user_data):
-    pass
 def follow_link(sender, app_data, user_data):
     parse_path(user_data)
     dpg.set_value('path', user_data)
-    open_link(None, None, None)
+    open_link(None, None, user_data)
 
 
 def parse_path(full_path: str):
     print("PARSE_PATH: ", full_path)
-    # full_path = 'https://example.com/'
     global hostname, path
-    if re.search(r'(//[\w.]*)', full_path):
-        hostname = re.search(r'(//[\w.]*)', full_path)[0][2:]
-    print("parsed hostname: ", hostname)
-    if re.search(r'(\w/.*)', full_path) and not re.search(r'(\w/.*\..*)', full_path):
-        path = re.search(r'(\w/.*)', full_path)[0][1:]
+    if full_path[0] != '/':
+        if re.search(r'(//[\w.]*)', full_path):
+            hostname = re.search(r'(//[\w.]*)', full_path)[0][2:]
+        print("parsed hostname: ", hostname)
+        if re.search(r'(\w/.*)', full_path) or re.search(r'(\w/.*\.html)', full_path):
+            path = re.search(r'(\w/.*)', full_path)[0][1:]
+        else:
+            path = '/'
     else:
-        path = '/'
-    print("parsed path: ", path)
+        path = full_path
     dpg.set_value('correct_host', f"{hostname}{path}")
 
 
 def open_link(sender, app_data, full_path):
-    print("open_link: ", full_path)
     dpg.delete_item('content', children_only=True)
-    if not full_path:
-        print(dpg.get_value('path'))
-        parse_path(dpg.get_value('path'))
+    if full_path == 'init':
+        full_path = dpg.get_value('path')
+        parse_path(full_path)
+    if not re.search(r'(http)', full_path):
+        full_path = 'https://' + hostname + path
+    print("open_link: ", full_path)
     with create_connection((hostname, DEFAULT_PORT)) as sock:
         with sslcontext.wrap_socket(sock, server_hostname=hostname) as ssock:
             print(ssock.version())
             receive_page = f"GET {path} HTTP/1.1\r\n" \
                            f"Host:{hostname}\r\n" \
-                           f"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0\r\n" \
+                           f"User-Agent: Linux\r\n" \
                            "\r\n"
             ssock.send(receive_page.encode())
             r = SocketReader(ssock)
             p = HttpStream(r)
             # print(p.headers())
             body = p.body_file().read()
-            dpg.add_text(body.decode(), parent='content')
-            # print(body.decode())
             parser = tHTMLParser()
             parser.feed(body.decode('utf8'))
-            # parser.handle_starttag('a', 'href')
+            if re.search(r'([^/]/.*\.html)', full_path):
+                filename = re.search(r'([^/]*\.html)', full_path)[0]
+                with open(filename, 'wb') as source:
+                    source.write(body)
 
 
 with dpg.window(label="BROWSER", tag="main", autosize=True):
     with dpg.menu_bar():
-        dpg.add_input_text(label=":PATH", tag='path', default_value='https://example.com/', callback=open_link)
-        dpg.add_input_text(label="Host", tag='correct_host', default_value='example.com/', readonly=True)
+        dpg.add_button(label=':SEARCH', tag='search', callback=open_link, user_data='init')
+        dpg.add_input_text(label=":PATH", tag='path', default_value='https://docs.readthedocs.io/en/')
+        dpg.add_input_text(label="Host", tag='correct_host', default_value='docs.readthedocs.io/en/', readonly=True)
     dpg.add_child_window(tag='content')
 
 # region other
