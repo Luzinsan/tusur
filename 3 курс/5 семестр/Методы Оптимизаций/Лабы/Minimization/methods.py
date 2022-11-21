@@ -55,41 +55,41 @@ class ExpressionMin:
 
 def simplex_method(expr: ExpressionMin):
     function, x_0, delta, alpha, eps_x, eps_y = expr.function, expr.x_0, expr.delta, expr.alpha, expr.eps_x, expr.eps_y
-    n = 2
-    # Симплекс 0
-    V = np.ones((n + 1, n))
-    V[0] = x_0  # Инициализация нулевой строки начальным приближением
+    n = len(x_0)
+    # Симплекс
+    simplex = np.empty((n + 1, n))
+    simplex[0] = x_0  # Инициализация нулевой строки начальным приближением
 
-    p_n = delta * (sqrt(n + 1) + n - 1) / (n * sqrt(2))
+    p_n = delta * (np.sqrt(n + 1) + n - 1) / (n * np.sqrt(2))  # ? - delta - длина ребра симплекса (или +1)
     g_n = p_n - delta * sqrt(2) / 2
     for row in range(1, n + 1):
         for column in range(n):
             if row - 1 == column:
-                V[row][column] = V[0][column] + p_n
+                simplex[row][column] = simplex[0][column] + p_n
             else:
-                V[row][column] = V[0][column] + g_n
+                simplex[row][column] = simplex[0][column] + g_n
     # начальное приближение точки минимума - геометрический центр симплекса
-    x_approx_prev = [sum(V[:, i]) / (n + 1) for i in range(n)]
+    x_approx_prev = [sum(simplex[:, i]) / (n + 1) for i in range(n)]
     F_approx_prev = function.subs({x1: x_approx_prev[0], x2: x_approx_prev[1]})
     iter = 0
     while iter < ITERATIONS:
-        F_x = np.array([function.subs({x1: V[i][0], x2: V[i][1]}) for i in range(n + 1)])
+        F_x = np.array([function.subs({x1: simplex[i][0], x2: simplex[i][1]}) for i in range(n + 1)])
         p = F_x.argmax()
         V_p = np.zeros(n)
         for row in range(n + 1):
             if row != p:
-                V_p += V[row]
-        V_p = V_p * (2 / n) - V[p]
+                V_p += simplex[row]
+        V_p = V_p * (2 / n) - simplex[p]
         F_p = function.subs({x1: V_p[0], x2: V_p[1]})
         if F_p <= F_x[p]:
-            V[p] = V_p  # построить новый симплекс
+            simplex[p] = V_p  # построить новый симплекс
         else:
             delta *= alpha # выполнить сжатие
             m = F_x.argmin()  # индекс вершины с мин.знач
-            V = alpha * V + (1 - alpha) * V[m]  # перемещение точек для получения (1/2) ребра
+            simplex = alpha * simplex + (1 - alpha) * simplex[m]  # перемещение точек для получения (1/2) ребра
 
         # начальное приближение точки минимума - геометрический центр симплекса
-        x_approx_curr = [sum(V[:, i]) / (n + 1) for i in range(n)]
+        x_approx_curr = [sum(simplex[:, i]) / (n + 1) for i in range(n)]
         F_approx_curr = function.subs({x1: x_approx_curr[0], x2: x_approx_curr[1]})
         # Евклидова норма приближений точек оптимума
         diff_x = np.sqrt(sum(pow(a - b, 2) for a, b in zip(x_approx_prev, x_approx_curr)))
