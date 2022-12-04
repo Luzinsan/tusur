@@ -1,7 +1,0 @@
-# depslib dependency file v1.0
-1609172259 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\lab 5-6\lab 5\main.c
-	<stdio.h>
-	<stdlib.h>
-	<locale.h>
-	<limits.h>
-

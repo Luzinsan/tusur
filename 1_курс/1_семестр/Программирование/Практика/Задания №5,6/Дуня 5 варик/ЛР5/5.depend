@@ -1,7 +1,0 @@
-# depslib dependency file v1.0
-1608666531 source:c:\users\Виталя\desktop\Учеба\ЛР5-6\5\main.c
-	<stdio.h>
-	<stdlib.h>
-	<math.h>
-	<locale.h>
-

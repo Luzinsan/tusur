@@ -1,7 +1,0 @@
-# depslib dependency file v1.0
-1608377972 source:/home/wfox/C/IZ/IZ5/main.c
-	<stdio.h>
-	<stdlib.h>
-	<time.h>
-	<math.h>
-

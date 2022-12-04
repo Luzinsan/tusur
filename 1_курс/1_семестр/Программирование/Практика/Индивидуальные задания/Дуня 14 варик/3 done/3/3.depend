@@ -1,8 +1,0 @@
-# depslib dependency file v1.0
-1608274352 source:c:\users\Виталя\desktop\Учеба\ИЗ программирование\3исп\3\main.c
-	<stdio.h>
-	<stdlib.h>
-	<windows.h>
-	<math.h>
-	<time.h>
-
