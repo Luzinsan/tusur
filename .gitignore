@@ -1,10 +1,17 @@
 **/.idea/
 **/.vs/
 **/Debug/
+.exe
+.zip
+.rar
+.pptx
 .cdp
 .cbp
 .depend
 .layout
+.user
+.sln
 
 3_курс/5_семестр/PyCourseLuzinsan/
+
 Производственная_практика/
