@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1608275545 source:c:\users\Виталя\desktop\Учеба\ИЗ программирование\1\1\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+

@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1608668226 source:c:\users\Виталя\desktop\Учеба\ЛР5-6\ЛР6\7\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<locale.h>
+
+1608668226 source:c:\users\Виталя\desktop\Учеба\ЛР5-6\ЛР6\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<locale.h>
+

@@ -1,0 +1,93 @@
+# depslib dependency file v1.0
+1346780424 source:d:\УМОД\ПЯВУ\Лаб. работы\ЛР0\fartocels\var 2.c
+	<stdio.h>
+
+1346780424 source:d:\УМОД\ПЯВУ\Лаб. работы\ЛР0\fartocels\var 3.c
+	<stdio.h>
+
+1380719329 source:d:\УМОД\ПЯВУ\Лаб. работы\ЛР0\fartocels\var 4.c
+	<stdio.h>
+
+1380720586 source:d:\УМОД\ПЯВУ\Лаб. работы\ЛР0\fartocels\main.c
+	<stdio.h>
+	<conio.h>
+	"locale.h"
+
+1346780424 source:d:\УМОД\ПЯВУ\Лаб. работы\ЛР0\fartocels\var 1.c
+	<stdio.h>
+
+1409741601 source:c:\users\Администратор\desktop\2014-15 уч.г\Программирование\Первое занятие\fartocels\var 1.c
+	<stdio.h>
+
+1409741601 source:c:\users\Администратор\desktop\2014-15 уч.г\Программирование\Первое занятие\fartocels\var 2.c
+	<stdio.h>
+
+1409741601 source:c:\users\Администратор\desktop\2014-15 уч.г\Программирование\Первое занятие\fartocels\var 3.c
+	<stdio.h>
+
+1409741601 source:c:\users\Администратор\desktop\2014-15 уч.г\Программирование\Первое занятие\fartocels\var 4.c
+	<stdio.h>
+
+1409738471 source:c:\users\Администратор\desktop\2014-15 уч.г\Программирование\Первое занятие\fartocels\main.c
+	<stdio.h>
+	<conio.h>
+	"locale.h"
+
+1508218986 source:d:\__УчПроцесс\2017-18 уч. год\Осень\Программирование\_Лабораторные\ЛР 4\fartocels\main.c
+	<stdio.h>
+	<conio.h>
+	"locale.h"
+
+1508217392 source:d:\__УчПроцесс\2017-18 уч. год\Осень\Программирование\_Лабораторные\ЛР 4\fartocels\var 1.c
+	<stdio.h>
+
+1409745396 source:d:\__УчПроцесс\2017-18 уч. год\Осень\Программирование\_Лабораторные\ЛР 4\fartocels\var 2.c
+	<stdio.h>
+
+1446820261 source:d:\__УчПроцесс\2017-18 уч. год\Осень\Программирование\_Лабораторные\ЛР 4\fartocels\var 3.c
+	<stdio.h>
+
+1446820260 source:d:\__УчПроцесс\2017-18 уч. год\Осень\Программирование\_Лабораторные\ЛР 4\fartocels\var 4.c
+	<stdio.h>
+
+1508217392 source:d:\__УчПроцесс\2019-20 уч. год\Осень\Программирование\ЛР\ЛР 3 (бывшая 4)\fartocels\var 1.c
+	<stdio.h>
+
+1409745396 source:d:\__УчПроцесс\2019-20 уч. год\Осень\Программирование\ЛР\ЛР 3 (бывшая 4)\fartocels\var 2.c
+	<stdio.h>
+
+1446820261 source:d:\__УчПроцесс\2019-20 уч. год\Осень\Программирование\ЛР\ЛР 3 (бывшая 4)\fartocels\var 3.c
+	<stdio.h>
+
+1446820260 source:d:\__УчПроцесс\2019-20 уч. год\Осень\Программирование\ЛР\ЛР 3 (бывшая 4)\fartocels\var 4.c
+	<stdio.h>
+
+1508217392 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\fartocels\var 1.c
+	<stdio.h>
+
+1409741796 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\fartocels\var 2.c
+	<stdio.h>
+
+1446820260 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\fartocels\var 3.c
+	<stdio.h>
+
+1446820260 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\fartocels\var 4.c
+	<stdio.h>
+
+1602225447 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\fartocels\main.c
+	<stdio.h>
+	<conio.h>
+	"locale.h"
+
+1508217392 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\fartocels\var 1.c
+	<stdio.h>
+
+1409741796 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\fartocels\var 2.c
+	<stdio.h>
+
+1446820260 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\fartocels\var 3.c
+	<stdio.h>
+
+1446820260 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\fartocels\var 4.c
+	<stdio.h>
+

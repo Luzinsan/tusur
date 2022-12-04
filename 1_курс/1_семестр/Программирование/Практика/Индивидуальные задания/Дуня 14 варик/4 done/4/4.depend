@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1608274486 source:c:\users\Виталя\desktop\Учеба\ИЗ программирование\4исп\4\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<math.h>
+	<time.h>
+
+1608657531 source:c:\users\Виталя\desktop\Учеба\ИЗ программирование\4\4\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<math.h>
+	<time.h>
+

@@ -1,0 +1,22 @@
+# depslib dependency file v1.0
+1602227060 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\fartocels\Лабораторные\project title\untitled1.c
+
+1602885868 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\fartocels\Лабораторные\project title\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+
+1602909746 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\Лабораторные\project title\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+
+1602227060 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\Лабораторные\project title\untitled1.c
+
+1602909746 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\Лабораторные\lab 2\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+
+1602227060 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\Лабораторные\lab 2\untitled1.c
+

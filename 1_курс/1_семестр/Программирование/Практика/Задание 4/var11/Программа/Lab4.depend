@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1604852361 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\Лабораторные\lab 4\Программа\lab4\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<math.h>
+
+1605929391 source:c:\users\vovas\desktop\Учеба\ТУСУР\Программирование\Практика\Си\lab 4\Программа\lab4\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<math.h>
+

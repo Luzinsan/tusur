@@ -82,3 +82,6 @@ _В курсе лекций будет рассматриваться тольк
 
 
 ## Основные понятия
+SELECT *
+FROM (SELECT * FROM pr_dir JOIN EXAMS ON PR_DIS.pnam=exams.pnam)
+JOIN
