@@ -1,2 +1,0 @@
-Ссылка на google colab (режим комментирование):  https://colab.research.google.com/drive/1SJMlXof0W6-cqZ4RrPkde6coj2QxZjpw?usp=sharing
-и на github:                                     https://github.com/Luzinsan/OPD_neuro/blob/main/Practice1.ipynb
