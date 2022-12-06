@@ -1,0 +1,343 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.6 (Ubuntu 14.6-1.pgdg22.10+1)
+-- Dumped by pg_dump version 14.6 (Ubuntu 14.6-1.pgdg22.10+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: t_address; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.t_address (
+    id integer NOT NULL,
+    post_code character varying(6),
+    region character varying(30) NOT NULL,
+    city character varying(30) NOT NULL,
+    street character varying(50) NOT NULL,
+    house integer,
+    apartment integer,
+    CONSTRAINT t_address_apartment_check CHECK (((apartment > 0) OR NULL::boolean)),
+    CONSTRAINT t_address_house_check CHECK ((house > 0))
+);
+
+
+ALTER TABLE public.t_address OWNER TO postgres;
+
+--
+-- Name: t_address_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.t_address_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.t_address_id_seq OWNER TO postgres;
+
+--
+-- Name: t_address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.t_address_id_seq OWNED BY public.t_address.id;
+
+
+--
+-- Name: t_period; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.t_period (
+    idpub character varying(6) NOT NULL,
+    periodname character varying(20) NOT NULL,
+    period integer NOT NULL,
+    price money,
+    CONSTRAINT t_period_period_check CHECK ((period > 0))
+);
+
+
+ALTER TABLE public.t_period OWNER TO postgres;
+
+--
+-- Name: t_pod; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.t_pod (
+    id integer NOT NULL,
+    fio character(85) NOT NULL,
+    idaddr integer
+);
+
+
+ALTER TABLE public.t_pod OWNER TO postgres;
+
+--
+-- Name: t_pod_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.t_pod_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.t_pod_id_seq OWNER TO postgres;
+
+--
+-- Name: t_pod_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.t_pod_id_seq OWNED BY public.t_pod.id;
+
+
+--
+-- Name: t_pubhouse; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.t_pubhouse (
+    id character(7) NOT NULL,
+    name character(50) NOT NULL,
+    idaddr integer,
+    phone character(15),
+    CONSTRAINT t_pubhouse_id_check CHECK ((char_length(id) > 2)),
+    CONSTRAINT t_pubhouse_phone_check CHECK ((phone ~ similar_to_escape('\(\d{4}\) \d{2}-\d{2}-\d{2}'::text)))
+);
+
+
+ALTER TABLE public.t_pubhouse OWNER TO postgres;
+
+--
+-- Name: t_publishing; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.t_publishing (
+    id character varying(6) NOT NULL,
+    idpubhouse character varying(7),
+    pubname character varying(50) NOT NULL,
+    description text,
+    CONSTRAINT t_publishing_id_check CHECK (((id)::text ~ similar_to_escape('\d{5}[1-9]'::text)))
+);
+
+
+ALTER TABLE public.t_publishing OWNER TO postgres;
+
+--
+-- Name: t_subs; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.t_subs (
+    idpod integer NOT NULL,
+    datestart date NOT NULL,
+    idpub character varying(6) NOT NULL,
+    idperiod integer NOT NULL
+);
+
+
+ALTER TABLE public.t_subs OWNER TO postgres;
+
+--
+-- Name: t_address id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_address ALTER COLUMN id SET DEFAULT nextval('public.t_address_id_seq'::regclass);
+
+
+--
+-- Name: t_pod id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_pod ALTER COLUMN id SET DEFAULT nextval('public.t_pod_id_seq'::regclass);
+
+
+--
+-- Data for Name: t_address; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.t_address (id, post_code, region, city, street, house, apartment) FROM stdin;
+1	634045	Томская Область	Томск	Нахимова	20	52
+2	634043	Томская Область	Томск	Вершинина	74	438
+\.
+
+
+--
+-- Data for Name: t_period; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.t_period (idpub, periodname, period, price) FROM stdin;
+000854	Премиум	12	1 990,00 ₽
+000854	Стандарт	6	1 290,00 ₽
+000854	Базовый	1	710,00 ₽
+\.
+
+
+--
+-- Data for Name: t_pod; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.t_pod (id, fio, idaddr) FROM stdin;
+1	Иван Иванович                                                                        	2
+\.
+
+
+--
+-- Data for Name: t_pubhouse; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.t_pubhouse (id, name, idaddr, phone) FROM stdin;
+29402  	Habr                                              	1	(8322) 20-28-10
+\.
+
+
+--
+-- Data for Name: t_publishing; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.t_publishing (id, idpubhouse, pubname, description) FROM stdin;
+000854	29402	Habr	This is a portal about programming!
+\.
+
+
+--
+-- Data for Name: t_subs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.t_subs (idpod, datestart, idpub, idperiod) FROM stdin;
+1	2020-10-10	000854	12
+\.
+
+
+--
+-- Name: t_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.t_address_id_seq', 2, true);
+
+
+--
+-- Name: t_pod_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.t_pod_id_seq', 1, true);
+
+
+--
+-- Name: t_address t_address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_address
+    ADD CONSTRAINT t_address_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: t_period t_period_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_period
+    ADD CONSTRAINT t_period_pkey PRIMARY KEY (idpub, period);
+
+
+--
+-- Name: t_pod t_pod_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_pod
+    ADD CONSTRAINT t_pod_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: t_pubhouse t_pubhouse_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_pubhouse
+    ADD CONSTRAINT t_pubhouse_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: t_publishing t_publishing_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_publishing
+    ADD CONSTRAINT t_publishing_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: t_subs t_subs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_subs
+    ADD CONSTRAINT t_subs_pkey PRIMARY KEY (idpod, idpub, idperiod);
+
+
+--
+-- Name: t_publishing idpubhouse; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_publishing
+    ADD CONSTRAINT idpubhouse FOREIGN KEY (idpubhouse) REFERENCES public.t_pubhouse(id);
+
+
+--
+-- Name: t_period t_period_idpub_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_period
+    ADD CONSTRAINT t_period_idpub_fkey FOREIGN KEY (idpub) REFERENCES public.t_publishing(id);
+
+
+--
+-- Name: t_pod t_pod_idaddr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_pod
+    ADD CONSTRAINT t_pod_idaddr_fkey FOREIGN KEY (idaddr) REFERENCES public.t_address(id);
+
+
+--
+-- Name: t_pubhouse t_pubhouse_idaddr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_pubhouse
+    ADD CONSTRAINT t_pubhouse_idaddr_fkey FOREIGN KEY (idaddr) REFERENCES public.t_address(id);
+
+
+--
+-- Name: t_subs t_subs_idpod_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_subs
+    ADD CONSTRAINT t_subs_idpod_fkey FOREIGN KEY (idpod) REFERENCES public.t_pod(id);
+
+
+--
+-- Name: t_subs t_subs_idpub_idperiod_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.t_subs
+    ADD CONSTRAINT t_subs_idpub_idperiod_fkey FOREIGN KEY (idpub, idperiod) REFERENCES public.t_period(idpub, period);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

@@ -1,7 +1,7 @@
 sudo -i -u postgres
 psql
 
-
+https://postgrespro.ru/education/books/sqlprimer - список SQL команд
 
 
 
@@ -11,12 +11,21 @@ psql
 
     \l - выводит все базы данных
 
+    \s имя_файла_для_сохранения - сохраняет историю вызова команд в указанный файл
+
     q - выйти из режима просмотра
 
 CREATE DATABASE имя_базы_данных
 \c имя_базы_данных
 
 CREATE TABLE имя_отношения
+UPDATE - обновление существующих значений в таблице
+DELETE FROM - удаление данных из таблицы
+
+    postgres@luzinsan-NBD-WXX9:~$ pg_dump subscription -f databasesub - сохранить набор выполненных инструкций базы_данных:subscription в файл (-f) databasesub (<путь_до_файла>)
+    сохранение идёт от пользователя postgres, поэтому другим пользователям запрещено менять файл. Тем не менее можно поменять права доступа (из под пользователя postgres) командой chmod databasesub o+rwx (см. лекции по ОС)
+    или просто запустить с правами пользователя postgres (если из под другого пользователя): pg_dump -U postgres subscription -f databasesub
+
 
 ## Типы данных столбцов:
 - varchar(N)
