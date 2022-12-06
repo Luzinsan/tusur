@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+        <title>Зе энд</title>
+    </head>
+    <body>
+        <h2>Твой, {{firstName}} , результат: {{result}} из 10!</h2>
+       
+        <a href="home">HOME</a>
+    <style> 
+        body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 600px;
+        font-family: sans-serif;
+        background-image: url(https://cdn.ananasposter.ru/image/cache/catalog/poster/travel/87/7778-1000x830.jpg);
+        }
+    </style>
+
+    </body>
+</html>
