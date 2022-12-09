@@ -56,10 +56,17 @@ def ranging():
                        borders_outerV=True):
             dpg.add_table_column(label='Альтернативы', tag=f'alter_col')
             dpg.add_table_column(label='Суммарные оценки', tag=f'marks_col')
+            calc_marks = np.empty(count_alternatives, dtype=np.int64)
             for i in range(0, count_alternatives):
                 with dpg.table_row():
                     dpg.add_text(default_value=dpg.get_value(f'alter_text{i}'), tag=f'alter_row{i}')
-                    dpg.add_text(tag=f'common_range{i}', default_value=count_alternatives-sum(common_matrix[i])+1)
+                    calc_marks[i] = count_alternatives-sum(common_matrix[i])+1
+                    dpg.add_text(tag=f'common_range{i}', default_value=calc_marks[i])
+
+        print(calc_marks)
+        with dpg.group(horizontal=True):
+            dpg.add_text(default_value="Наилучшая альтернатива: ")
+            dpg.add_input_text(default_value=dpg.get_value(f'alter_text{np.argmin(calc_marks)}'), readonly=True)
 
 
 def experts():
