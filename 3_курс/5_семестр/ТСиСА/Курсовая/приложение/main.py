@@ -15,19 +15,18 @@ def switch_expert(sender, app_data, expert_data):
     # expert_data = [number_of_expert, count_of_alternatives, count_of_experts]
     global estimates
     estimates[expert_data[0]] = [[dpg.get_value(f'mark{expert_data[0]}{i}{j}')
-                                 for j in range(expert_data[1])]
+                                  for j in range(expert_data[1])]
                                  for i in range(expert_data[1])]
     dpg.configure_item(f'evaluation{expert_data[0]}', show=False)
     if expert_data[0] + 1 != expert_data[2]:
         dpg.configure_item(f'evaluation{expert_data[0] + 1}', show=True)
     else:
-        ranging()
+        ranging([expert_data[2], expert_data[1]])
 
 
-def ranging():
+def ranging(user_data):
     global estimates
-    count_expert = dpg.get_value('experts')
-    count_alternatives = dpg.get_value('alternatives')
+    count_expert, count_alternatives = user_data
     common_matrix = np.empty((count_alternatives, count_alternatives), dtype=np.bool_)
     for i in range(0, count_alternatives):
         for j in range(0, count_alternatives):
@@ -70,7 +69,7 @@ def experts():
     with dpg.group(horizontal=True, tag="group_target_const", parent='expert_window'):
         dpg.add_text(default_value=f"ЦЕЛЬ: ")
         dpg.add_input_text(readonly=True, default_value=dpg.get_value('target'), width=1900)
-    count_expert = dpg.get_value('experts')
+    count_experts = dpg.get_value('experts')
     count_alternatives = dpg.get_value('alternatives')
     alternatives = []
     for expert in range(count_alternatives):
@@ -78,12 +77,12 @@ def experts():
 
     dpg.add_listbox(tag='list_alternatives', items=alternatives, parent='expert_window',
                     tracked=True, width=1920, num_items=count_alternatives)
-    estimates.resize([count_expert, count_alternatives, count_alternatives])
-    for expert in range(count_expert):
+    estimates.resize([count_experts, count_alternatives, count_alternatives])
+    for expert in range(count_experts):
         with dpg.child_window(tag=f'evaluation{expert}', parent='expert_window', height=720, width=1920, show=False):
             with dpg.group(horizontal=True, tag=f"group_role{expert}"):
                 dpg.add_text(default_value=f"Роль эксперта #{expert + 1}: ")
-                dpg.add_input_text(tag=f'role{expert}')
+                dpg.add_input_text(tag=f'role{expert}', default_value='Аноним')
             # табличка с альтернативами
             with dpg.table(tag=f'table{expert}',
                            header_row=True, row_background=True,
@@ -92,10 +91,10 @@ def experts():
                            borders_outerV=True):
                 dpg.add_table_column(label=' ', tag=f'col{expert}')
                 for row in range(0, count_alternatives):
-                    dpg.add_table_column(label=f'Alternative #{row + 1}', tag=f'col{expert}{row}')
+                    dpg.add_table_column(label=f'Альтарнатива #{row + 1}', tag=f'col{expert}{row}')
                 for row in range(0, count_alternatives):
                     with dpg.table_row():
-                        dpg.add_text(default_value=f'Alternative #{row + 1}', tag=f'row{expert}{row}')
+                        dpg.add_text(default_value=f'Альтарнатива #{row + 1}', tag=f'row{expert}{row}')
                         for col in range(0, count_alternatives):
                             default_value = 0
                             if col > row:
@@ -108,8 +107,12 @@ def experts():
                                                   min_clamped=True, max_clamped=True,
                                                   callback=check_mark, user_data=[expert, col, row])
             # Переход к другому эксперту
-            dpg.add_button(label=f"Перейти к эксперту #{expert + 1}", tag=f'next{expert + 1}',
-                           callback=switch_expert, user_data=[expert, count_alternatives, count_expert])
+            if expert + 1 != count_experts:
+                dpg.add_button(label=f"Перейти к эксперту #{expert + 2}", tag=f'next{expert + 1}',
+                               callback=switch_expert, user_data=[expert, count_alternatives, count_experts])
+            else:  # Выход к результатам
+                dpg.add_button(label="Вычислить наилучшую альтернативу", tag='finish',
+                               callback=switch_expert, user_data=[expert, count_alternatives, count_experts])
     dpg.configure_item('evaluation0', show=True)
 
 
