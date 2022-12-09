@@ -46,7 +46,7 @@ def ranging(user_data):
                        borders_innerH=True, borders_outerH=True, borders_innerV=True,
                        borders_outerV=True):
             dpg.add_table_column(label='Альтернативы', tag=f'alter_col')
-            dpg.add_table_column(label='Суммарные оценки', tag=f'marks_col')
+            dpg.add_table_column(label='Ранг', tag=f'marks_col')
             calc_marks = np.empty(count_alternatives, dtype=np.int64)
             for i in range(0, count_alternatives):
                 with dpg.table_row():
@@ -133,10 +133,10 @@ with dpg.window(label="Main", tag="Main", autosize=True):
         dpg.add_input_text(label=" ", tag='target', default_value='У самурая нет цели, есть только путь')
     with dpg.group(horizontal=True, tag="group_experts"):
         dpg.add_text(default_value='Выберите количество экспертов: ')
-        dpg.add_input_int(label=" ", tag='experts', default_value=3)
+        dpg.add_input_int(label=" ", tag='experts', default_value=3, min_value=1, min_clamped=True)
     with dpg.group(horizontal=True, tag="group_alternatives"):
         dpg.add_text(default_value='Выберите количество альтернатив: ')
-        dpg.add_input_int(label=" ", tag='alternatives', default_value=5)
+        dpg.add_input_int(label=" ", tag='alternatives', default_value=5, min_value=1, min_clamped=True)
     dpg.add_button(label="Ввести альтернативы", width=300, callback=add_alternatives)
     dpg.add_child_window(tag='alternatives_window', height=500)
     dpg.add_button(label="Продолжить", tag='expert_button', width=150, callback=experts)
