@@ -55,7 +55,8 @@ def ranging(user_data):
                     dpg.add_text(tag=f'common_range{i}', default_value=calc_marks[i])
         with dpg.group(horizontal=True):
             dpg.add_text(default_value="Наилучшая альтернатива: ")
-            dpg.add_input_text(default_value=dpg.get_value(f'alter_text{np.argmin(calc_marks)}'), readonly=True)
+            dpg.add_input_text(default_value=dpg.get_value(f'alter_text{np.argmin(calc_marks)}'),
+                               readonly=True, multiline=True)
 
 
 def check_mark(sender, checked_mark, reflected_mark):
