@@ -1,11 +1,14 @@
 import dearpygui.dearpygui as dpg
-import numpy as np
+from gauss_expert import *
 
 WIDTH = 960
 HEIGHT = 540
 CENTER = int(WIDTH / 2) - 100
 
 dpg.create_context()
+
+ge = GaussExpert()
+print(ge.gauss_parametrs)
 
 
 def on_exit(sender, app_data, user_data):
@@ -23,32 +26,37 @@ def check_inputs(crit):
         dpg.set_value(f'a3_crit{crit}_except', 'Значение должно быть больше Ay1 и Ay2')
         itsok = False
     if dpg.get_value(f'j1_crit{crit}') <= dpg.get_value(f'a1_crit{crit}') \
-        or dpg.get_value(f'j1_crit{crit}') >= dpg.get_value(f'a2_crit{crit}'):
+            or dpg.get_value(f'j1_crit{crit}') >= dpg.get_value(f'a2_crit{crit}'):
         dpg.configure_item(f'j1_crit{crit}_except', show=True)
         dpg.set_value(f'j1_crit{crit}_except', 'Значение должно быть между Ay1 и Ay2')
         itsok = False
     if dpg.get_value(f'j2_crit{crit}') <= dpg.get_value(f'a2_crit{crit}') \
-        or dpg.get_value(f'j2_crit{crit}') >= dpg.get_value(f'a3_crit{crit}'):
+            or dpg.get_value(f'j2_crit{crit}') >= dpg.get_value(f'a3_crit{crit}'):
         dpg.configure_item(f'j2_crit{crit}_except', show=True)
         dpg.set_value(f'j2_crit{crit}_except', 'Значение должно быть между Ay2 и Ay3')
         itsok = False
-
+    if itsok:
+        for i in range(2):
+            ge.gauss_parametrs[crit]['dominant_value'][i] = dpg.get_value(f'a{i+1}_crit{crit}')
+            ge.gauss_parametrs[crit]['bound_neighb'][i] = dpg.get_value(f'j{i + 1}_crit{crit}')
+            ge.gauss_parametrs[crit]['membership_deg'][i] = dpg.get_value(f'M{i + 1}_crit{crit}')
+        ge.gauss_parametrs[crit]['dominant_value'][2] = dpg.get_value(f'a3_crit{crit}')
     return True
 
 
 def switch_crit(sender, app_data, crit):
     if check_inputs(crit):
         if crit == 0:
-            dpg.configure_item(f'child{crit}', show=False)
-            dpg.configure_item(f'child{crit+1}', show=True)
+            dpg.delete_item(f'child{crit}')
+            dpg.configure_item(f'child{crit + 1}', show=True)
         else:
-            dpg.configure_item('gauss_param', show=False)
+            dpg.delete_item('gauss_param')
             dpg.configure_item('window_alter', show=True)
-            print(dpg.get_value('alts'))
             window_alter(dpg.get_value('alts'))
 
 
 def window_alter(amount_alts):
+    print(ge.gauss_parametrs)
     for i in range(amount_alts):
         with dpg.group(horizontal=True, parent='group_alts'):
             dpg.add_text(default_value=f'Ввод альтернативы #{i + 1}: ')
@@ -65,15 +73,15 @@ with dpg.window(label="Gauss Parameters", tag="gauss_param", width=WIDTH, height
                 show=True, no_move=True, no_resize=True, modal=True):
     for i in range(2):
         with dpg.child_window(tag=f'child{i}', show=False):
-            dpg.add_text(default_value=f'Параметры функции Гаусса для критерия #{i+1}', indent=CENTER-120)
+            dpg.add_text(default_value=f'Параметры функции Гаусса для критерия #{i + 1}', indent=CENTER - 120)
             dpg.add_separator()
             # Ввод доминирующих значений
             dpg.add_text(default_value='Доминирующее значение Y нечёткого множества, описывающего терм, ai')
             with dpg.group(horizontal=False):
                 for j in range(3):
                     with dpg.group(horizontal=True):
-                        dpg.add_text(default_value=f'Ay{j+1}: ')
-                        dpg.add_input_float(tag=f'a{j + 1}_crit{i}', default_value=0, width=150)
+                        dpg.add_text(default_value=f'Ay{j + 1}: ')
+                        dpg.add_input_double(tag=f'a{j + 1}_crit{i}', default_value=0, width=150)
                         dpg.add_input_text(tag=f'a{j + 1}_crit{i}_except', show=False)
 
             dpg.add_separator()
@@ -83,7 +91,7 @@ with dpg.window(label="Gauss Parameters", tag="gauss_param", width=WIDTH, height
                 for j in range(2):
                     with dpg.group(horizontal=True):
                         dpg.add_text(default_value=f'j{j + 1}: ')
-                        dpg.add_input_float(tag=f'j{j + 1}_crit{i}', default_value=0, width=150)
+                        dpg.add_input_double(tag=f'j{j + 1}_crit{i}', default_value=0, width=150)
                         dpg.add_input_text(tag=f'j{j + 1}_crit{i}_except', show=False)
             dpg.add_separator()
             # Ввод степени разделения
@@ -92,7 +100,7 @@ with dpg.window(label="Gauss Parameters", tag="gauss_param", width=WIDTH, height
                 for j in range(2):
                     with dpg.group(horizontal=True):
                         dpg.add_text(default_value=f'M{j + 1}: ')
-                        dpg.add_input_float(tag=f'M{j + 1}_crit{i}', default_value=0, width=150,
+                        dpg.add_input_double(tag=f'M{j + 1}_crit{i}', default_value=0, width=150,
                                             min_value=0.0, min_clamped=True, max_value=1.0, max_clamped=True)
                         dpg.add_input_text(tag=f'M{j + 1}_crit{i}_except', show=False)
             dpg.add_button(label='Подтвердить', indent=CENTER,
