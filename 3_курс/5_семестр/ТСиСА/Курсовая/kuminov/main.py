@@ -258,13 +258,13 @@ with dpg.theme() as global_theme:
 dpg.bind_theme(global_theme)
 
 with dpg.font_registry():
-    with dpg.font('FreeSerifBold.ttf', 20, default_font=True, id="Default font"):
+    with dpg.font('C:\Windows\Fonts\CALIBRIL.TTF', 16, default_font=True, id="Default font"):
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
 dpg.bind_font("Default font")
 ########################################################################################################################
 dpg.create_viewport(title='НЕЧЁТКОЕ МНОГОКРИТЕРИАЛЬНОЕ ОЦЕНИВАНИЕ МЕТОДОМ ГАУССА', width=WIDTH, height=HEIGHT,
                     resizable=False)
-dpg.set_global_font_scale(1.25)
+dpg.set_global_font_scale(1)
 dpg.set_exit_callback(on_exit)
 dpg.setup_dearpygui()
 dpg.show_viewport()
