@@ -114,6 +114,7 @@ with dpg.window(label="Gauss Parameters", tag="gauss_param", width=WIDTH, height
                            callback=switch_crit, user_data=i)
         dpg.configure_item('child0', show=True)
 
+
 # endregion
 # endregion
 
@@ -122,6 +123,7 @@ with dpg.window(label="Gauss Parameters", tag="gauss_param", width=WIDTH, height
 def switch_grade():
     if check_crit():
         dpg.configure_item('window_gauss_grade', show=True)
+        window_gauss_grade(ge.alts)
     else:
         dpg.configure_item('window_exc', show=True)
 
@@ -130,10 +132,11 @@ def check_crit():
     succ = True
     for alter in range(ge.alts):
         for crit in range(ge.crits):
-            if dpg.get_value(f'alt{alter}_crit{crit+1}') < ge.gauss_parametrs[crit]['dominant_value'][0] \
-                  or dpg.get_value(f'alt{alter}_crit{crit+1}') > ge.gauss_parametrs[crit]['dominant_value'][2]:
+            if dpg.get_value(f'alt{alter}_crit{crit + 1}') < ge.gauss_parametrs[crit]['dominant_value'][0] \
+                    or dpg.get_value(f'alt{alter}_crit{crit + 1}') > ge.gauss_parametrs[crit]['dominant_value'][2]:
                 print("ERROR")
-                dpg.add_text(default_value=f'Error: значение альтернативы {alter+1} критерия {crit+1} неверно', parent='window_exc')
+                dpg.add_text(default_value=f'Error: значение альтернативы {alter + 1} критерия {crit + 1} неверно',
+                             parent='window_exc')
                 succ = False
     return succ
 
@@ -141,7 +144,6 @@ def check_crit():
 with dpg.window(label='Предупреждение', tag="window_exc", width=WIDTH, height=HEIGHT,
                 show=False, no_move=True, no_resize=True):
     pass
-
 
 with dpg.window(label="Input Alternatives", tag="window_alter", width=WIDTH, height=HEIGHT,
                 show=False, no_move=True, no_resize=True):
@@ -158,7 +160,7 @@ def window_alter(amount_alts):
     print(ge.gauss_parametrs)
     dpg.add_table_column(parent='table_alts')
     dpg.add_table_column(parent='table_alts')
-    for i in range(dpg.get_value('alts')):
+    for i in range(amount_alts):
         with dpg.table_row(parent='table_alts'):
             dpg.add_text(default_value=f'Альтернатива #{i + 1}')
             dpg.add_input_text(tag=f'alt{i}_text', hint=f'Ввод альтернативы #{i + 1}')
@@ -170,26 +172,62 @@ def window_alter(amount_alts):
             dpg.add_input_float(tag=f'alt{i}_crit2')
 
 
-
 # endregion
+
 
 # region WINDOW#4: Gauss Criteria Grade
+def window_gauss_grade(amount_alts):
+    for crit in range(ge.crits):
+        dpg.add_text(label=dpg.get_value(f'crit{crit + 1}'), before=f'table_membership_crit{crit + 1}')
+        dpg.add_table_column(label='Альтернатива', parent=f'table_membership_crit{crit + 1}')
+        dpg.add_table_column(label='Низкий', parent=f'table_membership_crit{crit + 1}')
+        dpg.add_table_column(label='Средний', parent=f'table_membership_crit{crit + 1}')
+        dpg.add_table_column(label='Высокий', parent=f'table_membership_crit{crit + 1}')
+        for alter in range(amount_alts):
+            with dpg.table_row(parent=f'table_membership_crit{crit + 1}'):
+                dpg.add_text(default_value=dpg.get_value(f'alt{alter}_text'))
+                dpg.add_text(default_value='0.0')
+                dpg.add_text(default_value='0.0')
+                dpg.add_text(default_value='0.0')
+
+
+def output_res():
+    dpg.configure_item('window_result', show=True)
+    dpg.add_table_column(label='Альтернатива', parent='table_result')
+    dpg.add_table_column(label='Эффективность', parent='table_result')
+    for alter in range(ge.alts):
+        with dpg.table_row(parent='table_result'):
+            dpg.add_text(default_value=dpg.get_value(f'alt{alter}_text'))
+            dpg.add_text(default_value='0.0')
+    dpg.set_value('output_res', 'хуйна')
+
+
 with dpg.window(label="Gauss Criteria Grade", tag="window_gauss_grade", width=WIDTH, height=HEIGHT,
                 show=False, no_move=True, no_resize=True):
-    # Ввод альтернатив
-    pass
+    # Таблицы оценок по критериям
+    for crit in range(ge.crits):
+        dpg.add_table(tag=f'table_membership_crit{crit+1}',
+                      resizable=True, policy=dpg.mvTable_SizingStretchProp,
+                      row_background=True,
+                      borders_innerH=True, borders_outerH=True, borders_innerV=True,
+                      borders_outerV=True)
+        dpg.add_separator()
 
-
-
-
-
-
+    dpg.add_button(label='Продолжить', indent=CENTER, callback=output_res)
 # endregion
 
-# region Gauss Criteria Estimate
-with dpg.window(label='Gauss Criteria Estimate', popup=True, tag="window_gauss_est", width=WIDTH, height=HEIGHT,
+# region WINDOW#5:
+with dpg.window(label='Results', modal=True, tag="window_result", width=WIDTH, height=HEIGHT,
                 show=False, no_move=True, no_resize=True):
+    dpg.add_table(tag='table_result',
+                  resizable=True, policy=dpg.mvTable_SizingStretchProp,
+                  row_background=True,
+                  borders_innerH=True, borders_outerH=True, borders_innerV=True,
+                  borders_outerV=True)
+    dpg.add_text(default_value='Наилучшая альтернатива: ')
+    dpg.add_input_text(tag='output_res', readonly=True)
     pass
+
 
 # endregion
 
