@@ -1,8 +1,10 @@
 import math
+import dearpygui.dearpygui as dpg
+
 
 class GaussExpert:
-    __crits = 2
-    __alts = 2
+    crits = 2
+    alts = 2
     grades = [[], []]
     gauss_parametrs = [{'dominant_value': [0.0] * 3,
                         'bound_neighb': [0.0] * 2,
@@ -16,26 +18,16 @@ class GaussExpert:
                         'y': [0.0] * 4}
                        ]
 
-    def __init__(self):
-        self.__alts = 5
+    # def __init__(self):
+        # crits = 2
+        # alts = 5
+        # self.grades = [[0] * self.__alts for i in range(self.__crits)]
 
-        self.grades = [[0] * self.__alts for i in range(2)]
-        print(self.grades)
+        # for j in range(self.__crits):
+        #     for i in range(self.__alts):
+        #         self.grades[j][i] = int(input(f'Введите альт#{j} крит#{i}: '))
 
-        for i in range(self.__crits):
-            for j in range(3):
-                self.gauss_parametrs[i]['dominant_value'][j] = float(input(f'crit#{i} dv{j}: '))
-            for j in range(2):
-                self.gauss_parametrs[i]['bound_neighb'][j] = float(input(f'crit#{i} bn{j}: '))
-            for j in range(2):
-                self.gauss_parametrs[i]['membership_deg'][j] = float(input(f'crit#{i} md{j}: '))
-
-
-        for j in range(self.__crits):
-            for i in range(self.__alts):
-                self.grades[j][i] = int(input(f'Введите альт#{j} крит#{i}: '))
-
-        print(self.grades)
+        # print(self.grades)
 
 
     #GaussExpert(int alts_amount, int, crit_amount,
@@ -268,6 +260,6 @@ class GaussExpert:
 # }
 
 
-ge = GaussExpert()
-ge.calculateParams()
-ge.getBestAlternative()
+# ge = GaussExpert()
+# ge.calculateParams()
+# ge.getBestAlternative()
