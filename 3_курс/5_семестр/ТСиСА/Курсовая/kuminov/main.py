@@ -63,7 +63,6 @@ def check_inputs(crit):
         dpg.configure_item(f'j2_crit{crit}_except', show=True)
         dpg.set_value(f'j2_crit{crit}_except', 'Значение должно быть между Ay2 и Ay3')
         itsok = False
-    itsok = True  # ЗАГЛУШКА
     if itsok:
         for i in range(2):
             ge.gauss_parametrs[crit]['dominant_value'][i] = dpg.get_value(f'a{i + 1}_crit{crit}')
@@ -122,6 +121,12 @@ with dpg.window(label="Gauss Parameters", tag="gauss_param", width=WIDTH, height
 # region WINDOW#3: Input Alternatives
 def switch_grade():
     if check_crit():
+        ge.grades = [[dpg.get_value(f'alt{alter}_crit{crit + 1}')
+                     for crit in range(ge.crits)]
+                     for alter in range(ge.alts)]
+        ge.calculateParams()
+        ge.getBestAlternative()
+        dpg.configure_item('window_alter', show=False)
         dpg.configure_item('window_gauss_grade', show=True)
         window_gauss_grade(ge.alts)
     else:
@@ -186,9 +191,9 @@ def window_gauss_grade(amount_alts):
         for alter in range(amount_alts):
             with dpg.table_row(parent=f'table_membership_crit{crit + 1}'):
                 dpg.add_text(default_value=dpg.get_value(f'alt{alter}_text'))
-                dpg.add_text(default_value='0.0')
-                dpg.add_text(default_value='0.0')
-                dpg.add_text(default_value='0.0')
+                dpg.add_text(default_value=ge.fuzzy_grades[crit][alter][0])
+                dpg.add_text(default_value=ge.fuzzy_grades[crit][alter][1])
+                dpg.add_text(default_value=ge.fuzzy_grades[crit][alter][2])
 
 
 def output_res():
@@ -198,15 +203,15 @@ def output_res():
     for alter in range(ge.alts):
         with dpg.table_row(parent='table_result'):
             dpg.add_text(default_value=dpg.get_value(f'alt{alter}_text'))
-            dpg.add_text(default_value='0.0')
-    dpg.set_value('output_res', 'хуйна')
+            dpg.add_text(default_value=ge.alts_eff[alter])
+    dpg.set_value('output_res', dpg.get_value(f'alt{ge.best_alt[1]}_text'))
 
 
 with dpg.window(label="Gauss Criteria Grade", tag="window_gauss_grade", width=WIDTH, height=HEIGHT,
                 show=False, no_move=True, no_resize=True):
     # Таблицы оценок по критериям
     for crit in range(ge.crits):
-        dpg.add_table(tag=f'table_membership_crit{crit+1}',
+        dpg.add_table(tag=f'table_membership_crit{crit + 1}',
                       resizable=True, policy=dpg.mvTable_SizingStretchProp,
                       row_background=True,
                       borders_innerH=True, borders_outerH=True, borders_innerV=True,
