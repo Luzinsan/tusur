@@ -55,8 +55,7 @@ def ranging(user_data):
                     dpg.add_text(tag=f'common_range{i}', default_value=calc_marks[i])
         with dpg.group(horizontal=True):
             dpg.add_text(default_value="Наилучшая альтернатива: ")
-            dpg.add_input_text(default_value=dpg.get_value(f'alter_text{np.argmin(calc_marks)}'),
-                               readonly=True, multiline=True)
+            dpg.add_input_text(default_value=dpg.get_value(f'alter_text{np.argmin(calc_marks)}'), readonly=True)
 
 
 def check_mark(sender, checked_mark, reflected_mark):
@@ -92,10 +91,10 @@ def experts():
                            borders_outerV=True):
                 dpg.add_table_column(label=' ', tag=f'col{expert}')
                 for row in range(0, count_alternatives):
-                    dpg.add_table_column(label=f'Альтарнатива #{row + 1}', tag=f'col{expert}{row}')
+                    dpg.add_table_column(label=f'Альтернатива #{row + 1}', tag=f'col{expert}{row}')
                 for row in range(0, count_alternatives):
                     with dpg.table_row():
-                        dpg.add_text(default_value=f'Альтарнатива #{row + 1}', tag=f'row{expert}{row}')
+                        dpg.add_text(default_value=f'Альтернатива #{row + 1}', tag=f'row{expert}{row}')
                         for col in range(0, count_alternatives):
                             default_value = 0
                             if col > row:
@@ -139,7 +138,7 @@ with dpg.window(label="Main", tag="Main", autosize=True):
         dpg.add_text(default_value='Выберите количество альтернатив: ')
         dpg.add_input_int(label=" ", tag='alternatives', default_value=5, min_value=1, min_clamped=True)
     dpg.add_button(label="Ввести альтернативы", width=300, callback=add_alternatives)
-    dpg.add_child_window(tag='alternatives_window', height=500)
+    dpg.add_child_window(tag='alternatives_window', height=300)
     dpg.add_button(label="Продолжить", tag='expert_button', width=150, callback=experts)
 
 with dpg.theme() as global_theme:
@@ -153,15 +152,16 @@ with dpg.theme() as global_theme:
         dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (15, 61, 131), category=dpg.mvThemeCat_Core)
         dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
 
+
 with dpg.font_registry():
-    with dpg.font(f'/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf', 20, default_font=True, id="Default font"):
+    with dpg.font('C:\Windows\Fonts\ARIALNB.TTF', 25, default_font=True, id="Default font"):
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
 dpg.bind_font("Default font")
 
 dpg.bind_theme(global_theme)
 ########################################################################################################################
-dpg.create_viewport(title='ГРУППОВОЕ ПАРНОЕ ОЦЕНИВАНИЕ', width=1920, height=920)
-dpg.set_global_font_scale(1.25)
+dpg.create_viewport(title='Expert System', width=1200, height=700)
+dpg.set_global_font_scale(1)
 dpg.set_exit_callback(on_exit)
 dpg.setup_dearpygui()
 dpg.show_viewport()
