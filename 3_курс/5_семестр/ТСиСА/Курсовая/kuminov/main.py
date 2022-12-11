@@ -122,8 +122,8 @@ with dpg.window(label="Gauss Parameters", tag="gauss_param", width=WIDTH, height
 def switch_grade():
     if check_crit():
         ge.grades = [[dpg.get_value(f'alt{alter}_crit{crit + 1}')
-                     for crit in range(ge.crits)]
                      for alter in range(ge.alts)]
+                     for crit in range(ge.crits)]
         ge.calculateParams()
         ge.getBestAlternative()
         dpg.configure_item('window_alter', show=False)
@@ -208,7 +208,7 @@ def output_res():
 
 
 with dpg.window(label="Gauss Criteria Grade", tag="window_gauss_grade", width=WIDTH, height=HEIGHT,
-                show=False, no_move=True, no_resize=True):
+                show=False, no_move=True, no_resize=True, popup=True):
     # Таблицы оценок по критериям
     for crit in range(ge.crits):
         dpg.add_table(tag=f'table_membership_crit{crit + 1}',
