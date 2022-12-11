@@ -241,11 +241,26 @@ def on_exit(sender, app_data, user_data):
     print("closed")
 
 
+# Оформление
+with dpg.theme() as global_theme:
+    # with dpg.theme_component(dpg.mvAll):
+    #     dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (5, 7, 143), category=dpg.mvThemeCat_Core)
+    #     dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+    with dpg.theme_component(dpg.mvInputInt):
+        dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (30, 77, 180), category=dpg.mvThemeCat_Core)
+        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+    with dpg.theme_component(dpg.mvInputText):
+        dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (30, 177, 180), category=dpg.mvThemeCat_Core)
+        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+    with dpg.theme_component(dpg.mvText):
+        dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (15, 161, 131), category=dpg.mvThemeCat_Core)
+        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+dpg.bind_theme(global_theme)
+
 with dpg.font_registry():
-    with dpg.font(f'/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf', 20, default_font=True, id="Default font"):
+    with dpg.font('FreeSerifBold.ttf', 20, default_font=True, id="Default font"):
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
 dpg.bind_font("Default font")
-
 ########################################################################################################################
 dpg.create_viewport(title='НЕЧЁТКОЕ МНОГОКРИТЕРИАЛЬНОЕ ОЦЕНИВАНИЕ МЕТОДОМ ГАУССА', width=WIDTH, height=HEIGHT,
                     resizable=False)
