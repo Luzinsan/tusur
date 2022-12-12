@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 import numpy as np
-
+from remapping import *
 dpg.create_context()
 
 
@@ -44,9 +44,9 @@ def ranging(user_data):
                        row_background=True,
                        resizable=True, policy=dpg.mvTable_SizingStretchProp,
                        borders_innerH=True, borders_outerH=True, borders_innerV=True,
-                       borders_outerV=True):
+                       borders_outerV=True, width=800):
             dpg.add_table_column(label='Альтернативы', tag=f'alter_col')
-            dpg.add_table_column(label='Ранг', tag=f'marks_col')
+            dpg.add_table_column(label='Ранг', tag=f'marks_col', width=20)
             calc_marks = np.empty(count_alternatives, dtype=np.int64)
             for i in range(0, count_alternatives):
                 with dpg.table_row():
@@ -55,7 +55,7 @@ def ranging(user_data):
                     dpg.add_text(tag=f'common_range{i}', default_value=calc_marks[i])
         with dpg.group(horizontal=True):
             dpg.add_text(default_value="Наилучшая альтернатива: ")
-            dpg.add_input_text(default_value=dpg.get_value(f'alter_text{np.argmin(calc_marks)}'), readonly=True)
+            dpg.add_input_text(default_value=dpg.get_value(f'alter_text{np.argmin(calc_marks)}'), readonly=True, width=600)
 
 
 def check_mark(sender, checked_mark, reflected_mark):
@@ -86,9 +86,8 @@ def experts():
             # табличка с альтернативами
             with dpg.table(tag=f'table{expert}',
                            header_row=True, row_background=True,
-                           resizable=True, policy=dpg.mvTable_SizingStretchProp,
                            borders_innerH=True, borders_outerH=True, borders_innerV=True,
-                           borders_outerV=True):
+                           borders_outerV=True, width=900):
                 dpg.add_table_column(label=' ', tag=f'col{expert}')
                 for row in range(0, count_alternatives):
                     dpg.add_table_column(label=f'Альтернатива #{row + 1}', tag=f'col{expert}{row}')
@@ -100,12 +99,13 @@ def experts():
                             if col > row:
                                 default_value = 1
                             if col == row:
-                                dpg.add_input_int(tag=f'mark{expert}{row}{col}', default_value=1, readonly=True)
+                                dpg.add_input_int(tag=f'mark{expert}{row}{col}', default_value=1, readonly=True, width=120)
                             else:
                                 dpg.add_input_int(tag=f'mark{expert}{row}{col}', default_value=default_value,
                                                   min_value=0, max_value=1,
                                                   min_clamped=True, max_clamped=True,
-                                                  callback=check_mark, user_data=[expert, col, row])
+                                                  callback=check_mark, user_data=[expert, col, row],
+                                                  width=120)
             # Переход к другому эксперту
             if expert + 1 != count_experts:
                 dpg.add_button(label=f"Перейти к эксперту #{expert + 2}", tag=f'next{expert + 1}',
@@ -152,11 +152,6 @@ with dpg.theme() as global_theme:
         dpg.add_theme_color(dpg.mvThemeCol_FrameBg, (15, 61, 131), category=dpg.mvThemeCat_Core)
         dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
 
-
-with dpg.font_registry():
-    with dpg.font('C:\Windows\Fonts\ARIALNB.TTF', 25, default_font=True, id="Default font"):
-        dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
-dpg.bind_font("Default font")
 
 dpg.bind_theme(global_theme)
 ########################################################################################################################
