@@ -222,7 +222,7 @@ with dpg.window(label="Gauss Criteria Grade", tag="window_gauss_grade", width=WI
 # endregion
 
 # region WINDOW#5:
-with dpg.window(label='Results', modal=True, tag="window_result", width=WIDTH, height=HEIGHT,
+with dpg.window(label='Results', tag="window_result", width=WIDTH, height=HEIGHT,
                 show=False, no_move=True, no_resize=True):
     dpg.add_table(tag='table_result',
                   resizable=True, policy=dpg.mvTable_SizingStretchProp,
