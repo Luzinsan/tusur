@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 import numpy as np
 from remapping import *
-dpg.create_context()
+
 
 
 def on_exit(sender, app_data, user_data):
@@ -124,7 +124,7 @@ def add_alternatives():
                            height=50, parent='alternatives_window')
 
 
-with dpg.window(label="Expert", tag="expert_window", autosize=True, show=False, modal=True, width=1920):
+with dpg.window(label="Expert", tag="expert_window", autosize=True, show=False, modal=True, width=900):
     dpg.add_separator()
 
 with dpg.window(label="Main", tag="Main", autosize=True):
