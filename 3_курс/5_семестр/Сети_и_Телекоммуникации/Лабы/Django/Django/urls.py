@@ -17,6 +17,8 @@ urlpatterns = [
     re_path(r'^optimization', views.optimization, name='minimize'),
 
     path('access/<int:age>', views.access, name='access'),
+    path('set', views.set, name='set_cookies'),
+    path('get', views.get, name='get_cookies'),
 
     path('user/', include(user_patterns)),
     path('admin/', admin.site.urls),

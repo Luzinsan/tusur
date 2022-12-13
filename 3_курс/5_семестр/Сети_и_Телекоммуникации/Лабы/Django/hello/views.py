@@ -2,7 +2,25 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, \
-    HttpResponseBadRequest, HttpResponseForbidden
+    HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
+
+# установка куки
+def set(request):
+    # получаем из строки запроса имя пользователя
+    username = request.GET.get("username", "Undefined")
+    # создаем объект ответа
+    response = HttpResponse(f"Hello {username}")
+    # передаем его в куки
+    response.set_cookie("username", username)
+    return response
+
+
+# получение куки
+def get(request):
+    # получаем куки с ключом username
+    username = request.COOKIES['username']
+    return HttpResponse(f"Hello {username}")
 
 
 def index(request):
@@ -68,4 +86,19 @@ def calculate(request):
 
 
 def optimization(request):
-    return HttpResponsePermanentRedirect('/')
+    min = Minimize("Newton", 1)
+    return JsonResponse(min, safe=False, encoder=MinimizeEncoder)
+
+
+class Minimize:
+    def __init__(self, method, function):
+        self.method = method
+        self.function = function
+
+
+class MinimizeEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Minimize):
+            return {"method": obj.method, "function": obj.function}
+            # return obj.__dict__
+        return super().default(obj)
