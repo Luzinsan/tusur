@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static "css/styles.css" %}" />
+    <title>{{ user.name }}</title>
+</head>
+{% block content%}
+<p>{{ header }}</p>
+<p>Текущие дата и время: {% now "d.m.y P" %}</p>
+<p>Другой способ задавать дату: {{ date|date:"SHORT_DATETIME_FORMAT"}}</p>
+<p>Языки:</p>
+<ul>
+    {% for language in langs %}
+        <li>{{ language|cut:"Python"|default:"Fogot" }}</li>
+    {% empty %}
+        <li>Languages array is empty</li>
+    {% endfor %}
+</ul>
+<h3>Пользователь</h3>
+<h4>Имя: {{ user.name|capfirst }}</h4>
+<h4>Возраст: {{ user.age }}</h4>
+<h3>Адрес</h3>
+<h4>Улица: {{ address.0 }}</h4>
+<h4>Дом: {{ address.1 }}</h4>
+<h4>Квартира: {{ address.2 }}</h4>
+
+<p>Перевод названий цветов:</p>
+<ul>
+    {% for eng, rus in colors.items %}
+        <li>{{ eng }}: {{ rus }}</li>
+    {% empty %}
+        <li>Словарь пуст...</li>
+    {% endfor %}
+</ul>
+
+{% with var_text="Что-то " value=29 %}
+    <div>
+        <p>Text: {{ var_text|add:"с чем-то" }}</p>
+        <p>Value: {{ value }}</p>
+    </div>
+{% endwith %}
+
+
+
+<p>Функция для оптимизации: {{ optimize.function }}</p>
+<p>Используемый метод: {{ optimize.method|add:" | метод для оптимизации" }}</p>
+
+{% comment %}
+<p> Это комментарий </p>
+{% endcomment %}
+
+{% if user.age > 81 %}
+    <p>Дай бог вам здоровья</p>
+{% elif user.age > 18 %}
+    <p>Пользователь совершеннолетний</p>
+{% else %}
+    <p>У тебя ещё всё  впереди</p>
+{% endif %}
+<img src="{% static "images/space.jpg" %}" alt="Космос" >
+{% endblock content %}

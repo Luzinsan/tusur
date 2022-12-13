@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from datetime import datetime
+from django.template.response import TemplateResponse
 
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, \
@@ -55,17 +57,25 @@ def about(request, name, age):
 
 
 def contact(request):
-    return HttpResponse("<b>Контакты</b>")
+    data = {"header": "Hello Django", "message": "Welcome to Python"}
+    return render(request, "index.html", context=data)
 
 
 def user(request):
     name = request.GET.get('name', "Undefined")
-    age = request.GET.get('age', None)
-    return HttpResponse(f"""
-    <h1>Информация о пользователе</h1>
-    <p>Имя: {name}</p>
-    <p>Возраст: {age}</p>    
-    """)
+    age = int(request.GET.get('age', 0))
+
+    header = "Данные пользователя"  # обычная переменная
+    date = datetime.now()
+    langs = ["Python", "Java", "C#"]  # список
+
+    user = {"name": name, "age": age}  # словарь
+    address = ("Абрикосовая", 23, 45)  # кортеж
+    optimize = Minimize('Newton', 'x+1')
+    colors = {"red": 'красный', "green": 'зелёный', "blue": 'синий'}
+    data = {"header": header, "langs": langs, "user": user, "address": address, "optimize": optimize, "colors": colors,
+            "date": date}
+    return TemplateResponse(request, "user.html", context=data)
 
 
 def access(request, age):
@@ -82,7 +92,7 @@ def access(request, age):
 
 
 def calculate(request):
-    return HttpResponseRedirect('/')
+    return TemplateResponse(request,  "calculate.html")
 
 
 def optimization(request):
