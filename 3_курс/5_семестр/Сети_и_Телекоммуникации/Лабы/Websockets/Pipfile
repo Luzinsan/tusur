@@ -5,6 +5,10 @@ name = "pypi"
 
 [packages]
 django = "*"
+sympy = "*"
+numpy = "*"
+matplotlib = "*"
+imageio = "*"
 
 [dev-packages]
 
