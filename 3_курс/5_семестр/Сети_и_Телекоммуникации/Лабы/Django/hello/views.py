@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from datetime import datetime
 from django.template.response import TemplateResponse
+from .forms import UserForm
 
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, \
     HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
+
 
 # установка куки
 def set(request):
@@ -62,20 +64,29 @@ def contact(request):
 
 
 def user(request):
-    name = request.GET.get('name', "Undefined")
-    age = int(request.GET.get('age', 0))
-
     header = "Данные пользователя"  # обычная переменная
-    date = datetime.now()
-    langs = ["Python", "Java", "C#"]  # список
+    if request.method == "POST":
+        userform = UserForm(request.POST)
+        if userform.is_valid():
+            # langs = userform.cleaned_data['languages']
+            name = userform.cleaned_data['name']
+            age = userform.cleaned_data['age']
+            return HttpResponse(f"""<div>Name: {name}</div>
+                                    <div>Age: {age}</div>""")
+                                    # <div>Languages: {langs}</div>""")
+        else:
+            return HttpResponseBadRequest("Invalid data")
+    else:
+        # userform = UserForm(field_order=["date", "name", "email", "password", "comment"])
+        userform = UserForm()
+        date = datetime.now()
+        address = ("Абрикосовая", 23, 45)  # кортеж
+        optimize = Minimize('Newton', 'x+1')
+        colors = {"red": 'красный', "green": 'зелёный', "blue": 'синий'}
+        data = {"header": header, "address": address, "optimize": optimize, "colors": colors,
+                "date": date, "form": userform}
+        return TemplateResponse(request, "user.html", context=data)
 
-    user = {"name": name, "age": age}  # словарь
-    address = ("Абрикосовая", 23, 45)  # кортеж
-    optimize = Minimize('Newton', 'x+1')
-    colors = {"red": 'красный', "green": 'зелёный', "blue": 'синий'}
-    data = {"header": header, "langs": langs, "user": user, "address": address, "optimize": optimize, "colors": colors,
-            "date": date}
-    return TemplateResponse(request, "user.html", context=data)
 
 
 def access(request, age):

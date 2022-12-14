@@ -18,8 +18,22 @@
     {% endfor %}
 </ul>
 <h3>Пользователь</h3>
-<h4>Имя: {{ user.name|capfirst }}</h4>
-<h4>Возраст: {{ user.age }}</h4>
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            {{ form.as_div }}
+        </table>
+         <p>
+            Выберите языки:<br />
+            <select multiple name="languages">
+                <option>Python</option>
+                <option>JavaScript</option>
+                <option>C++</option>
+                <option>Java</option>
+             </select>
+        </p>
+        <input type="submit" value="Send" />
+    </form>
 <h3>Адрес</h3>
 <h4>Улица: {{ address.0 }}</h4>
 <h4>Дом: {{ address.1 }}</h4>
