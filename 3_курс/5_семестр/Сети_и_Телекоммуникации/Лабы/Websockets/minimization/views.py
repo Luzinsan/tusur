@@ -1,10 +1,7 @@
-from django.shortcuts import render
-from datetime import datetime
 from django.template.response import TemplateResponse
 from .forms import UserForm, TaskForm
 
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, \
-    HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 
 
