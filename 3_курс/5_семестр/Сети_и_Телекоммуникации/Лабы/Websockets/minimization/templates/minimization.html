@@ -2,10 +2,14 @@
 {% block title %}Минимизация{% endblock title %}
 {% block header %}Минимизация функции с одной переменной{% endblock header %}
 {% block content%}
+    <h3>Данные пользователя:</h3>
+        <p>Имя пользователя: {{ name }}</p>
+        <p>Username: {{ email }}</p>
+
     <form method="POST" action="results">
         {% csrf_token %}
         <table>
-            {{ form.as_table }}
+            {{ taskform.as_table }}
         </table>
         <input type="submit" value="Send" />
     </form>
