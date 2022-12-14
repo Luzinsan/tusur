@@ -47,30 +47,39 @@ def user(request):
 
 
 def minimization(request):
-    pass
-    # if request.method == "POST":
-    #     userform = UserForm(request.POST)
-    #     taskform = TaskForm(request.POST)
-    #     if taskform.is_valid() and :
-    #         name = userform.cleaned_data['name']
-    #         age = userform.cleaned_data['age']
-    #         email = userform.cleaned_data['email']
-    #         password = userform.cleaned_data['password']
-    #         data = {"name": name, "age": age, "email": email, "password": password}
-    #         # установка куки
-    #         # создаем объект ответа
-    #         response = TemplateResponse(request, "minimization.html", context=data)
-    #         # передаем его в куки
-    #         response.set_cookie("email", email)
-    #         response.set_cookie("password", password)
-    #         return response
-    #     else:
-    #         return HttpResponseBadRequest("Invalid data")
-    # else:
-    #     userform = UserForm()
-    #     data = {"form": userform}
-    #     return TemplateResponse(request, "user.html", context=data)
+    if request.method == "POST":
+        userform = UserForm(request.POST)
+        if userform.is_valid():
+            name = userform.cleaned_data['name']
+            age = userform.cleaned_data['age']
+            email = userform.cleaned_data['email']
+            password = userform.cleaned_data['password']
+            taskform = TaskForm()
+            data = {"name": name, "age": age, "email": email, "password": password, "taskform": taskform}
+            return TemplateResponse(request, "minimization.html", context=data)
+        else:
+            return HttpResponseBadRequest("Invalid data")
+    else:
+        return HttpResponseForbidden()
 
 
 def results(request):
-    pass
+    if request.method == "POST":
+        taskform = TaskForm(request.POST)
+        if taskform.is_valid():
+            list_methods = {'1': "Метод Ньютона", '2': "Метод Золотого сечения", '3': "Метод Секущих",
+                            '4': "Метод Стивенсона", '5': "Метод Больцано"}
+
+            method = list_methods[taskform.cleaned_data['method']]
+            function = taskform.cleaned_data['function']
+            result = get_result(method, function)
+            data = {"method": method, "function": function, "result": result}
+            return TemplateResponse(request, "results.html", context=data)
+        else:
+            return HttpResponseBadRequest("Invalid data")
+    else:
+        return HttpResponseForbidden()
+
+
+def get_result(method, function):
+    return method + ' ' + function
