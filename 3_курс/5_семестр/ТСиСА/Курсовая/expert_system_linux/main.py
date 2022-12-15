@@ -24,6 +24,10 @@ def switch_expert(sender, app_data, expert_data):
         ranging([expert_data[2], expert_data[1]])
 
 
+def concordance_factor():
+    pass
+
+
 def ranging(user_data):
     global estimates
     count_expert, count_alternatives = user_data
@@ -48,11 +52,29 @@ def ranging(user_data):
             dpg.add_table_column(label='Альтернативы', tag=f'alter_col')
             dpg.add_table_column(label='Ранг', tag=f'marks_col')
             calc_marks = np.empty(count_alternatives, dtype=np.int64)
-            for i in range(0, count_alternatives):
-                with dpg.table_row():
+            for i in range(count_alternatives):
+                with dpg.table_row(tag=f'row{i}'):
                     dpg.add_text(default_value=dpg.get_value(f'alter_text{i}'), tag=f'alter_row{i}')
-                    calc_marks[i] = count_alternatives - sum(common_matrix[i]) + 1
+                    calc_marks[i] = sum(common_matrix[i])
                     dpg.add_text(tag=f'common_range{i}', default_value=calc_marks[i])
+
+            not_viewed_indices = list(range(count_alternatives))
+            viewed_indices = []
+            rank = 1
+            while rank < count_alternatives + 1:
+                # узнаём максимальную сумму среди непросморенных
+                max_value = np.max(calc_marks[not_viewed_indices])
+                # реализуем связные ранги
+                temp_lst = list(np.where(calc_marks == max_value)[0])
+                # отсекаем просмотренные индексы
+                temp_lst = [item for item in temp_lst if item not in viewed_indices]
+                # убираем найденные индексы в стороны - теперь они просмотрены
+                not_viewed_indices = [item for item in not_viewed_indices if item not in temp_lst]
+                viewed_indices += temp_lst
+                # присваиваем связные ранги
+                calc_marks[temp_lst] = sum(range(rank, rank + len(temp_lst))) / len(temp_lst)
+                rank += len(temp_lst)
+            [dpg.set_value(f'common_range{i}', calc_marks[i]) for i in range(count_alternatives)]
         with dpg.group(horizontal=True):
             dpg.add_text(default_value="Наилучшая альтернатива: ")
             dpg.add_input_text(default_value=dpg.get_value(f'alter_text{np.argmin(calc_marks)}'),
@@ -92,10 +114,10 @@ def experts():
                            borders_outerV=True):
                 dpg.add_table_column(label=' ', tag=f'col{expert}')
                 for row in range(0, count_alternatives):
-                    dpg.add_table_column(label=f'Альтарнатива #{row + 1}', tag=f'col{expert}{row}')
+                    dpg.add_table_column(label=f'Альтернатива #{row + 1}', tag=f'col{expert}{row}')
                 for row in range(0, count_alternatives):
                     with dpg.table_row():
-                        dpg.add_text(default_value=f'Альтарнатива #{row + 1}', tag=f'row{expert}{row}')
+                        dpg.add_text(default_value=f'Альтернатива #{row + 1}', tag=f'row{expert}{row}')
                         for col in range(0, count_alternatives):
                             default_value = 0
                             if col > row:
