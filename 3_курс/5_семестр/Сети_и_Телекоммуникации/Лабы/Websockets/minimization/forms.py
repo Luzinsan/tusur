@@ -11,4 +11,4 @@ class UserForm(forms.Form):
 class TaskForm(forms.Form):
     method = forms.ChoiceField(choices=((1, "Метод Ньютона"), (2, "Метод Золотого сечения"), (3, "Метод Секущих"),
                                         (4, "Метод Стивенсона"), (5, "Метод Больцано")))
-    function = forms.CharField()
+    function = forms.FileField()
