@@ -9,6 +9,12 @@ def on_exit(sender, app_data, user_data):
 
 
 estimates = np.array([1, 1, 1])
+count_alter = 0
+
+
+def go_back(sender, app_data, expert):
+    dpg.configure_item(f'evaluation{expert}', show=False)
+    dpg.configure_item(f'evaluation{expert - 1}', show=True)
 
 
 def switch_expert(sender, app_data, expert_data):
@@ -24,7 +30,7 @@ def switch_expert(sender, app_data, expert_data):
         ranging([expert_data[2], expert_data[1]])
 
 
-def concordance_factor():
+def coefficient_variation():
     pass
 
 
@@ -87,82 +93,85 @@ def check_mark(sender, checked_mark, reflected_mark):
 
 
 def experts():
-    dpg.delete_item('expert_window', children_only=True)
-    dpg.configure_item('expert_window', show=True)
-    with dpg.group(horizontal=True, tag="group_target_const", parent='expert_window'):
-        dpg.add_text(default_value=f"ЦЕЛЬ: ")
-        dpg.add_input_text(readonly=True, default_value=dpg.get_value('target'), width=1900)
+    dpg.set_value('output_target', dpg.get_value('target'))
     count_experts = dpg.get_value('experts')
     count_alternatives = dpg.get_value('alternatives')
-    alternatives = []
-    for expert in range(count_alternatives):
-        alternatives.append(dpg.get_value(f'alter_text{expert}'))
-
+    alternatives = [dpg.get_value(f'alter_text{expert}') for expert in range(count_alternatives)]
     dpg.add_listbox(tag='list_alternatives', items=alternatives, parent='expert_window',
-                    tracked=True, width=1920, num_items=count_alternatives)
+                    tracked=True, width=1310, num_items=count_alternatives)
     estimates.resize([count_experts, count_alternatives, count_alternatives])
     for expert in range(count_experts):
-        with dpg.child_window(tag=f'evaluation{expert}', parent='expert_window', height=720, width=1920, show=False):
-            with dpg.group(horizontal=True, tag=f"group_role{expert}"):
+        with dpg.child_window(tag=f'evaluation{expert}', parent='expert_window', height=720, show=False):
+            with dpg.group(horizontal=True):
+                if expert > 0:
+                    dpg.add_button(arrow=True, direction=dpg.mvDir_Left,
+                                   callback=go_back, user_data=expert)
                 dpg.add_text(default_value=f"Роль эксперта #{expert + 1}: ")
-                dpg.add_input_text(tag=f'role{expert}', default_value='Аноним')
+                dpg.add_input_text(tag=f'role{expert}', default_value='Аноним', width=1100 - bool(expert) * 40)
             # табличка с альтернативами
             with dpg.table(tag=f'table{expert}',
                            header_row=True, row_background=True,
-                           resizable=True, policy=dpg.mvTable_SizingStretchProp,
                            borders_innerH=True, borders_outerH=True, borders_innerV=True,
                            borders_outerV=True):
-                dpg.add_table_column(label=' ', tag=f'col{expert}')
+                dpg.add_table_column(label=' ', width_fixed=True, width=200)
                 for row in range(0, count_alternatives):
-                    dpg.add_table_column(label=f'Альтернатива #{row + 1}', tag=f'col{expert}{row}')
+                    dpg.add_table_column(label=f'Альтернатива #{row + 1}', width_fixed=True, width=200)
                 for row in range(0, count_alternatives):
                     with dpg.table_row():
-                        dpg.add_text(default_value=f'Альтернатива #{row + 1}', tag=f'row{expert}{row}')
+                        dpg.add_text(default_value=f'Альтернатива #{row + 1}')
                         for col in range(0, count_alternatives):
                             default_value = 0
                             if col > row:
                                 default_value = 1
                             if col == row:
-                                dpg.add_input_int(tag=f'mark{expert}{row}{col}', default_value=1, readonly=True)
+                                dpg.add_input_int(tag=f'mark{expert}{row}{col}',
+                                                  default_value=1, readonly=True, width=200)
                             else:
                                 dpg.add_input_int(tag=f'mark{expert}{row}{col}', default_value=default_value,
                                                   min_value=0, max_value=1,
                                                   min_clamped=True, max_clamped=True,
-                                                  callback=check_mark, user_data=[expert, col, row])
+                                                  callback=check_mark, user_data=[expert, col, row], width=200)
             # Переход к другому эксперту
             if expert + 1 != count_experts:
-                dpg.add_button(label=f"Перейти к эксперту #{expert + 2}", tag=f'next{expert + 1}',
+                dpg.add_button(label=f"Перейти к эксперту #{expert + 2}",
                                callback=switch_expert, user_data=[expert, count_alternatives, count_experts])
             else:  # Выход к результатам
-                dpg.add_button(label="Вычислить наилучшую альтернативу", tag='finish',
+                dpg.add_button(label="Вычислить наилучшую альтернативу",
                                callback=switch_expert, user_data=[expert, count_alternatives, count_experts])
     dpg.configure_item('evaluation0', show=True)
+    dpg.configure_item('expert_window', show=True)
 
 
-def add_alternatives():
-    dpg.delete_item('alternatives_window', children_only=True)
-    for i in range(dpg.get_value('alternatives')):
-        dpg.add_input_text(tag=f'alter_text{i}', multiline=True,
-                           default_value=f'Альтернатива решения #{i + 1}',
+def add_alternative(sender, new_count_alter):
+    dpg.delete_item('next_to_experts')
+    dpg.add_button(label="Продолжить", tag='next_to_experts', width=150, callback=experts, parent='Main')
+    global count_alter
+    if new_count_alter > count_alter:
+        dpg.add_input_text(tag=f'alter_text{new_count_alter - 1}', multiline=True,
+                           default_value=f'Альтернатива решения #{new_count_alter}',
                            height=50, parent='alternatives_window')
+    else:
+        dpg.delete_item(f'alter_text{count_alter - 1}')
+    count_alter = new_count_alter
 
 
-with dpg.window(label="Expert", tag="expert_window", autosize=True, show=False, modal=True, width=1920):
-    dpg.add_separator()
+with dpg.window(label="Expert", tag="expert_window", show=False, popup=True, width=1920, no_move=True):
+    with dpg.group(horizontal=True):
+        dpg.add_text(default_value="ЦЕЛЬ: ", tag='label_target')
+        dpg.add_input_text(tag='output_target', readonly=True, width=1220)
 
 with dpg.window(label="Main", tag="Main", autosize=True):
-    with dpg.group(horizontal=True, tag="group_target"):
+    with dpg.group(horizontal=True):
         dpg.add_text(default_value='Введите рассматриваемую цель: ')
-        dpg.add_input_text(label=" ", tag='target', default_value='У самурая нет цели, есть только путь')
-    with dpg.group(horizontal=True, tag="group_experts"):
-        dpg.add_text(default_value='Выберите количество экспертов: ')
-        dpg.add_input_int(label=" ", tag='experts', default_value=3, min_value=1, min_clamped=True)
-    with dpg.group(horizontal=True, tag="group_alternatives"):
-        dpg.add_text(default_value='Выберите количество альтернатив: ')
-        dpg.add_input_int(label=" ", tag='alternatives', default_value=5, min_value=1, min_clamped=True)
-    dpg.add_button(label="Ввести альтернативы", width=300, callback=add_alternatives)
+        dpg.add_input_text(tag='target', hint='цель для решения проблемы')
+    with dpg.group(horizontal=True):
+        dpg.add_text(default_value='Введите количество экспертов: ')
+        dpg.add_input_int(tag='experts', default_value=3, min_value=1, min_clamped=True, width=223)
+    with dpg.group(horizontal=True):
+        dpg.add_text(default_value='Введите количество альтернатив: ')
+        dpg.add_input_int(tag='alternatives', default_value=count_alter, min_value=1, min_clamped=True, width=200,
+                          callback=add_alternative)
     dpg.add_child_window(tag='alternatives_window', height=500)
-    dpg.add_button(label="Продолжить", tag='expert_button', width=150, callback=experts)
 
 with dpg.theme() as global_theme:
     with dpg.theme_component(dpg.mvAll):
