@@ -71,9 +71,9 @@ def results(request):
                             '4': "Метод Стивенсона", '5': "Метод Больцано"}
 
             method = list_methods[taskform.cleaned_data['method']]
-            function = taskform.cleaned_data['function']
-            result = get_result(method, function)
-            data = {"method": method, "function": function, "result": result}
+            path = taskform.cleaned_data['path']
+            result = get_result(method, path)
+            data = {"method": method, "path": path, "result": result}
             return TemplateResponse(request, "results.html", context=data)
         else:
             return HttpResponseBadRequest("Invalid data")
@@ -81,5 +81,8 @@ def results(request):
         return HttpResponseForbidden()
 
 
-def get_result(method, function):
-    return method + ' ' + function
+def get_result(method, path):
+    # func = Expression(filename="expression.txt")
+    # (min_f_dich, val_min_f_dich), counter = func.dichotomy()
+    # return f"({min_f_dich}, {val_min_f_dich})"
+    return 0

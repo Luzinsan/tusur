@@ -10,9 +10,9 @@ ITERATIONS = 50
 
 
 class Expression:
-    def __init__(self, filename='', **kwargs) -> None:
-        if filename != '':
-            with open(filename, "rt") as file:
+    def __init__(self, path='', **kwargs) -> None:
+        if path != '':
+            with open(path, "rt") as file:
                 expression = file.readline()
                 self.__start, self.__end, self.__eps = [parse_expr(num).evalf() for num in file.readline().split()]
                 transformations = (standard_transformations + (implicit_multiplication_application,))
