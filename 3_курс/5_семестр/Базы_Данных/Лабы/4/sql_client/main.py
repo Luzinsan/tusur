@@ -1,19 +1,26 @@
 from settings import *
 
 
-def insert_record():
-
-    # values = [
-    #     ('59', '492749', 'Атомный gdf', 'Зеленогорск', 'Хорова', '46', '491'),
-    # ]
-    # insert = sql.SQL(
-    #     'INSERT INTO t_address (id, post_code, region, city, street, house, apartment) VALUES {}').format(
-    #     sql.SQL(',').join(map(sql.Literal, values))
-    # )
-    # cursor.execute(insert)
-    # cursor.execute("SELECT * FROM t_address;")
-    # print(cursor.fetchall())
-    pass
+def task_request():
+    connection, cursor = dpg.get_item_user_data('auth')
+    dpg.delete_item('task_error')
+    try:
+        request = f"SELECT street, house, apartment, fio " \
+                  f"FROM t_subs " \
+                  f"JOIN t_pod on t_pod.id=t_subs.idpod " \
+                  f"JOIN t_address on t_address.id=t_pod.idaddr;"
+        cursor.execute(request)
+        answer = cursor.fetchall()
+        print(answer)
+        # list_columns = [column[0] for column in list_info_columns]
+        # dpg.configure_item('list_columns', items=list_columns, show=True,
+        #                    num_items=len(list_columns), user_data=list_columns)
+        # print(f"Поля таблицы: {list_columns}")
+        # add_fields(list_columns, list_info_columns)
+        # output_records(table_name, list_columns)
+    except (Exception, Error) as error:
+        print(Error)
+        dpg.add_text(tag='task_error', default_value=Error, color=(255, 0, 0), before='list_columns')
 
 
 def send_request():
@@ -158,6 +165,7 @@ with dpg.window(label="Main", tag="Main"):
     dpg.add_separator()
     dpg.add_table(tag='table_records')
     dpg.add_separator()
+    dpg.add_button(label="Вывод таблицы по заданию", callback=task_request)
 dpg.set_primary_window("Main", True)
 
 
