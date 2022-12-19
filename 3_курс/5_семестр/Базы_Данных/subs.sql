@@ -5,30 +5,7 @@
 -- Dumped from database version 14.6 (Ubuntu 14.6-1.pgdg22.10+1)
 -- Dumped by pg_dump version 15.1 (Ubuntu 15.1-1.pgdg22.10+1)
 
--- Started on 2022-12-19 20:07:43 +07
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- TOC entry 3439 (class 1262 OID 16472)
--- Name: subscription; Type: DATABASE; Schema: -; Owner: postgres
---
-
-CREATE DATABASE subscription WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'ru_RU.UTF-8';
-
-
-ALTER DATABASE subscription OWNER TO postgres;
-
-\connect subscription
+-- Started on 2022-12-19 20:15:42 +07
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -92,7 +69,7 @@ CREATE SEQUENCE public.t_address_id_seq
 ALTER TABLE public.t_address_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3441 (class 0 OID 0)
+-- TOC entry 3440 (class 0 OID 0)
 -- Dependencies: 209
 -- Name: t_address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -210,7 +187,7 @@ CREATE SEQUENCE public.t_pod_id_seq
 ALTER TABLE public.t_pod_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3442 (class 0 OID 0)
+-- TOC entry 3441 (class 0 OID 0)
 -- Dependencies: 211
 -- Name: t_pod_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -397,7 +374,7 @@ INSERT INTO public.t_subs (idpod, datestart, idpub, idperiod) VALUES (4, '2017-0
 
 
 --
--- TOC entry 3443 (class 0 OID 0)
+-- TOC entry 3442 (class 0 OID 0)
 -- Dependencies: 209
 -- Name: t_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -406,7 +383,7 @@ SELECT pg_catalog.setval('public.t_address_id_seq', 4, true);
 
 
 --
--- TOC entry 3444 (class 0 OID 0)
+-- TOC entry 3443 (class 0 OID 0)
 -- Dependencies: 211
 -- Name: t_pod_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -532,7 +509,7 @@ ALTER TABLE ONLY public.t_pod
 
 
 --
--- TOC entry 3440 (class 0 OID 0)
+-- TOC entry 3439 (class 0 OID 0)
 -- Dependencies: 4
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
 --
@@ -541,7 +518,7 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2022-12-19 20:07:43 +07
+-- Completed on 2022-12-19 20:15:42 +07
 
 --
 -- PostgreSQL database dump complete
