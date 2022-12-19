@@ -17,69 +17,65 @@ def insert_record():
 
 
 def send_request():
-    # region Выполнение SQL-запроса
-    # pubname = "Миниатюрные говорящие ослы"
-    # cursor.execute("SELECT fio as Подписчики "
-    #                "FROM t_subs "
-    #                "JOIN t_publishing on idpub=id "
-    #                "JOIN t_pod on t_subs.idpod=t_pod.id "
-    #                "WHERE pubname=%s;", (pubname, ))
-    # последовательный вывод данных
-    # print(cursor.fetchall())
-    # for row in cursor:
-    #     print(row[:])
-    # endregion
-    # values = [
-    #     ('59', '492749', 'Атомный gdf', 'Зеленогорск', 'Хорова', '46', '491'),
-    # ]
-    # insert = sql.SQL(
-    #     'INSERT INTO t_address (id, post_code, region, city, street, house, apartment) VALUES {}').format(
-    #     sql.SQL(',').join(map(sql.Literal, values))
-    # )
-    # cursor.execute(insert)
-    # cursor.execute("SELECT * FROM t_address;")
-    # print(cursor.fetchall())
-    pass
+    connection, cursor = dpg.get_item_user_data('auth')
+    print(connection, cursor)
+    list_columns = dpg.get_item_user_data('list_columns')
+    values = []
+    dpg.delete_item('insert_error')
+    try:
+        for field in list_columns:
+            values.append(dpg.get_value(f"{field}"))
+            print(field)
+        values = tuple(values)
+        print(values)
+        table_name = dpg.get_item_user_data('list_tables')
+        column_names = ', '.join(list_columns)
+        insert = f"INSERT INTO {table_name}({column_names}) VALUES {values};"
+        print(insert)
+        cursor.execute(insert)
+        with dpg.table_row(parent='table_records'):
+            for value in values:
+                dpg.add_text(default_value=value)
+    except (Exception, Error) as error:
+        print("Insert Error")
+        dpg.add_text(tag='insert_error', default_value=f"Неверно введённые данные: {Error}", color=(255, 0, 0), before='table_records')
 
 
 def output_records(table_name, list_columns):
     connection, cursor = dpg.get_item_user_data('auth')
     dpg.delete_item('output_records_error')
     dpg.delete_item('table_records', children_only=True)
+
+    request = f"SELECT * FROM {table_name};"
+    cursor.execute(request)
+    list_info_records = cursor.fetchall()
+    print(f"Записи таблицы: \n{list_info_records}")
     try:
-        request = f"SELECT * FROM {table_name};"
-        cursor.execute(request)
-        list_info_records = cursor.fetchall()
-        print(f"Записи таблицы: \n{list_info_records}")
-        try:
-            for column in list_columns:
-                dpg.add_table_column(label=column, parent='table_records')
-            amount_columns = len(list_columns)
-            for row in list_info_records:
-                with dpg.table_row(parent='table_records'):
-                    for field in row:
-                        dpg.add_text(default_value=field)
-
-            # dpg.configure_item('list_records', items=list_records, show=True, num_items=len(list_records))
-            # print(f"Таблица: {list_records}")
-        except (Exception, Error) as error:
-            print(Error)
-
+        for column in list_columns:
+            dpg.add_table_column(label=column, parent='table_records')
+        amount_columns = len(list_columns)
+        for row in list_info_records:
+            with dpg.table_row(parent='table_records'):
+                for field in row:
+                    dpg.add_text(default_value=field)
+        # dpg.configure_item('list_records', items=list_records, show=True, num_items=len(list_records))
+        # print(f"Таблица: {list_records}")
     except (Exception, Error) as error:
         dpg.add_text(tag='output_records_error', default_value=Error, color=(255, 0, 0), before='list_records')
 
 
-def set_fields(list_columns, list_info_columns):
+def add_fields(list_columns, list_info_columns):
     dpg.delete_item('box_input_fields', children_only=True)
     with dpg.group(parent='box_input_fields'):
         for number, field in enumerate(list_columns):
             if list_info_columns[number][1] == 'integer':
-                    dpg.add_input_int()
+                    dpg.add_input_int(tag=field)
             else:
-               dpg.add_input_text(hint=field)
+               dpg.add_input_text(tag=field, hint=field)
 
 
 def output_columns(sender, table_name):
+    dpg.configure_item('list_tables', user_data=table_name)
     connection, cursor = dpg.get_item_user_data('auth')
     dpg.delete_item('output_columns_error')
     try:
@@ -89,9 +85,10 @@ def output_columns(sender, table_name):
         list_info_columns = cursor.fetchall()
         print(list_info_columns)
         list_columns = [column[0] for column in list_info_columns]
-        dpg.configure_item('list_columns', items=list_columns, show=True, num_items=len(list_columns))
+        dpg.configure_item('list_columns', items=list_columns, show=True,
+                           num_items=len(list_columns), user_data=list_columns)
         print(f"Поля таблицы: {list_columns}")
-        set_fields(list_columns, list_info_columns)
+        add_fields(list_columns, list_info_columns)
         output_records(table_name, list_columns)
     except (Exception, Error) as error:
         dpg.add_text(tag='output_columns_error', default_value=Error, color=(255, 0, 0), before='list_columns')
