@@ -60,6 +60,7 @@ def send_request():
         insert = f"INSERT INTO {table_name}({column_names}) VALUES {values};"
         print(insert)
         cursor.execute(insert)
+        connection.commit()
         dpg.add_text(tag='success_insert', default_value=f"Строка {values} успешно вставлена",
                      color=(0, 255, 0), before='table_records')
 
