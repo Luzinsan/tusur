@@ -48,7 +48,7 @@ def task_request():
         list_index = [list(df[column]) for column in array]
         index = pd.MultiIndex.from_arrays(list_index, names=columns[:-1])
         s = pd.Series(list(df['ФИО']), index=index, name='Список подписчиков')
-        table = tabulate(df, headers=columns, tablefmt='pretty')
+        table = tabulate(df, headers=columns, tablefmt='psql')
         print(f"Таблица по заданию:\n{s}")
         with open('task.txt', 'w') as file:
             file.write(f"\t\t{s.name}\n")
@@ -124,7 +124,6 @@ def output_columns(sender, table_name):
     connection, cursor = dpg.get_item_user_data('auth')
     dpg.delete_item('output_columns_error')
     try:
-
         request = f"SELECT column_name, data_type, column_default, is_nullable, character_maximum_length  FROM information_schema.columns WHERE table_name='{table_name}';"
         cursor.execute(request)
         list_info_columns = cursor.fetchall()
@@ -208,7 +207,6 @@ with dpg.window(label="Main", tag="Main"):
         dpg.add_group(tag='box_input_fields')
     dpg.add_button(tag='insert_button', label='Добавить запись', callback=send_request, show=False)
     dpg.add_separator()
-
     dpg.add_table(tag='table_records', row_background=True,
                   resizable=True, policy=dpg.mvTable_SizingStretchProp,
                   borders_innerH=True, borders_outerH=True, borders_innerV=True,
