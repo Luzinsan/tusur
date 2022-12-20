@@ -37,7 +37,7 @@ def task_request():
         for row in answer:
             with dpg.table_row(parent='task_table'):
                 for field in row:
-                    dpg.add_text(default_value=field, color=(0,0,255))
+                    dpg.add_text(default_value=field, color=(150, 30, 200))
     except Exception as err:
         # print_psycopg2_exception(err, 'task_table')
         dpg.add_text(tag='task_error', default_value=Error, color=(255, 0, 0), before='task_table')
@@ -97,9 +97,9 @@ def add_fields(list_columns, list_info_columns):
     with dpg.group(parent='box_input_fields'):
         for number, field in enumerate(list_columns):
             if list_info_columns[number][1] == 'integer':
-                    dpg.add_input_int(tag=field)
+                dpg.add_input_int(tag=field)
             else:
-               dpg.add_input_text(tag=field, hint=field)
+                dpg.add_input_text(tag=field, hint=field)
 
 
 def output_columns(sender, table_name):
@@ -115,6 +115,7 @@ def output_columns(sender, table_name):
         list_columns = [column[0] for column in list_info_columns]
         dpg.configure_item('list_columns', items=list_columns, show=True,
                            num_items=len(list_columns), user_data=list_columns)
+        dpg.configure_item('insert_button', show=True)
         print(f"Поля таблицы: {list_columns}")
         add_fields(list_columns, list_info_columns)
         output_records(table_name, list_columns)
@@ -153,11 +154,16 @@ def connect_database():
         print(connection.get_dsn_parameters())
         # Инициализация курсора для выполнения операций с базой данных
         cursor = connection.cursor(cursor_factory=DictCursor)
-        dpg.add_text(tag='connect_success', before='send_auth', color=(0, 255, 0), default_value=f"База данных успешно подключена.")
+        dpg.add_text(tag='connect_success', before='send_auth', color=(0, 255, 0),
+                     default_value=f"База данных успешно подключена.")
         dpg.set_item_user_data('auth', [connection, cursor])
+        dpg.configure_item('label_database', default_value=f"Список таблиц базы данных: {auth_data['database']}",
+                           show=True)
+        dpg.configure_item('task_button', show=True)
         output_tables(cursor)
     except (Exception, Error) as error:
-        dpg.add_text(tag='connect_error', before='send_auth', color=(255, 0, 0), default_value=f"Ошибка при работе с PostgreSQL: {error}")
+        dpg.add_text(tag='connect_error', before='send_auth', color=(255, 0, 0),
+                     default_value=f"Ошибка при работе с PostgreSQL: {error}")
 
 
 ############################################# AUTHORIZATION ############################################################
@@ -177,19 +183,26 @@ with dpg.window(label="AUTHORIZATION", modal=True, show=False, tag="auth", no_ti
 with dpg.window(label="Main", tag="Main"):
     with dpg.menu_bar():
         dpg.add_menu_item(label="Log in", callback=lambda: dpg.configure_item("auth", show=True))
-    dpg.add_listbox(tag='list_tables', callback=output_columns)
+    dpg.add_text(tag='label_database', default_value='Список таблиц базы данных: ', show=False, color=(170, 4, 170))
+    dpg.add_listbox(tag='list_tables', callback=output_columns, show=False)
     dpg.add_separator()
     with dpg.group(horizontal=True):
-        dpg.add_listbox(tag='list_columns')
+        dpg.add_listbox(tag='list_columns', show=False)
         dpg.add_group(tag='box_input_fields')
-    dpg.add_button(label='Добавить запись', callback=send_request)
+    dpg.add_button(tag='insert_button', label='Добавить запись', callback=send_request, show=False)
     dpg.add_separator()
-    dpg.add_table(tag='table_records')
-    dpg.add_separator()
-    dpg.add_button(label="Вывод таблицы по заданию", callback=task_request)
-    dpg.add_table(tag='task_table')
-dpg.set_primary_window("Main", True)
 
+    dpg.add_table(tag='table_records', row_background=True,
+                  resizable=True, policy=dpg.mvTable_SizingStretchProp,
+                  borders_innerH=True, borders_outerH=True, borders_innerV=True,
+                  borders_outerV=True)
+    dpg.add_separator()
+    dpg.add_button(tag='task_button', label="Вывод таблицы по заданию", callback=task_request, show=False)
+    dpg.add_table(tag='task_table', row_background=True,
+                  resizable=True, policy=dpg.mvTable_SizingStretchProp,
+                  borders_innerH=True, borders_outerH=True, borders_innerV=True,
+                  borders_outerV=True)
+dpg.set_primary_window("Main", True)
 
 ########################################################################################################################
 dpg.create_viewport(title='SQL CLIENT')
