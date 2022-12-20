@@ -1,6 +1,23 @@
 from settings import *
 
 
+def print_psycopg2_exception(err, obj):
+    # dpg.delete_item('error')
+    err_type, err_obj, traceback = sys.exc_info()
+    line_num = traceback.tb_lineno
+    # print the connect() error
+    print("\npsycopg2 ERROR:", err, "on line number:", line_num)
+    print("psycopg2 traceback:", traceback, "-- type:", err_type)
+
+    # psycopg2 extensions.Diagnostics object attribute
+    print("\nextensions.Diagnostics:", err.diag)
+
+    # print the pgcode and pgerror exceptions
+    print("pgerror:", err.pgerror)
+    print("pgcode:", err.pgcode, "\n")
+    # dpg.add_text(tag='error', default_value=f"gf", color=(255, 0, 0), before=obj)
+
+
 def task_request():
     connection, cursor = dpg.get_item_user_data('auth')
     dpg.delete_item('task_error')
@@ -8,19 +25,22 @@ def task_request():
         request = f"SELECT street, house, apartment, fio " \
                   f"FROM t_subs " \
                   f"JOIN t_pod on t_pod.id=t_subs.idpod " \
-                  f"JOIN t_address on t_address.id=t_pod.idaddr;"
+                  f"JOIN t_address on t_address.id=t_pod.idaddr " \
+                  f"GROUP BY street, house, apartment, fio;"
         cursor.execute(request)
         answer = cursor.fetchall()
-        print(answer)
-        # list_columns = [column[0] for column in list_info_columns]
-        # dpg.configure_item('list_columns', items=list_columns, show=True,
-        #                    num_items=len(list_columns), user_data=list_columns)
-        # print(f"Поля таблицы: {list_columns}")
-        # add_fields(list_columns, list_info_columns)
-        # output_records(table_name, list_columns)
-    except (Exception, Error) as error:
-        print(Error)
-        dpg.add_text(tag='task_error', default_value=Error, color=(255, 0, 0), before='list_columns')
+        print(f"Таблица по заданию: {answer}")
+
+        for column in ['Улица', 'Дом', 'Квартира\\Офис', 'ФИО']:
+            dpg.add_table_column(label=column, parent='task_table')
+
+        for row in answer:
+            with dpg.table_row(parent='task_table'):
+                for field in row:
+                    dpg.add_text(default_value=field, color=(0,0,255))
+    except Exception as err:
+        # print_psycopg2_exception(err, 'task_table')
+        dpg.add_text(tag='task_error', default_value=Error, color=(255, 0, 0), before='task_table')
 
 
 def send_request():
@@ -28,11 +48,11 @@ def send_request():
     print(connection, cursor)
     list_columns = dpg.get_item_user_data('list_columns')
     values = []
+    dpg.delete_item('success_insert')
     dpg.delete_item('insert_error')
     try:
         for field in list_columns:
             values.append(dpg.get_value(f"{field}"))
-            print(field)
         values = tuple(values)
         print(values)
         table_name = dpg.get_item_user_data('list_tables')
@@ -40,27 +60,28 @@ def send_request():
         insert = f"INSERT INTO {table_name}({column_names}) VALUES {values};"
         print(insert)
         cursor.execute(insert)
+        dpg.add_text(tag='success_insert', default_value=f"Строка {values} успешно вставлена",
+                     color=(0, 255, 0), before='table_records')
+
         with dpg.table_row(parent='table_records'):
             for value in values:
                 dpg.add_text(default_value=value)
-    except (Exception, Error) as error:
-        print("Insert Error")
-        dpg.add_text(tag='insert_error', default_value=f"Неверно введённые данные: {Error}", color=(255, 0, 0), before='table_records')
+    except OperationalError as err:
+        dpg.add_text(tag='insert_error', default_value=Error, color=(255, 0, 0), before='task_table')
 
 
 def output_records(table_name, list_columns):
     connection, cursor = dpg.get_item_user_data('auth')
     dpg.delete_item('output_records_error')
     dpg.delete_item('table_records', children_only=True)
-
-    request = f"SELECT * FROM {table_name};"
-    cursor.execute(request)
-    list_info_records = cursor.fetchall()
-    print(f"Записи таблицы: \n{list_info_records}")
     try:
+        request = f"SELECT * FROM {table_name};"
+        cursor.execute(request)
+        list_info_records = cursor.fetchall()
+        print(f"Записи таблицы: \n{list_info_records}")
         for column in list_columns:
             dpg.add_table_column(label=column, parent='table_records')
-        amount_columns = len(list_columns)
+
         for row in list_info_records:
             with dpg.table_row(parent='table_records'):
                 for field in row:
@@ -166,6 +187,7 @@ with dpg.window(label="Main", tag="Main"):
     dpg.add_table(tag='table_records')
     dpg.add_separator()
     dpg.add_button(label="Вывод таблицы по заданию", callback=task_request)
+    dpg.add_table(tag='task_table')
 dpg.set_primary_window("Main", True)
 
 

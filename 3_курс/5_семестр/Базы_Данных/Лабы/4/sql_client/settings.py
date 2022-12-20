@@ -3,6 +3,12 @@ from psycopg2 import Error,  sql
 from contextlib import closing
 from psycopg2.extras import DictCursor
 
+
+import sys
+from psycopg2 import connect
+from psycopg2 import OperationalError, errorcodes, errors
+
+
 import dearpygui.dearpygui as dpg
 
 DEFAULT_USER = "postgres"
