@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 dearpygui = "*"
+pandas = "*"
+tabulate = "*"
 
 [dev-packages]
 

@@ -18,9 +18,21 @@ def print_psycopg2_exception(err, obj):
     # dpg.add_text(tag='error', default_value=f"gf", color=(255, 0, 0), before=obj)
 
 
+def add_task_table(columns, answer):
+    dpg.delete_item('task_table', children_only=True)
+    for column in columns:
+        dpg.add_table_column(label=column, parent='task_table')
+
+    for row in answer:
+        with dpg.table_row(parent='task_table'):
+            for field in row:
+                dpg.add_text(default_value=field, color=(150, 30, 200))
+
+
 def task_request():
     connection, cursor = dpg.get_item_user_data('auth')
     dpg.delete_item('task_error')
+
     try:
         request = f"SELECT street, house, apartment, fio " \
                   f"FROM t_subs " \
@@ -29,15 +41,19 @@ def task_request():
                   f"GROUP BY street, house, apartment, fio;"
         cursor.execute(request)
         answer = cursor.fetchall()
-        print(f"Таблица по заданию: {answer}")
-
-        for column in ['Улица', 'Дом', 'Квартира\\Офис', 'ФИО']:
-            dpg.add_table_column(label=column, parent='task_table')
-
-        for row in answer:
-            with dpg.table_row(parent='task_table'):
-                for field in row:
-                    dpg.add_text(default_value=field, color=(150, 30, 200))
+        columns = ['Улица', 'Дом', 'Квартира\\Офис', 'ФИО']
+        add_task_table(columns, answer)
+        df = pd.DataFrame(answer, columns=columns)
+        array = df[columns[:-1]]
+        list_index = [list(df[column]) for column in array]
+        index = pd.MultiIndex.from_arrays(list_index, names=columns[:-1])
+        s = pd.Series(list(df['ФИО']), index=index, name='Список подписчиков')
+        table = tabulate(df, headers=columns, tablefmt='pretty')
+        print(f"Таблица по заданию:\n{s}")
+        with open('task.txt', 'w') as file:
+            file.write(f"\t\t{s.name}\n")
+            file.write(table)
+        s.to_csv('task.csv')
     except Exception as err:
         # print_psycopg2_exception(err, 'task_table')
         dpg.add_text(tag='task_error', default_value=Error, color=(255, 0, 0), before='task_table')
