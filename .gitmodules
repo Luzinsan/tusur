@@ -1,0 +1,11 @@
+[submodule "3_курс/5_семестр/Сети_и_Телекоммуникации/work_with_sockets "]
+	path = "3_курс/5_семестр/Сети_и_Телекоммуникации/work_with_sockets "
+	url = https://github.com/Luzinsan/work_with_sockets.git
+[submodule "3_курс/5_семестр/Базы_Данных/Лабы/4/client_sql"]
+	url = https://github.com/Luzinsan/client_sql.git
+[submodule "3_курс/5_семестр/ТСиСА/Курсовая/decision_making_system"]
+	path = 3_курс/5_семестр/ТСиСА/Курсовая/decision_making_system
+	url = https://github.com/Luzinsan/expert_system.git
+[submodule "3_курс/5_семестр/Сети_и_Телекоммуникации/work_with_sockets"]
+	path = 3_курс/5_семестр/Сети_и_Телекоммуникации/work_with_sockets
+	url = https://github.com/Luzinsan/work_with_sockets.git
