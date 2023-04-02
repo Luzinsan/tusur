@@ -42,10 +42,32 @@ interface vlan 1
 
 Указание IP-адреса:
 ip address 192.168.1.253 255.255.255.0
-
+Активация интерфейса:
 no shutdown
 
 Command Prompt:
 ping 
+
++ конфигурирование хоста в IP Configuration
+
+
+Флеш-память:
+Проверка содержимого во флеш-памяти:
+show flash
+Сохранение файла загр.конф. во флеш памяти:
+copy startup-config flash
+
+Вывод сведений об интерфейсе:
+Пример:
+show interfaces Serial 0/0/0
+
+BW - пропускная способность
+
+Вывод таблицы маршрутизации
+show ip route
+
+Вывод краткой сводки по текущим интерфейсам:
+show ip interface brief
+
 
 
