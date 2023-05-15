@@ -148,5 +148,42 @@ R1# show ip route
 
 Сбор данных об IPv6 адресах устройства:
 PC1 (Command Prompt): ipv6config /all
+----------------------------------------------------------------------------------------
+                              SSH (протокол удалённого доступа)
+11.2.4.5
+11.5.1.2
+11.5.1.3 
 
 
+open password - cisco
+enable secret - class
+
+Указание доменноо имени:
+Main(config)# ip domain-name Main.com
+
+Создание пользователя:
+username any_user password any_password
+
+Создание ключа RSA:
+Main(config)# crypto key generate rsa
+
+Блокировка на 3 минуты всех, кто не смог войти в систему спустя 4 попытки за 2 минуты:
+Main(config)# login block-for 180 attemprs 4 within 120
+
+Настройка линии VTY для доступа по SSH:
+Main(config)# line vty 0 4
+Main(config-line)# transport input ssh
+Main(config-line)# login local
+
+Доступ по SSH:
+PC-A> ssh -l username 10.10.10.1
+Password: ...
+
+Отключение поиска DNS:
+R1(config)# no ip domain-lookup
+
+Установка длины пароля минимальной:
+R1(config)# security passwords min-length 10
+
+Настройка закрытия линии связи через 5 минут неактивности
+(config)# exec-timeout 5
