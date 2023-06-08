@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="yes" ?>
 <DBMODEL Version="4.0">
 <SETTINGS>
-<GLOBALSETTINGS ModelName="ER" IDModel="0" IDVersion="0" VersionStr="1.0.0.0" Comments="" UseVersionHistroy="1" AutoIncVersion="1" DatabaseType="MySQL" ZoomFac="109.00" XPos="161" YPos="496" DefaultDataType="5" DefaultTablePrefix="0" DefSaveDBConn="" DefSyncDBConn="" DefQueryDBConn="" Printer="" HPageCount="4.0" PageAspectRatio="1.440892512336408" PageOrientation="1" PageFormat="A4 (210x297 mm, 8.26x11.7 inches)" SelectedPages="" UsePositionGrid="0" PositionGridX="20" PositionGridY="20" TableNameInRefs="1" DefaultTableType="0" ActivateRefDefForNewRelations="1" FKPrefix="" FKPostfix="" CreateFKRefDefIndex="1" DBQuoteCharacter="`" CreateSQLforLinkedObjects="0" DefModelFont="Tahoma" CanvasWidth="4096" CanvasHeight="2842" />
+<GLOBALSETTINGS ModelName="ER" IDModel="0" IDVersion="0" VersionStr="1.0.0.0" Comments="" UseVersionHistroy="1" AutoIncVersion="1" DatabaseType="MySQL" ZoomFac="100.00" XPos="127" YPos="384" DefaultDataType="5" DefaultTablePrefix="0" DefSaveDBConn="" DefSyncDBConn="" DefQueryDBConn="" Printer="" HPageCount="4.0" PageAspectRatio="1.440892512336408" PageOrientation="1" PageFormat="A4 (210x297 mm, 8.26x11.7 inches)" SelectedPages="" UsePositionGrid="0" PositionGridX="20" PositionGridY="20" TableNameInRefs="1" DefaultTableType="0" ActivateRefDefForNewRelations="1" FKPrefix="" FKPostfix="" CreateFKRefDefIndex="1" DBQuoteCharacter="`" CreateSQLforLinkedObjects="0" DefModelFont="Tahoma" CanvasWidth="4096" CanvasHeight="2842" />
 <DATATYPEGROUPS>
 <DATATYPEGROUP Name="Numeric Types" Icon="1" />
 <DATATYPEGROUP Name="Date and Time Types" Icon="2" />
@@ -278,7 +278,7 @@
 <REGIONS>
 </REGIONS>
 <TABLES>
-<TABLE ID="1007" Tablename="\208\229\239\229\242\232\246\232\255" PrevTableName="Table_02" XPos="1228" YPos="650" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="3" >
+<TABLE ID="1007" Tablename="\208\229\239\229\242\232\246\232\255" PrevTableName="Table_02" XPos="1228" YPos="634" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="3" >
 <COLUMNS>
 <COLUMN ID="1219" ColName="\196\224\242\224 \239\240\238\226\229\228\229\237\232\255" PrevColName="" Pos="0" idDatatype="14" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="1" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -316,7 +316,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1009" Tablename="\215\235\229\237 \234\238\235\235\229\234\242\232\226\224" PrevTableName="Table_03" XPos="238" YPos="773" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="4" >
+<TABLE ID="1009" Tablename="\211\247\224\241\242\237\232\234 \234\238\235\235\229\234\242\232\226\224" PrevTableName="Table_03" XPos="241" YPos="768" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="4" >
 <COLUMNS>
 <COLUMN ID="1107" ColName="\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224" PrevColName="" Pos="0" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="1" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -369,7 +369,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1011" Tablename="\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252" PrevTableName="Table_04" XPos="556" YPos="1019" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="5" >
+<TABLE ID="1011" Tablename="\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252" PrevTableName="Table_04" XPos="553" YPos="1016" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="5" >
 <COLUMNS>
 <COLUMN ID="1223" ColName="id_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252" PrevColName="id" Pos="0" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="1" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -409,7 +409,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1017" Tablename="\204\229\240\238\239\240\232\255\242\232\229" PrevTableName="Table_07" XPos="1227" YPos="1030" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="8" >
+<TABLE ID="1017" Tablename="\204\229\240\238\239\240\232\255\242\232\229" PrevTableName="Table_07" XPos="1239" YPos="998" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="8" >
 <COLUMNS>
 <COLUMN ID="1700" ColName="\205\224\231\226\224\237\232\229" PrevColName="" Pos="9" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -472,7 +472,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1074" Tablename="\194\251\241\242\243\239\235\229\237\232\229" PrevTableName="\204\229\240\238\239\240\232\255\242\232\229_has_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252" XPos="855" YPos="1019" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="24" >
+<TABLE ID="1074" Tablename="\194\251\241\242\243\239\235\229\237\232\229" PrevTableName="\204\229\240\238\239\240\232\255\242\232\229_has_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252" XPos="856" YPos="999" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="24" >
 <COLUMNS>
 <COLUMN ID="1701" ColName="\205\224\231\226\224\237\232\229 \236\229\240\238\239\240\232\255\242\232\255" PrevColName="" Pos="1" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -500,14 +500,14 @@
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1655" ColName="\207\240\238\228\238\235\230\232\242\229\235\252\237\238\241\242\252" PrevColName="" Pos="4" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1773" ColName="\192\226\242\238\240\241\242\226\238" PrevColName="" Pos="1" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
 <OPTIONSELECTED>
-<OPTIONSELECT Value="1" />
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1656" ColName="\194\240\229\236\255 \237\224\247\224\235\224 \226\251\241\242\243\239\235\229\237\232\255" PrevColName="\194\240\229\236\255 \226\251\241\242\243\239\235\229\237\232\255" Pos="5" idDatatype="17" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1655" ColName="\208\229\231\243\235\252\242\224\242\251 \243\247\224\241\242\232\255" PrevColName="\207\240\238\228\238\235\230\232\242\229\235\252\237\238\241\242\252" Pos="4" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
+<OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
 </COLUMNS>
@@ -527,6 +527,7 @@
 <INDEX ID="1326" IndexName="\204\229\240\238\239\240\232\255\242\232\229_has_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252_FKIndex1" IndexKind="1" FKRefDef_Obj_id="1324">
 <INDEXCOLUMNS>
 <INDEXCOLUMN idColumn="1624" LengthParam="0" />
+<INDEXCOLUMN idColumn="1773" LengthParam="0" />
 </INDEXCOLUMNS>
 </INDEX>
 <INDEX ID="1383" IndexName="\204\229\240\238\239\240\232\255\242\232\229_has_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252_FKIndex3" IndexKind="1" FKRefDef_Obj_id="1076">
@@ -542,7 +543,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1211" Tablename="\215\235\229\237 \224\237\241\224\236\225\235\255" PrevTableName="\209\242\243\228\229\237\242_has_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252" XPos="232" YPos="1028" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="28" >
+<TABLE ID="1211" Tablename="\211\247\224\241\242\237\232\234 \224\237\241\224\236\225\235\255" PrevTableName="\209\242\243\228\229\237\242_has_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252" XPos="239" YPos="1025" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="28" >
 <COLUMNS>
 <COLUMN ID="1577" ColName="\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224" PrevColName="" Pos="1" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -590,14 +591,14 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1256" Tablename="\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229" PrevTableName="Table_15" XPos="1218" YPos="786" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="31" >
+<TABLE ID="1256" Tablename="\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229" PrevTableName="Table_15" XPos="1218" YPos="799" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="31" >
 <COLUMNS>
 <COLUMN ID="1258" ColName="\205\224\232\236\229\237\238\226\224\237\232\229" PrevColName="" Pos="0" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="1" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1260" ColName="\192\226\242\238\240\241\242\226\238" PrevColName="\192\226\242\238\240" Pos="1" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="1" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1260" ColName="\192\226\242\238\240\241\242\226\238" PrevColName="\192\226\242\238\240" Pos="1" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
@@ -613,11 +614,6 @@
 </OPTIONSELECTED>
 </COLUMN>
 <COLUMN ID="1638" ColName="\198\224\237\240" PrevColName="" Pos="2" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
-<OPTIONSELECTED>
-<OPTIONSELECT Value="0" />
-</OPTIONSELECTED>
-</COLUMN>
-<COLUMN ID="1639" ColName="\192\235\252\225\238\236" PrevColName="" Pos="3" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
@@ -653,11 +649,12 @@
 <INDEX ID="1259" IndexName="PRIMARY" IndexKind="0" FKRefDef_Obj_id="-1">
 <INDEXCOLUMNS>
 <INDEXCOLUMN idColumn="1258" LengthParam="0" />
+<INDEXCOLUMN idColumn="1260" LengthParam="0" />
 </INDEXCOLUMNS>
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1340" Tablename="\199\224\237\255\242\232\229" PrevTableName="\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255_has_\208\229\239\229\242\232\246\232\255" XPos="866" YPos="644" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="26" >
+<TABLE ID="1340" Tablename="\199\224\237\255\242\232\229" PrevTableName="\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255_has_\208\229\239\229\242\232\246\232\255" XPos="866" YPos="627" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="26" >
 <COLUMNS>
 <COLUMN ID="1581" ColName="\196\224\242\224 \239\240\238\226\229\228\229\237\232\255 \240\229\239\229\242\232\246\232\232" PrevColName="" Pos="1" idDatatype="14" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -673,20 +670,19 @@
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1672" ColName="\215\232\241\235\238 \239\240\232\241\243\242\241\242\226\243\254\249\232\245" PrevColName="" Pos="3" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1672" ColName="\202\238\235\232\247\229\241\242\226\238 \239\240\232\241\243\242\241\242\226\243\254\249\232\245" PrevColName="\215\232\241\235\238 \239\240\232\241\243\242\241\242\226\243\254\249\232\245" Pos="3" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="1" />
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1673" ColName="\207\235\224\237 \240\229\239\229\242\232\246\232\232" PrevColName="" Pos="4" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1673" ColName="\207\235\224\237 " PrevColName="\207\235\224\237 \240\229\239\229\242\232\246\232\232" Pos="4" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1725" ColName="\200\242\238\227\232" PrevColName="" Pos="5" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1725" ColName="\200\242\238\227\232" PrevColName="" Pos="5" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
-<OPTIONSELECT Value="1" />
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
@@ -716,14 +712,9 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1391" Tablename="\204\243\231\251\234\224\235\252\237\251\233 \232\237\241\242\240\243\236\229\237\242" PrevTableName="Table_14" XPos="556" YPos="904" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="26" >
+<TABLE ID="1391" Tablename="\204\243\231\251\234\224\235\252\237\251\233 \232\237\241\242\240\243\236\229\237\242" PrevTableName="Table_14" XPos="549" YPos="913" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="26" >
 <COLUMNS>
 <COLUMN ID="1425" ColName="\205\224\232\236\229\237\238\226\224\237\232\229" PrevColName="\210\232\239\238\226\238\229 \237\224\231\237\224\247\229\237\232\229" Pos="0" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="1" IsForeignKey="0" DefaultValue="" Comments="">
-<OPTIONSELECTED>
-<OPTIONSELECT Value="0" />
-</OPTIONSELECTED>
-</COLUMN>
-<COLUMN ID="1633" ColName="\202\224\242\229\227\238\240\232\255" PrevColName="" Pos="2" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
@@ -734,12 +725,12 @@
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1635" ColName="\209\242\240\238\233" PrevColName="" Pos="4" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1775" ColName="\195\240\243\239\239\224" PrevColName="" Pos="4" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1636" ColName="\206\239\232\241\224\237\232\229" PrevColName="" Pos="4" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1635" ColName="\204\229\245\224\237\232\231\236 \231\226\243\234\238\232\231\226\235\229\247\229\237\232\255" PrevColName="\209\242\240\238\233" Pos="4" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
@@ -757,7 +748,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1393" Tablename="\194\235\224\228\229\235\229\246" PrevTableName="\209\242\243\228\229\237\242_has_\202\235\224\241\241 \232\237\241\242\240\243\236\229\237\242\224" XPos="542" YPos="788" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="27" >
+<TABLE ID="1393" Tablename="\194\235\224\228\229\235\229\246" PrevTableName="\209\242\243\228\229\237\242_has_\202\235\224\241\241 \232\237\241\242\240\243\236\229\237\242\224" XPos="540" YPos="800" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="27" >
 <COLUMNS>
 <COLUMN ID="1587" ColName="\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224" PrevColName="" Pos="1" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -799,7 +790,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1402" Tablename="\192\240\224\237\230\232\240\238\226\234\224" PrevTableName="\204\243\231\251\234\224\235\252\237\251\233 \232\237\241\242\240\243\236\229\237\242_has_\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229" XPos="867" YPos="794" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="25" >
+<TABLE ID="1402" Tablename="\192\240\224\237\230\232\240\238\226\234\224" PrevTableName="\204\243\231\251\234\224\235\252\237\251\233 \232\237\241\242\240\243\236\229\237\242_has_\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229" XPos="861" YPos="788" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="25" >
 <COLUMNS>
 <COLUMN ID="1618" ColName="\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229" PrevColName="" Pos="1" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -807,6 +798,11 @@
 </OPTIONSELECTED>
 </COLUMN>
 <COLUMN ID="1722" ColName="\204\243\231\251\234\224\235\252\237\251\233 \232\237\241\242\240\243\236\229\237\242" PrevColName="" Pos="1" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
+<OPTIONSELECTED>
+<OPTIONSELECT Value="0" />
+</OPTIONSELECTED>
+</COLUMN>
+<COLUMN ID="1772" ColName="\192\226\242\238\240\241\242\226\238" PrevColName="" Pos="1" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
@@ -822,7 +818,12 @@
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
 </COLUMN>
-<COLUMN ID="1757" ColName="\198\224\237\240" PrevColName="" Pos="6" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<COLUMN ID="1763" ColName="\210\238\237\224\235\252\237\238\241\242\252" PrevColName="" Pos="5" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
+<OPTIONSELECTED>
+<OPTIONSELECT Value="0" />
+</OPTIONSELECTED>
+</COLUMN>
+<COLUMN ID="1764" ColName="\210\229\236\239" PrevColName="" Pos="6" idDatatype="20" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="0" NotNull="0" AutoInc="0" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
 <OPTIONSELECT Value="0" />
 </OPTIONSELECTED>
@@ -837,11 +838,13 @@
 <INDEXCOLUMNS>
 <INDEXCOLUMN idColumn="1618" LengthParam="0" />
 <INDEXCOLUMN idColumn="1722" LengthParam="0" />
+<INDEXCOLUMN idColumn="1772" LengthParam="0" />
 </INDEXCOLUMNS>
 </INDEX>
 <INDEX ID="1408" IndexName="\204\243\231\251\234\224\235\252\237\251\233 \232\237\241\242\240\243\236\229\237\242_has_\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229_FKIndex2" IndexKind="1" FKRefDef_Obj_id="1404">
 <INDEXCOLUMNS>
 <INDEXCOLUMN idColumn="1618" LengthParam="0" />
+<INDEXCOLUMN idColumn="1772" LengthParam="0" />
 </INDEXCOLUMNS>
 </INDEX>
 <INDEX ID="1721" IndexName="\208\229\239\229\240\242\243\224\240 \234\238\235\235\229\234\242\232\226\224_FKIndex2" IndexKind="1" FKRefDef_Obj_id="1719">
@@ -851,7 +854,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1508" Tablename="\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255" PrevTableName="Table_17" XPos="557" YPos="651" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="23" >
+<TABLE ID="1508" Tablename="\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255" PrevTableName="Table_17" XPos="557" YPos="634" TableType="0" TablePrefix="0" nmTable="0" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="23" >
 <COLUMNS>
 <COLUMN ID="1510" ColName="id_\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255" PrevColName="id" Pos="0" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="1" IsForeignKey="0" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -891,7 +894,7 @@
 </INDEX>
 </INDICES>
 </TABLE>
-<TABLE ID="1514" Tablename="\215\235\229\237 \241\229\234\246\232\232" PrevTableName="\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255_has_\209\242\243\228\229\237\242" XPos="239" YPos="663" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="24" >
+<TABLE ID="1514" Tablename="\211\247\224\241\242\237\232\234 \241\229\234\246\232\232" PrevTableName="\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255_has_\209\242\243\228\229\237\242" XPos="245" YPos="652" TableType="0" TablePrefix="0" nmTable="1" Temporary="0" UseStandardInserts="0" StandardInserts="\n" TableOptions="DelayKeyTblUpdates=0\nPackKeys=0\nRowChecksum=0\nRowFormat=0\nUseRaid=0\nRaidType=0\n" Comments="" Collapsed="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="24" >
 <COLUMNS>
 <COLUMN ID="1578" ColName="\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224" PrevColName="" Pos="1" idDatatype="5" DatatypeParams="" Width="-1" Prec="-1" PrimaryKey="1" NotNull="1" AutoInc="0" IsForeignKey="1" DefaultValue="" Comments="">
 <OPTIONSELECTED>
@@ -940,11 +943,11 @@
 <RELATION ID="1076" RelationName="\243\247\224\241\242\226\243\229\242" Kind="2" SrcTable="1011" DestTable="1074" FKFields="id_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252=id_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252\n" FKFieldsComments="\n" relDirection="2" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="0" CaptionOffsetY="0" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1383" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="26" />
 <RELATION ID="1212" RelationName="\241\238\241\242\238\232\242 \226" Kind="1" SrcTable="1009" DestTable="1211" FKFields="\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224=\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224\n" FKFieldsComments="\n" relDirection="3" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="0" CaptionOffsetY="0" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1215" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="29" />
 <RELATION ID="1213" RelationName="\226\234\235\254\247\224\229\242" Kind="1" SrcTable="1011" DestTable="1211" FKFields="id_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252=id_\204\243\231\251\234\224\235\252\237\251\233 \224\237\241\224\236\225\235\252\n" FKFieldsComments="\n" relDirection="4" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="0" CaptionOffsetY="0" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1384" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="30" />
-<RELATION ID="1324" RelationName="\232\241\239\238\235\237\255\229\242\241\255" Kind="2" SrcTable="1256" DestTable="1074" FKFields="\205\224\232\236\229\237\238\226\224\237\232\229=\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229\n" FKFieldsComments="\n" relDirection="4" MidOffset="1" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="2" CaptionOffsetY="-18" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1326" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="26" />
+<RELATION ID="1324" RelationName="\232\241\239\238\235\237\255\229\242\241\255" Kind="2" SrcTable="1256" DestTable="1074" FKFields="\205\224\232\236\229\237\238\226\224\237\232\229=\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229\n\192\226\242\238\240\241\242\226\238=\192\226\242\238\240\241\242\226\238\n" FKFieldsComments="\n\n" relDirection="4" MidOffset="1" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="2" CaptionOffsetY="-18" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1326" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="26" />
 <RELATION ID="1342" RelationName="\237\224\231\237\224\247\229\237\224" Kind="1" SrcTable="1007" DestTable="1340" FKFields="\196\224\242\224 \239\240\238\226\229\228\229\237\232\255=\196\224\242\224 \239\240\238\226\229\228\229\237\232\255 \240\229\239\229\242\232\246\232\232\n\194\240\229\236\255 \237\224\247\224\235\224=\194\240\229\236\255 \237\224\247\224\235\224 \240\229\239\229\242\232\246\232\232\n" FKFieldsComments="\n\n" relDirection="4" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="1" CaptionOffsetY="-15" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1347" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="28" />
 <RELATION ID="1394" RelationName="\226\235\224\228\229\229\242" Kind="1" SrcTable="1009" DestTable="1393" FKFields="\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224=\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224\n" FKFieldsComments="\n" relDirection="2" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="8" CaptionOffsetY="-14" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1397" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="28" />
 <RELATION ID="1395" RelationName="\239\240\232\237\224\228\235\229\230\232\242" Kind="1" SrcTable="1391" DestTable="1393" FKFields="\205\224\232\236\229\237\238\226\224\237\232\229=\204\243\231\251\234\224\235\252\237\251\233 \232\237\241\242\240\243\236\229\237\242\n" FKFieldsComments="\n" relDirection="1" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="-3" CaptionOffsetY="-12" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1628" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="29" />
-<RELATION ID="1404" RelationName="\231\224\244\232\234\241\232\240\238\226\224\237\238" Kind="1" SrcTable="1256" DestTable="1402" FKFields="\205\224\232\236\229\237\238\226\224\237\232\229=\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229\n" FKFieldsComments="\n" relDirection="4" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="-2" CaptionOffsetY="-12" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1408" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="27" />
+<RELATION ID="1404" RelationName="\224\228\224\239\242\232\240\238\226\224\237\238" Kind="1" SrcTable="1256" DestTable="1402" FKFields="\205\224\232\236\229\237\238\226\224\237\232\229=\204\243\231\251\234\224\235\252\237\238\229 \239\240\238\232\231\226\229\228\229\237\232\229\n\192\226\242\238\240\241\242\226\238=\192\226\242\238\240\241\242\226\238\n" FKFieldsComments="\n\n" relDirection="4" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="-2" CaptionOffsetY="-12" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1408" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="27" />
 <RELATION ID="1515" RelationName="\226\234\235\254\247\224\229\242" Kind="1" SrcTable="1508" DestTable="1514" FKFields="id_\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255=id_\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255\n" FKFieldsComments="\n" relDirection="4" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="2" CaptionOffsetY="-12" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1518" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="25" />
 <RELATION ID="1516" RelationName="\241\238\241\242\238\232\242 \226" Kind="1" SrcTable="1009" DestTable="1514" FKFields="\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224=\205\238\236\229\240 \241\242\243\228.\225\232\235\229\242\224\n" FKFieldsComments="\n" relDirection="1" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="0" CaptionOffsetY="-13" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1520" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="26" />
 <RELATION ID="1523" RelationName="\239\240\232\241\243\242\241\242\226\243\229\242" Kind="1" SrcTable="1508" DestTable="1340" FKFields="id_\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255=id_\204\243\231\251\234\224\235\252\237\224\255 \241\229\234\246\232\255\n" FKFieldsComments="\n" relDirection="2" MidOffset="0" OptionalStart="0" OptionalEnd="0" CaptionOffsetX="4" CaptionOffsetY="-11" StartIntervalOffsetX="0" StartIntervalOffsetY="0" EndIntervalOffsetX="0" EndIntervalOffsetY="0" CreateRefDef="1" Invisible="0" RefDef="Matching=0\nOnDelete=3\nOnUpdate=3\n" Comments="" FKRefDefIndex_Obj_id="1525" Splitted="0" IsLinkedObject="0" IDLinkedModel="-1" Obj_id_Linked="-1" OrderPos="27" />
