@@ -1,0 +1,66 @@
+group: DB 
+
+S = {
+Snum:string, Snam:string, St:number, Ci:string
+S8, Vladimir, 30, Tomsk
+S2, Nikolai, 50, Asino
+S5, Konstantin, 100, Yaya
+S4, Petr, 20, Rio-de-Janeiro
+S3, Grigoriy, 80, Yaya
+S9, Egor, 100, Yaya
+S7, Sergey, 90, Asino
+S1, Ivan, 100, Tomsk
+S6, Ivan, 100, Lesoto
+}
+
+P = {
+Pnum:string, Pnam:string, We:number, Co:string, Ci:string
+P1, korpus, 300, white, Tomsk
+P2, raziem, 3, black, Yaya
+P3, knopka, 5, red, Tomsk
+P4, korpus, 800, blue, Lesoto
+P5, panel, 100, gray, Asino
+P6, kineskop, 1200, black, Yaya
+P7, knopka, 10, orange, Asino
+P8, panel, 450, pink, Asino
+P9, lamp, 1, red, Tomsk
+}
+
+J = {
+Jnum:string, Jnam:string, Ci:string
+J1, processor, Asino
+J10, display, Yaya
+J2, klava, Yaya
+J3, display, Tomsk
+J4, printer, Sayanogorsk
+J5, processor, Yaya
+J6, klava, Tomsk
+J7, mouse, Lesoto
+J8, joystick, London
+J9, winchester, Rio-de-Janeiro
+}
+
+SPJ = {
+S.Snum:string, P.Pnum:string, J.Jnum:string, Qt:number
+S1, P1, J3, 100
+S8, P3, J6, 100
+S4, P4, J1, 130
+S8, P9, J2, 150
+S3, P4, J8, 150
+S2, P9, J4, 200
+S1, P2, J5, 200
+S8, P7, J6, 200
+S6, P8, J9, 300
+S8, P1, J1, 400
+S5, P3, J8, 400
+S2, P3, J7, 500
+S3, P9, J9, 600
+S7, P3, J2, 1000
+S1, P2, J3, 1000
+S7, P6, J1, 2800
+S8, P1, J6, 2200
+S7, P8, J2, 2500
+S6, P5, J9, 2800
+}
+
+
