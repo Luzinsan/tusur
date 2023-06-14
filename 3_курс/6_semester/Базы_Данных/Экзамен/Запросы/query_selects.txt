@@ -1,0 +1,382 @@
+-- Получить значение номера детали, поставляемой только для изделия J1.
+-- (SPJ WHERE Jnum = ‘J1’) [Pnum]
+-- MINUS
+-- (SPJ WHERE NOT Jnum = ‘J1’) [Pnum];
+
+t1 = pi Pnum, Jnum((σ Jnum = 'J1' SPJ) - (σ Jnum ≠ 'J1' SPJ))
+
+-- Получить значение номера поставщика, поставляющего все детали, размещённые в его городе
+
+-- ((S JOIN SPJ JOIN P) WHERE S.Ci = P.Ci)[Snum]
+σ Sci = P.Ci (ρ Sci←S.Ci(S join SPJ) join P) 
+
+SELECT DISTINCT P.Pnum, SPJ.Jnum FROM SPJ, P
+WHERE (SPJ.Pnum = P.Pnum) AND (SPJ.Jnum = 'J1') AND (NOT EXISTS (SELECT * FROM SPJ AS SPJX WHERE SPJX.Pnum=P.Pnum AND NOT SPJX.Jnum='J1');
+
+-----------------------------------------------------------------------------
+Напиши правильный  запрос к этой базе данных в упрощённом виде. 
+JOIN осуществляй сразу в операторе FROM через запятую.
+В проекции результата переименования не осуществляй.
+В качестве оператора сравнения '<>' используй оператор NOT.
+Формулировка запроса выглядит следующим образом:
+---------------------------------------------------------------------------------
+
+1. Определить номера деталей, поставляемых либо томским поставщиком, либо для томского изделия.
+SELECT DISTINCT SPJ.Pnum
+FROM SPJ, S, J
+WHERE (SPJ.Snum = S.Snum AND S.Ci = 'Томск') OR (SPJ.Jnum = J.Jnum AND J.Ci = 'Томск');
+
+РА: π SPJ.Pnum σ (SPJ.Snum = S.Snum and S.Ci = 'Томск') or (SPJ.Jnum = J.Jnum and J.Ci = 'Томск') ( ( SPJ ⨯ S ) ⨯ J )
+
+2. Получить все пары названий городов такие, что деталь в первом городе поставляется поставщиком во втором городе.
+SELECT DISTINCT S.Ci, P.Ci
+FROM S, P, SPJ
+WHERE S.Snum = SPJ.Snum AND P.Pnum = SPJ.Pnum;
+
+
+3. Найти все такие тройки значений "номер поставщика, номер детали, номер изделия", для которых указанные поставщик, деталь и изделие находятся в одном городе
+SELECT SPJ.Snum, SPJ.Pnum, SPJ.Jnum
+FROM SPJ, S, P, J
+WHERE SPJ.Snum = S.Snum 
+    AND SPJ.Pnum = P.Pnum 
+    AND SPJ.Jnum = J.Jnum 
+    AND S.Ci = P.Ci AND S.Ci = J.Ci;
+
+
+4. Получить значение номера изделия, снабжаемого, по крайней мере, одним поставщиком, находящимся не в том же самом городе.
+SELECT DISTINCT SPJ.Jnum
+FROM SPJ, S, J
+WHERE SPJ.Snum = S.Snum AND SPJ.Jnum = J.Jnum AND NOT(J.Ci = S.Ci);
+
+
+5. Получить значение номера детали, поставляемой каждым поставщиком, размещенным в Томске.
+SELECT DISTINCT SPJ.Pnum
+FROM SPJ, S
+WHERE SPJ.Snum = S.Snum AND S.Ci = 'Томск';
+
+
+6. Получить все пары названий городов такие, что деталь в первом городе поставляется поставщиком во втором городе. 
+SELECT P.Ci, S.Ci
+FROM SPJ, P, S
+WHERE SPJ.Snum=S.Snum and SPJ.Pnum=P.Pnum
+
+7. Получить значение номера изделия, снабжаемого, по крайней мере, одним поставщиком, находящимся не в том же самом городе.
+SELECT DISTINCT SPJ.Jnum
+FROM SPJ, S, J
+WHERE SPJ.Snum = S.Snum
+  AND SPJ.Jnum = J.Jnum
+  AND S.Ci <> J.Ci;
+
+8. Получить значение номера детали, поставляемой, по крайней мере, для одного изделия, размещённого не в том же самом городе.
+SELECT DISTINCT SPJ.Pnum
+FROM SPJ, P, J
+WHERE SPJ.Pnum = P.Pnum
+  AND SPJ.Jnum = J.Jnum
+  AND P.Ci <> J.Ci;
+
+9. Получить значение наименования поставщика, поставляющего для изделия J1 красную деталь.
+SELECT DISTINCT S.Snam
+FROM SPJ, S, P
+WHERE SPJ.Snum = S.Snum
+  AND SPJ.Pnum = P.Pnum
+  AND SPJ.Jnum = 'J1'
+  AND P.Co = 'красный';
+
+10. Получить пары значений (Pnum, Jnum) такие, что деталь Pnum поставляется для изделия Jnum поставщиком, расположенным в том же городе, в котором производится изделие.
+SELECT DISTINCT SPJ.Pnum, SPJ.Jnum
+FROM SPJ, S, J
+WHERE SPJ.Snum = S.Snum
+  AND SPJ.Jnum = J.Jnum
+  AND SPJ.Pnum = P.Pnum
+  AND S.Ci = J.Ci;
+
+11. Получить все пары названий городов такие, что поставщик в первом городе снабжает изделие во втором городе.
+SELECT J.Ci, S.Ci
+FROM SPJ, J, S
+WHERE SPJ.Snum=S.Snum and SPJ.Jnum=J.Pnum
+
+12. Получить значение наименования детали, поставляемой для каждого изделия, производимого в Томске. 
+SELECT P.Pnam
+FROM SPJ, P, J
+WHERE SPJ.Pnum = P.Pnum
+    AND SPJ.Jnum = J.Jnum
+    AND J.Ci = 'Томск';
+
+13. Получить значение номера детали, поставляемой только поставщиком S1
+SELECT DISTINCT SPJ.Pnum
+FROM SPJ
+WHERE NOT EXISTS (
+        SELECT *
+        FROM SPJ AS SPJX
+        WHERE SPJX.Pnum = SPJ.Pnum
+        AND NOT (SPJX.Snum = 'S1')
+    );
+
+
+14. Получить значения троек (Snum, Pnum, Jnum), для которых поставщик, деталь и изделие размещены в одном городе, и поставщик Snum поставляет деталь Pnum для изделия Jnum
+SELECT SPJ.Snum, SPJ.Pnum, SPJ.Jnum
+FROM SPJ, S, P, J
+WHERE SPJ.Snum = S.Snum
+  AND SPJ.Pnum = P.Pnum
+  AND SPJ.Jnum = J.Jnum
+  AND S.Ci = P.Ci
+  AND S.Ci = J.Ci;
+
+15. Определить номера изделий, в состав которых входят, по меньшей мере, все типы деталей, поставляемых поставщиком с номером S1. 
+SELECT DISTINCT J.Jnum
+FROM SPJ, J
+WHERE SPJ.Jnum = J.Jnum
+  AND NOT EXISTS (
+    SELECT *
+    FROM P
+    WHERE P.Pnum NOT IN (
+      SELECT Pnum
+      FROM SPJ
+      WHERE Snum = 'S1'
+    )
+    AND NOT EXISTS (
+      SELECT *
+      FROM SPJ
+      WHERE SPJ.Pnum = P.Pnum
+        AND SPJ.Jnum = J.Jnum
+        AND SPJ.Snum = 'S1'
+    )
+  );
+Или:
+SELECT DISTINCT Jnum
+FROM SPJ
+WHERE NOT EXIST ( 
+    SELECT SPJX.Jnum
+    FROM SPJ AS SPJX
+    WHERE (SPJX.Jnum=SPJ.Jnum) 
+        AND SPJX.Pnum NOT IN (
+            SELECT SPJY.Pnum
+            FROM SPJ AS SPJY 
+            WHERE SPJY.Snum = ‘S1’);
+
+
+16. Получить значение номера детали, поставляемой, по крайней мере, для одного изделия, размещённого не в том же самом городе.
+SELECT DISTINCT SPJ.Pnum
+FROM SPJ, J, P
+WHERE SPJ.Jnum = J.Jnum
+  AND SPJ.Pnum = P.Pnum
+  AND NOT (J.Ci = P.Ci);
+
+17. Получить значение номера поставщика, снабжающего, по крайней мере, одно изделие, размещённое в том же городе.
+SELECT DISTINCT SPJ.Snum
+FROM SPJ, J, S
+WHERE SPJ.Jnum = J.Jnum
+  AND SPJ.Snum = S.Snum
+  AND J.Ci = S.Ci;
+
+18. Найти все такие тройки значений "номер поставщика, номер детали, номер изделия", для которых никакие из пар (поставщик, деталь), (поставщик, изделие), (деталь, изделие) не находятся в одном городе
+SELECT DISTINCT SPJ.Snum, SPJ.Pnum, SPJ.Jnum
+FROM SPJ, P, J
+WHERE SPJ.Snum = P.Snum
+  AND SPJ.Pnum = P.Pnum
+  AND SPJ.Jnum = J.Jnum
+  AND NOT (S.Ci = P.Ci)
+  AND NOT (S.Ci = J.Ci)
+  AND NOT (P.Ci = J.Ci);
+
+19.  Получить значение номера поставщика, поставляющего только красные детали.
+SELECT DISTINCT SPJ.Snum
+FROM SPJ
+WHERE NOT EXISTS (
+      SELECT *
+      FROM SPJ AS SPJX, P
+      WHERE SPJX.Pnum = P.Pnum 
+          AND SPJ.Snum = SPJX.Snum
+          AND NOT (P.Co = 'красный')
+  );
+
+20. Получить значение номера изделия, снабжаемого, по крайней мере, одним поставщиком, находящимся не в том же самом городе. 
+SELECT DISTINCT SPJ.Jnum
+FROM SPJ, S, J
+WHERE SPJ.Snum = S.Snum
+    AND SPJ.Jnum = J.Jnum
+    AND NOT (S.Ci = J.Ci)
+);
+
+21. Получить значение номера детали, поставляемой только для изделия J1.
+SELECT SPJ.Pnum
+FROM SPJ
+WHERE NOT EXISTS (
+    SELECT *
+    FROM SPJ AS SPJX
+    WHERE SPJX.Pnum=SPJ.Pnum
+      AND NOT (SPJX.Jnum = 'J1')
+);
+
+22. Получить значение номера поставщика, поставляющего все детали, размещённые в его городе
+SELECT S.Snum
+FROM S
+WHERE NOT EXISTS (
+    SELECT *
+    FROM SPJ, P
+    WHERE SPJ.Snum = S.Snum
+      AND SPJ.Pnum = P.Pnum
+      AND NOT (S.Ci = P.Ci)
+);
+
+23. Получить значение номера поставщика, поставляющего только детали, размещённые в его городе
+Разве не тот же запрос?
+
+24. Определить номера деталей, поставляемых поставщиком из Томска для изделий в Томске. 
+SELECT DISTINCT SPJ.Pnum
+FROM SPJ, S, J
+WHERE SPJ.Snum = S.Snum
+  AND SPJ.Jnum = J.Jnum
+  AND S.Ci = 'Томск'
+  AND J.Ci = 'Томск';
+
+25. Получить пары значений (Snum, Jnum) такие, что поставщик Snum выполняет поставки только для изделия Jnum.
+SELECT SPJ.Snum, SPJ.Jnum
+FROM SPJ
+WHERE NOT EXISTS (
+  SELECT *
+  FROM SPJ AS SPJX
+  WHERE SPJ.Snum = SPJX.Snum
+    AND NOT (SPJX.Jnum = SPJ.Jnum)
+);
+
+26. Получить значение номера поставщика, снабжающего изделия J1 и J2 красными деталями
+SELECT DISTINCT SPJ.Snum
+FROM SPJ
+WHERE EXISTS (
+    SELECT *
+    FROM SPJ AS SPJX, P AS PX
+    WHERE SPJX.Snum = SPJ.Snum
+        AND SPJX.Pnum = PX.Pnum
+        AND SPJX.Jnum = 'J2'
+        AND PX.Co='красный'
+  )
+  AND EXISTS (
+    SELECT *
+    FROM SPJ AS SPJY, P AS PY
+    WHERE SPJY.Jnum = SPJ.Jnum
+        AND SPJY.Pnum = PY.Pnum
+        AND SPJY.Jnum = 'J2'
+        AND PY.Co='красный'
+);
+
+27. Получить значение номера изделия, снабжаемого поставщиками S1 и S2
+SELECT DISTINCT SPJ.Jnum
+FROM SPJ
+WHERE EXISTS (
+    SELECT *
+    FROM SPJ AS SPJX
+    WHERE SPJX.Jnum = SPJ.Jnum
+  		AND (SPJX.Snum = 'S1')
+  )
+  AND EXISTS (
+    SELECT *
+    FROM SPJ AS SPJY
+    WHERE SPJY.Jnum = SPJ.Jnum
+  		AND (SPJY.Snum = 'S2')
+);
+
+28. Получить значение номера поставщика, снабжающего только изделие J1.
+SELECT DISTINCT SPJ.Snum
+FROM SPJ
+WHERE NOT EXISTS (
+    SELECT *
+    FROM SPJ AS SPJX
+    WHERE SPJX.Snum=SPJ.Snum
+      AND NOT (SPJX.Jnum = 'J1')
+);
+
+29. Получить значения наименований деталей, поставляемых для какого-либо изделия поставщиком, находящимся в том же городе, что и деталь. 
+SELECT DISTINCT P.Pnam
+FROM S, P, SPJ
+WHERE S.Snum = SPJ.Snum 
+  AND P.Pnum = SPJ.Pnum 
+  AND S.Ci = P.Ci;
+
+30. Получить номера изделий, детали для которых поставляются только поставщиком с номером S1.
+SELECT DISTINCT SPJ.Jnum
+FROM SPJ
+WHERE NOT EXISTS (
+  SELECT *
+  FROM SPJ AS SPJX
+  WHERE SPJX.Jnum=SPJ.Jnum
+    AND SPJX.Pnum NOT IN (
+        SELECT SPJY.Pnum 
+        FROM SPJ AS SPJY 
+        WHERE SPJY.Snum = ‘S1’
+      )
+);
+
+31. Получить пары значений (Snum, Jnum) такие, что поставщик Snum поставляет для изделия Jnum детали Р1 и Р2
+SELECT DISTINCT SPJ.Snum, SPJ.Jnum 
+FROM SPJ 
+WHERE EXISTS (
+    SELECT *
+    FROM SPJ AS SPJX
+    WHERE SPJX.Snum = SPJ.Snum
+      AND SPJX.Jnum = SPJ.Jnum
+  		AND (SPJX.Pnum = 'P1')
+  )
+  AND EXISTS (
+    SELECT *
+    FROM SPJ AS SPJX
+    WHERE SPJX.Snum = SPJ.Snum
+      AND SPJX.Jnum = SPJ.Jnum
+  		AND (SPJX.Pnum = 'P2')
+);
+Или:
+SELECT DISTINCT X.Snum, X.Jnum 
+FROM spj as X 
+WHERE NOT EXISTS (
+    SELECT * 
+    FROM spj as Y 
+    WHERE Y.Snum = X.Snum 
+      AND Y.Jnum = X.Jnum 
+      AND (Y.Pnum = 'P1' OR Y.Pnum = 'P2')
+);
+
+32. Получить номер детали, для которой нет другой детали, имеющей меньшее значение веса
+SELECT Pnum
+FROM P 
+WHERE We = ( 
+  SELECT MIN(We) 
+  FROM P 
+);
+
+33. Получить пары значений (Snum, Jnum) такие, что поставщик Snum не поставляет для изделия Jnum детали Р1 и Р2.
+SELECT DISTINCT SPJ.Snum, SPJ.Jnum 
+FROM SPJ 
+WHERE NOT EXISTS (
+    SELECT *
+    FROM SPJ AS SPJX
+    WHERE SPJX.Snum = SPJ.Snum
+      AND SPJX.Jnum = SPJ.Jnum
+  		AND (SPJX.Pnum = 'P1' OR SPJX.Pnum = 'P2')
+);
+
+34. Получить значение номера детали, которая поставляется всеми поставщиками, размещёнными в Томске
+SELECT DISTINCT SPJ.Pnum
+FROM SPJ
+WHERE NOT EXISTS (
+  SELECT *
+  FROM SPJ AS SPJX, S
+  WHERE SPJ.Pnum = SPJX.Pnum
+    AND SPJX.Snum = S.Snum
+    AND NOT (S.Ci = 'Томск')
+);
+
+35. Получить значения Pnum для деталей, поставляемых для какого-либо изделия в Томске
+SELECT DISTINCT SPJ.Pnum
+FROM SPJ
+WHERE EXISTS (
+  SELECT *
+  FROM SPJ AS SPJX, J
+  WHERE SPJ.Pnum=SPJX.Pnum
+    AND SPJX.Jnum=J.Jnum
+    AND J.Ci = 'Томск'
+);
+Или (проще):
+SELECT DISTINCT Pnum 
+FROM SPJ, J 
+WHERE SPJ.Jnum = J.Jnum 
+  and j.ci = 'Томск';
