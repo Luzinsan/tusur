@@ -9,3 +9,6 @@ t1 = pi Pnum, Jnum((σ Jnum = 'J1' SPJ) - (σ Jnum ≠ 'J1' SPJ))
 
 -- ((S JOIN SPJ JOIN P) WHERE S.Ci = P.Ci)[Snum]
 σ Sci = P.Ci (ρ Sci←S.Ci(S join SPJ) join P) 
+
+SELECT DISTINCT P.Pnum, SPJ.Jnum FROM SPJ, P
+WHERE (SPJ.Pnum = P.Pnum) AND (SPJ.Jnum = 'J1') AND (NOT EXISTS (SELECT * FROM SPJ AS SPJX WHERE SPJX.Pnum=P.Pnum AND NOT SPJX.Jnum='J1');
