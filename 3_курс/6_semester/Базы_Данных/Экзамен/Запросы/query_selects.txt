@@ -380,3 +380,36 @@ SELECT DISTINCT Pnum
 FROM SPJ, J 
 WHERE SPJ.Jnum = J.Jnum 
   and j.ci = 'Томск';
+
+36. Получить пары значений (Snum, Jnum) такие, что поставщик Snum не поставляет детали для изделия Jnum.
+SELECT DISTINCT S.Snum, J.Jnum 
+FROM S, J
+WHERE NOT EXISTS (
+    SELECT *
+    FROM SPJ
+    WHERE SPJ.Snum = S.Snum
+      AND SPJ.Jnum = J.Jnum
+);
+
+37. Получить значения номеров изделий, для которых поставляются только красные детали.
+SELECT DISTINCT SPJ.Jnum
+FROM SPJ
+WHERE NOT EXISTS (
+      SELECT *
+      FROM SPJ AS SPJX, P
+      WHERE SPJX.Pnum = P.Pnum 
+          AND SPJ.Jnum = SPJX.Jnum
+          AND NOT (P.Co = 'красный')
+  );
+
+38. Получить значения Jnum такие, что изделие снабжается только деталями, находящимися в городе, в котором оно производится
+SELECT SPJ.Jnum
+FROM SPJ
+WHERE NOT EXISTS (
+    SELECT *
+    FROM SPJ AS SPJX, P, J
+    WHERE SPJX.Jnum = SPJ.Jnum
+  	  AND SPJX.Jnum = J.Jnum
+      AND SPJX.Pnum = P.Pnum
+      AND NOT(P.Ci = J.Ci)
+);
