@@ -388,7 +388,7 @@ WHERE NOT EXISTS (
     SELECT *
     FROM SPJ
     WHERE SPJ.Snum = S.Snum
-      AND SPJ.Jnum = J.Jnum
+      AND NOT (SPJ.Jnum = J.Jnum)
 );
 
 37. Получить значения номеров изделий, для которых поставляются только красные детали.
