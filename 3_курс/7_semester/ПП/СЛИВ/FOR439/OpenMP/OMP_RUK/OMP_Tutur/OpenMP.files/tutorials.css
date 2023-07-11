@@ -1,0 +1,48 @@
+BODY {
+	FONT-FAMILY: serif, times; BACKGROUND-COLOR: white
+}
+.title {
+	FONT-WEIGHT: 900; FONT-SIZE: x-large; COLOR: #000000; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.heading1 {
+	FONT-WEIGHT: 900; FONT-SIZE: large; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.heading2 {
+	FONT-WEIGHT: 900; FONT-SIZE: large; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.heading3 {
+	FONT-WEIGHT: bold; FONT-STYLE: normal; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.emphasis {
+	FONT-WEIGHT: bold; FONT-STYLE: italic; FONT-FAMILY: serif, times
+}
+.footer {
+	FONT-SIZE: 8pt; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.menu1 {
+	FONT-SIZE: 10pt; FONT-FAMILY: sans-serif, arial, helvetica
+}
+H1 {
+	COLOR: #000000; FONT-FAMILY: sans-serif, arial, helvetica
+}
+H2 {
+	FONT-WEIGHT: 900; FONT-SIZE: large; COLOR: #000000; FONT-FAMILY: sans-serif, arial, helvetica
+}
+H3 {
+	COLOR: #000000; FONT-FAMILY: sans-serif, arial, helvetica
+}
+TH {
+	FONT-FAMILY: sans-serif, arial, helvetica; BACKGROUND-COLOR: #98abce; TEXT-ALIGN: center
+}
+A:link {
+	COLOR: #333399; TEXT-DECORATION: underline
+}
+A:hover {
+	BACKGROUND: #dddddd; COLOR: #333399; TEXT-DECORATION: underline
+}
+A:active {
+	COLOR: #333399; TEXT-DECORATION: underline
+}
+A:visited {
+	COLOR: #333399; TEXT-DECORATION: underline
+}
