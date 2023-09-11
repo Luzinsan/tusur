@@ -19,12 +19,11 @@ with dpg.file_dialog(directory_selector=False, show=False, callback=set_path, ta
 def decrypting(input_data, shift):
     decrypted_data = []
     for row in input_data:
-        decrypted_data.append(''.join([chr(ord(symbol) + shift) for symbol in row]))
+        decrypted_data.append(''.join(encrypting_row(row, -shift)))
     return decrypted_data
 
 
-def encrypting(sender, app_data, user_data):
-    dpg.show_item('Caesar\'s cipher')
+def get_input_data():
     if dpg.get_value('input_method') == 'File':
         file_path = dpg.get_value('file')
         file = open(file_path, 'r', encoding="utf-8")
@@ -34,10 +33,41 @@ def encrypting(sender, app_data, user_data):
         input_data = dpg.get_value('Manually')
         is_multiline = ''
 
-    if type(input_data) is list:
-        input_data = [row.replace('ё', 'е').replace('\n', '') for row in input_data]
-    dpg.set_value('input data', value=is_multiline.join(input_data))
+    input_data = [row.replace('ё', 'е').replace('Ё', 'Е').replace('\n', '') for row in input_data]
+    return input_data, is_multiline
 
+
+def encrypting_row(row, shift):
+    cyrillic_lower = [chr(symbol) for symbol in range(ord('а'), ord('я') + 1)]
+    cyrillic = [chr(symbol) for symbol in range(ord('А'), ord('Я') + 1)]
+    latin_lower = [chr(symbol) for symbol in range(ord('a'), ord('z') + 1)]
+    latin = [chr(symbol) for symbol in range(ord('A'), ord('Z') + 1)]
+    sign = -1 if shift < 0 else 1
+    shift = abs(shift)
+    enc_row = []
+    for symbol in row:
+        if symbol in cyrillic_lower + cyrillic + latin_lower + latin:
+            if symbol in cyrillic_lower:
+                alphabetic = cyrillic_lower
+            elif symbol in cyrillic:
+                alphabetic = cyrillic
+            elif symbol in latin_lower:
+                alphabetic = latin_lower
+            elif symbol in latin:
+                alphabetic = latin
+            shift_for_symbol = (shift % (len(alphabetic) - 1)) * sign
+            index = (alphabetic.index(symbol) + shift_for_symbol) % (len(alphabetic))
+            enc_row.append(alphabetic[index])
+        else:
+            enc_row.append(chr(ord(symbol) + (shift * sign)))
+    return enc_row
+
+
+def encrypting(sender, app_data, user_data):
+    dpg.show_item('Caesar\'s cipher')
+    input_data, is_multiline = get_input_data()
+
+    dpg.set_value('input data', value=is_multiline.join(input_data))
     shift = dpg.get_value('shift')
     encrypted_data = []
     num_dots = 1
@@ -46,18 +76,16 @@ def encrypting(sender, app_data, user_data):
     if type(input_data) is list:
         for row in input_data:
             time.sleep(0.1)
-            encrypted_data.append(''.join([chr(ord(symbol) + shift) for symbol in row]))
+            encrypted_data.append(''.join(encrypting_row(row, shift)))
             dpg.set_value('dots', value='.  ' * num_dots)
             num_dots += 1
     else:
-        encrypted_data = is_multiline.join([chr(ord(symbol) + shift) for symbol in input_data])
+        encrypted_data = is_multiline.join(encrypting_row(input_data, shift))
 
     dpg.set_value('encrypted', value=is_multiline.join(encrypted_data))
-
-    fout.writelines('\n' + is_multiline.join(encrypted_data))
-
+    fout.writelines(is_multiline.join(encrypted_data) + '\n')
     # region test
-    test = decrypting(encrypted_data, -shift)
+    test = decrypting(encrypted_data, shift)
     dpg.set_value('test', value=is_multiline.join(test))
     if ''.join(input_data) == ''.join(test):
         dpg.configure_item('dots', default_value='True', color=(0, 255, 0, 255))
@@ -83,9 +111,9 @@ with dpg.window(label="Лабораторная работа #1", tag='lr1', sho
                          items=["Manually", "File"],
                          callback=switch_method,
                          horizontal=True)
-    dpg.add_input_int(tag='shift', label='Set Shift', default_value=-1, show=False)
+    dpg.add_input_int(tag='shift', label='Set Shift', default_value=1, show=False)
     dpg.add_input_text(label='Input Text', tag='Manually', show=False,
-                       default_value='Test')
+                       default_value='абвэюя')
     with dpg.group(horizontal=True, show=False, tag='File'):
         dpg.add_input_text(tag='file',
                            default_value='/home/luzinsan/Documents/TUSUR_learn/3_курс/7_semester/ИБ/Лабораторные/1/test.txt')
