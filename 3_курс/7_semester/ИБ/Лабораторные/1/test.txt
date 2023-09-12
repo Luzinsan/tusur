@@ -2,3 +2,4 @@
 АБСГДЕЁЖЗИЙКЛМНОПРСТУФХШЩЬЫЪЭЮЯ.,
 abcdifghklmnoprstxyz
 ABCDIFGKLMNOPRSTUVWXYZ
+αβγδ
