@@ -1,5 +1,4 @@
 import dearpygui.dearpygui as dpg
-# import numpy as np
 
 dpg.create_context()
 dpg.create_viewport(title='Лабораторные работы по Информационной безопасности')
@@ -28,6 +27,4 @@ def on_exit(sender, app_data, user_data):
 
 
 dpg.set_exit_callback(on_exit)
-
-
 
