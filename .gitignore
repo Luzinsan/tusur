@@ -14,4 +14,6 @@
 *.pyc
 3_курс/6_semester/Статья_и_повышка/
 
-3_курс/7_semester/ПП/labs/lab1/build/
+build/
+
+.vscode/
