@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 dearpygui = "*"
+numpy = "*"
 
 [dev-packages]
 
