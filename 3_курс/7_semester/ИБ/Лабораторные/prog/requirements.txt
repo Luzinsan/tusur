@@ -1,2 +1,2 @@
-dearpygui~=1.9.1
-#test
+dearpygui~=1.10.0
+numpy~=1.26.0
