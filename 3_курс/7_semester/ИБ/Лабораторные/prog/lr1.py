@@ -92,4 +92,5 @@ def initialize_lr1():
     with dpg.window(label="Лабораторная работа #1", tag='lr1', show=True, width=500, height=700, pos=(100, 100),
                     on_close=lambda: dpg.delete_item('lr1')):
         initialize()
+        dpg.add_input_int(tag='key', label='Key', default_value=1, show=False, before='Manually')
         dpg.add_button(label="Continue: 'Caesar\'s cipher", callback=encrypting, show=False, tag='continue')

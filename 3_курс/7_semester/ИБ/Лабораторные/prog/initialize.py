@@ -27,9 +27,8 @@ def initialize():
                          items=["Manually", "File"],
                          callback=switch_method,
                          horizontal=True)
-    dpg.add_input_text(tag='key', label='Key', default_value='passwordfbsfv', show=False)
     dpg.add_input_text(label='Input Text', tag='Manually', show=False,
-                       default_value='abcdefghklmnoprstuvwxyz')
+                       default_value='abcdefghklmnoprstuvwxyz', multiline=True)
     with dpg.group(horizontal=True, show=False, tag='File'):
         dpg.add_input_text(tag='file',
                            default_value='/home/luzinsan/Documents/TUSUR_learn/3_курс/7_semester/ИБ/Лабораторные/test.txt')
