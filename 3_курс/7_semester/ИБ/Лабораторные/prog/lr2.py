@@ -1,12 +1,24 @@
+from typing import Union
+
 from initialize import *
 import numpy as np
 import time
 from numpy.polynomial import Polynomial
 from collections import deque
 from constant import S_BOX, R_CON, INV_S_BOX, MATRIX_ENC, MATRIX_DEC
+import chardet
 
 sleeping = 0.0001
-encoding_key, encoding_text = 'cp866', 'cp866'
+
+
+def get_input_data():
+    if dpg.get_value('input_method') == 'File':
+        file_path = dpg.get_value('file')
+        file = open(file_path, 'r', encoding="utf-8")
+        input_data = file.read()
+    else:
+        input_data = dpg.get_value('Manually')
+    return input_data
 
 
 class AES:
@@ -22,81 +34,88 @@ class AES:
     Nr: int
     Nk: int
 
-    def __init__(self, key, __encoding_key, __encoding_text,
+    def __init__(self, key,
                  __Nb=4, __Nr=10, __Nk=4):
         """
         :param key:
-        :param __encoding_key:
-        :param __encoding_text:
         :param __Nb:
         :param __Nr:
         :param __Nk:
         """
-        self.encoding_key, self.encoding_text = __encoding_key, \
-            __encoding_text
         self.key = key
         self.Nb, self.Nr, self.Nk = __Nb, __Nr, __Nk
 
+        def __key_expansion():
+            """
+            Создание раундовых ключей (Round Keys)
+            :return:
+            """
+            try:
+                key_schedule = np.array(list(self.key.encode()))
+                if len(key_schedule) < (self.Nk * 4):  # Расширение до Nk байт
+                    key_schedule = np.append(key_schedule, [0x01] * ((self.Nk * 4) - len(key_schedule)))
+                elif len(key_schedule) > (self.Nk * 4):
+                    key_schedule = key_schedule[:self.Nk * 4]
+                key_schedule = key_schedule.reshape((4, self.Nk)).transpose()
+            except:
+                key_schedule = np.array(np.array([[0x01] * 4]) * 4)
+                dpg.set_value('key', 'Error in key')
+            # Дополняем оставшиеся строки таблицы ключей
+            for col in range(self.Nk, self.Nb * (self.Nr + 1)):
+                temp = key_schedule[:, col - 1]
+                if col % self.Nk == 0:
+                    temp = AES.InternalOperations.sub_bytes(AES.InternalOperations.rot_word(temp)) \
+                           ^ np.array(R_CON[col // self.Nk])
+                elif (self.Nk > 6) and (col % self.Nk == 4):
+                    temp = AES.InternalOperations.sub_bytes(temp)
+                temp = key_schedule[:, col - self.Nk] ^ temp
+                key_schedule = np.insert(key_schedule, col,
+                                         np.array(temp), axis=1)
+            self.key_schedule = key_schedule
+        __key_expansion()
+
     def set_plaintext(self, input_data: str):
         self.plaintext = input_data
+        # self.encoding_text = chardet.detect(input_data.encode())['encoding']
+        self.encoding_text = 'utf-16'
         self.original_length = len(self.plaintext)
 
-    def set_ciphertext(self, cipher_text: str)
+    def set_ciphertext(self, cipher_text: str):
         self.cipher_text = cipher_text
 
-    def __split_to_blocks(self, text: str, by_bytes: int):
+    @staticmethod
+    def __split_to_blocks(text: Union[str, list], by_bytes: int):
         blocks = []
         try:
-            text_bytes = text.encode(encoding=self.encoding_text)
+            # text_bytes = bytes(text, encoding=chardet.detect(text.encode())['encoding'])
+            # text_bytes = [ord(x) for x in text]
+            if type(text) == str:
+                text_bytes = text.encode(encoding='utf-16')
+            else:
+                text_bytes = text
+            # print("text_bytes: ", text_bytes)
             for i in range(0, len(text_bytes), by_bytes):
                 block = np.array(list(text_bytes[i:i + by_bytes]))
                 if len(block) < by_bytes:
-                    block = np.append(block, [0x01] * (by_bytes - len(block)))
+                    block = np.append(block, [0x00] * (by_bytes - len(block)))
                 block = block.reshape((4, by_bytes // 4)).transpose()
                 blocks.append(block)
-        except:
-            print("Error in encoding a text")
+        except Exception as err:
+            print("Error in splitting a text: ", err)
         return blocks
-
-    def key_expansion(self):
-        """
-        Создание раундовых ключей (Round Keys)
-        :return:
-        """
-        try:
-            key_schedule = np.array(list(self.key.encode(encoding=encoding_key)))
-            if len(key_schedule) < (self.Nk * 4):  # Расширение до Nk байт
-                key_schedule = np.append(key_schedule, [0x01] * ((self.Nk * 4) - len(key_schedule)))
-            elif len(key_schedule) > (self.Nk * 4):
-                key_schedule = key_schedule[:self.Nk * 4]
-            key_schedule = key_schedule.reshape((4, self.Nk)).transpose()
-        except:
-            key_schedule = np.array(np.array([[0x01] * 4]) * 4)
-            dpg.set_value('key', 'Error in key')
-        # Дополняем оставшиеся строки таблицы ключей
-        for col in range(self.Nk, self.Nb * (self.Nr + 1)):
-            temp = key_schedule[:, col - 1]
-            if col % self.Nk == 0:
-                temp = AES.InternalOperations.sub_bytes(AES.InternalOperations.rot_word(temp)) \
-                       ^ np.array(R_CON[col // self.Nk])
-            elif (self.Nk > 6) and (col % self.Nk == 4):
-                temp = AES.InternalOperations.sub_bytes(temp)
-            temp = key_schedule[:, col - self.Nk] ^ temp
-            key_schedule = np.insert(key_schedule, col,
-                                     np.array(temp), axis=1)
-        self.key_schedule = key_schedule
 
     def encrypt(self):
         """
         Алгоритм обрабатывает блоки по 128-бит,
         шифруя блок симметричным секретным ключом key (128 бит)
         """
-        encrypted_data = ''
+        # print("\n\t\t\tEncrypting\n")
+        encrypted_bytes = []
         num_dots = 1
         dpg.configure_item('dots', color=(0, 0, 255, 255))
-        self.blocks = AES.__split_to_blocks(self, self.plaintext, 16)
+        self.blocks = AES.__split_to_blocks(self.plaintext, 16)
         for block in self.blocks:
-            print('\tBlock:\n', block)
+            # print('\tBlock:\n', block)
             # initializing
             state = AES.InternalOperations.add_round_key(block, self.key_schedule[:, :self.Nb])
             for round in range(1, self.Nr):
@@ -114,28 +133,30 @@ class AES:
                     print(f"Error in encrypting in {round} round of {block} block")
             state = AES.InternalOperations.sub_bytes_state(state)
             state = AES.InternalOperations.shift_rows(state)
-            state = AES.InternalOperations.add_round_key(state, self.key_schedule[:,
-                                                                self.Nr * self.Nb:(self.Nr + 1) * self.Nb])
-            print('Finish of handling a block:\n', state)
+            state = AES.InternalOperations.add_round_key(state,
+                                                         self.key_schedule[:,
+                                                         self.Nr * self.Nb:(self.Nr + 1) * self.Nb])
+            # print('Finish of handling a block:\n', state)
             state = state.transpose()
-            encrypted_data += str(bytes(list(state.flatten())), encoding=encoding_text)
-        return encrypted_data
+            encrypted_bytes += list(state.flatten())
+        encrypted_data = ''.join([chr(x) for x in encrypted_bytes])
+        return encrypted_data, encrypted_bytes
 
-    def decrypt(self):
-        print("\n\t\t\tDecrypting\n")
-        decrypted_data = ''
+    def decrypt(self, encrypted_bytes):
+        # print("\n\t\t\tDecrypting\n")
+        decrypted_bytes = []
         num_dots = 1
         dpg.configure_item('dots', color=(0, 0, 255, 255))
-        self.blocks = AES.__split_to_blocks(self, self.cipher_text, 16)
+        self.blocks = AES.__split_to_blocks(encrypted_bytes, 16)
         for block in self.blocks:
             # initializing
-            print('Start block:\n', block)
+            # print('Start block:\n', block)
             state = AES.InternalOperations.add_round_key(block,
                                                          self.key_schedule[:,
                                                          self.Nr * self.Nb:self.Nb * (self.Nr + 1)])
             for round in range(self.Nr - 1, 0, -1):
                 try:
-                    time.sleep(sleeping)
+                    # time.sleep(sleeping)
                     state = AES.InternalOperations.shift_rows(state, invert=True)
                     state = AES.InternalOperations.sub_bytes_state(state, inverse=True)
                     state = AES.InternalOperations.add_round_key(state,
@@ -150,9 +171,10 @@ class AES:
             state = AES.InternalOperations.shift_rows(state, invert=True)
             state = AES.InternalOperations.sub_bytes_state(state, inverse=True)
             state = AES.InternalOperations.add_round_key(state, self.key_schedule[:, :self.Nb])
-            print('Finish of handling a block:\n', state)
+            # print('Finish of handling a block:\n', state)
             state = state.transpose()
-            decrypted_data += str(bytes(list(state.flatten())), encoding=encoding_text)
+            decrypted_bytes += list(state.flatten())
+        decrypted_data = bytes(decrypted_bytes).decode(encoding=self.encoding_text)
         return decrypted_data[:self.original_length]
 
     class InternalOperations:
@@ -231,35 +253,27 @@ class AES:
             return new_state
 
 
-def get_input_data():
-    if dpg.get_value('input_method') == 'File':
-        file_path = dpg.get_value('file')
-        file = open(file_path, 'r', encoding="utf-8")
-        input_data = file.read()
-    else:
-        input_data = dpg.get_value('Manually')
-    return input_data
-
-
 def preparing(sender, app_data, user_data):
     dpg.show_item('Cipher method')
     dpg.set_value('input data', value=get_input_data())
-    # длина ключа = 128/192/256 бит
-    aes = AES(dpg.get_value('key'),
-              dpg.get_value('encoding_key'),
-              dpg.get_value('encoding_text'))
+    aes = AES(dpg.get_value('key'))
     input_data = get_input_data()
     aes.set_plaintext(input_data)
-    aes.key_expansion()
-    ciphertext = aes.encrypt()
+    fout = open('plaintext.txt', 'a')
+    fout.writelines("\n\n\tText:\n" + input_data)
+    fout.close()
+    ciphertext, encrypted_bytes = aes.encrypt()
     aes.set_ciphertext(ciphertext)
     dpg.set_value('encrypted', value=ciphertext)
-    fout = open('output.txt', 'a', encoding=encoding_text)
-    fout.writelines("\n\n\tPlaintext:\n" + input_data + "\n\tCiphertext:\n" + ciphertext)
+    fout = open('ciphertext.txt', 'a')
+    fout.writelines("\n\tCiphertext:\n" + ciphertext)
     fout.close()
     # region test
-    decrypted_text = aes.decrypt()
+    decrypted_text = aes.decrypt(encrypted_bytes)
     dpg.set_value('test', value=decrypted_text)
+    fout = open('decrypted_text.txt', 'a')
+    fout.writelines("\n\tDecrypted:\n" + decrypted_text)
+    fout.close()
     if ''.join(input_data) == ''.join(decrypted_text):
         dpg.configure_item('dots', default_value='True', color=(0, 255, 0, 255))
     else:
@@ -267,24 +281,9 @@ def preparing(sender, app_data, user_data):
     # endregion
 
 
-def set_encoding_key(sender, add_data, _):
-    global encoding_key
-    encoding_key = add_data
-
-
-def set_encoding_text(sender, add_data, _):
-    global encoding_text
-    encoding_text = add_data
-
-
 def initialize_lr2():
     with dpg.window(label="Лабораторная работа #2", tag='lr2', show=True, width=500, height=700, pos=(100, 100),
                     on_close=lambda: dpg.delete_item('lr2')):
         initialize()
         dpg.add_input_text(tag='key', label='Key', default_value='passwordfbsfv', show=False, before='Manually')
-        encoding_items = ['cp866', 'utf-8', 'utf-16', 'latin-1', 'ascii', 'cp1253']
-        dpg.add_combo(items=encoding_items, label='Encoding for key', tag='encoding_key', show=True,
-                      default_value=encoding_key, callback=set_encoding_key, before='Cipher method')
-        dpg.add_combo(items=encoding_items, label='Encoding for plaintext', tag='encoding_text', show=True,
-                      default_value=encoding_text, callback=set_encoding_text, before='Cipher method')
         dpg.add_button(label="Continue: AES", callback=preparing, show=False, tag='continue')
