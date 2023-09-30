@@ -120,7 +120,7 @@ class AES:
             state = AES.InternalOperations.add_round_key(block, self.key_schedule[:, :self.Nb])
             for round in range(1, self.Nr):
                 try:
-                    time.sleep(sleeping)
+                    # time.sleep(sleeping)
                     state = AES.InternalOperations.sub_bytes_state(state)
                     state = AES.InternalOperations.shift_rows(state)
                     state = AES.InternalOperations.mix_columns(state, MATRIX_ENC)

@@ -1,15 +1,7 @@
 
-
-	Text:
+	Decrypted:
 abcdefghklmnoprstuvwxyz
-
-	Text:
-abcdefghklmnoprstuvwxyz
-
-	Text:
-abcdefghklmnoprstuvwxyz
-
-	Text:
+	Decrypted:
 (* ^ ω ^)
 (´ ∀ ` *)
 (o^▽^o)
@@ -48,8 +40,7 @@ o(>ω<)o
 ( ˙꒳​˙ )
 (´･ᴗ･ ` )
 (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
-
-	Text:
+	Decrypted:
 (* ^ ω ^)
 (´ ∀ ` *)
 (o^▽^o)
@@ -88,17 +79,13 @@ o(>ω<)o
 ( ˙꒳​˙ )
 (´･ᴗ･ ` )
 (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
-
-	Text:
+	Decrypted:
 abcdefghklmnoprstuvwxyz
-
-	Text:
+	Decrypted:
 abcdefghklmnoprstuvwxyz
-
-	Text:
+	Decrypted:
 abcdefghklmnoprstuvwxyz
-
-	Text:
+	Decrypted:
 (* ^ ω ^)
 (´ ∀ ` *)
 (o^▽^o)
@@ -137,3 +124,7 @@ o(>ω<)o
 ( ˙꒳​˙ )
 (´･ᴗ･ ` )
 (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+	Decrypted:
+abcdefghklmn№;%:?*(oprstuvwxyрусские буквы
+	Decrypted:
+abcdefghklmnoprstuvwxy@#$%^&вапгполz
