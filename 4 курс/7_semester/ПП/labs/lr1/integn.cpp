@@ -1,12 +1,14 @@
 #include "mpi.h"
-#include <stdio.h>
+#include <cstdio>
 #include <math.h>
 #include <iostream>
 #include <cassert>
+#include <fstream>
 
 
 static double f(double a);
 static double fi(double a);
+
 
 class Communicator
 {
@@ -26,8 +28,6 @@ protected:
     }
 
     ~Communicator(){ MPI_Finalize(); }
-
-
 };
 
 
@@ -45,8 +45,7 @@ public:
         : Communicator(argc, argv, comm)
     {
         MPI_Comm_rank(comm, &PID);
-        std::cerr << "\tProcess " << PID << " on " << processor_name << "\n";
-        fflush(stderr);
+        std::cout << "\tProcess " << PID << " on " << processor_name << "\n"; fflush(stdout);
     }
 
     template <typename T>
@@ -77,7 +76,6 @@ public:
                   &status);             /* status of errors    */
         return status;
     }
-
 };
 
 
@@ -91,18 +89,33 @@ private:
     double step;
     double sum = 0.0;
     double startwtime, endwtime;
+    FILE* fout;
 public:
     Integral(int argc, char *argv[], int numIntervals): Process(argc, argv) { intervals = numIntervals; }
-    Integral(int argc, char *argv[], MPI_Comm comm = MPI_COMM_WORLD): Process(argc, argv, comm) {}
+    Integral(int argc, char *argv[], MPI_Comm comm = MPI_COMM_WORLD,
+             std::string filename = "output.txt")
+             : Process(argc, argv, comm) 
+    {
+        fflush(NULL);
+        fout = fopen(filename.c_str(), "a+");
+        fflush(NULL);
+    }
+    ~Integral(){ fclose(fout); }
 
     int getIntervals()
     {
         if (PID == Process::INIT)
         {
-            std::cout << "Enter the number of intervals (0 quit) "; fflush(stdout);
+            std::cout << "Enter the number of intervals (0 quit) "; fflush(NULL);
             int n;
-            std::cin >> n;
+            std::cin >> n; fflush(stdin);
             intervals = n;
+            if (n != 0) 
+                {
+                    fprintf(fout, "\nNumber of processes: %d\nNumber of intervals: %d\n", 
+                                    numprocs, intervals); 
+                    fflush(NULL);
+                    }
             startwtime = MPI_Wtime();
             /* Sending the number of intervals to other nodes */
             for (int to_PID = 1; to_PID < numprocs; to_PID++)
@@ -111,9 +124,8 @@ public:
         else
         {
             MPI_Status status = receve(&intervals, Process::INIT);
-            assert(status.MPI_ERROR);
+            assert(status.MPI_ERROR); fflush(NULL);
         }
-        
         return intervals;
     }
 
@@ -127,7 +139,7 @@ public:
             sum += f(x);
         }
         sum *= step;
-        printf("Process %d SUMM %.16f\n", PID, sum);
+        printf("Process %d SUMM %.16f\n", PID, sum);  fflush(NULL);
         return sum;
     }
 
@@ -147,16 +159,21 @@ public:
             { 
                 double recv_summ;
                 MPI_Status status = receve(&recv_summ, i, MPI_DOUBLE);
-                assert(status.MPI_ERROR);
+                assert(status.MPI_ERROR); fflush(NULL);
                 integral += recv_summ;  
             }
-            printf("Integral is approximately  %.16f, Error   %.16f\n", integral, integral - fi(xh) + fi(xl));
             endwtime = MPI_Wtime();
-            printf("Time of calculation = %f\n", endwtime-startwtime);
+
+            printf("Integral is approximately  %.16f, Error   %.16f\n", integral, integral - fi(xh) + fi(xl));
+            printf("Time of calculation = %f\n", endwtime-startwtime); fflush(NULL);
+            fprintf(fout, "Integral is approximately  %.16f, Error   %.16f\n", integral, integral - fi(xh) + fi(xl)); fflush(NULL);
+            fprintf(fout, "Time of calculation = %f\n\n", endwtime-startwtime); fflush(NULL);
             return integral;
         }
     }
 };
+
+
 
 
 int main(int argc, char *argv[])
