@@ -1,100 +1,97 @@
 
 
-Number of processes: 4
-Number of intervals: 100
-Integral is approximately  1.0121248353779724, Error   0.0000047909138566
-Time of calculation = 0.028742
-
-
-Number of processes: 4
-Number of intervals: 1000
-Integral is approximately  1.0133346421749692, Error   0.0012145977108534
-Time of calculation = 0.000097
-
-
-Number of processes: 4
-Number of intervals: 10000
-Integral is approximately  1.0122416451002598, Error   0.0001216006361441
-Time of calculation = 0.000177
-
-
-Number of processes: 4
-Number of intervals: 100000
-Integral is approximately  1.0121321913686481, Error   0.0000121469045323
-Time of calculation = 0.001043
-
-
-Number of processes: 3
-Number of intervals: 100
-
-Number of processes: 3
-Number of intervals: 100
-Integral is approximately  1.0121248353779724, Error   0.0000047909138566
-Time of calculation = 0.012673
-
-
-Number of processes: 3
-Number of intervals: 1000
-Integral is approximately  1.0133346421749689, Error   0.0012145977108532
-Time of calculation = 0.000087
-
-
-Number of processes: 3
-Number of intervals: 10000
-Integral is approximately  1.0122416451002585, Error   0.0001216006361427
-Time of calculation = 0.000197
-
-
-Number of processes: 3
-Number of intervals: 100000
-Integral is approximately  1.0121321913686439, Error   0.0000121469045281
-Time of calculation = 0.001207
-
-
-Number of processes: 2
-Number of intervals: 100
-Integral is approximately  1.0121248353779722, Error   0.0000047909138564
-Time of calculation = 0.003067
-
-
-Number of processes: 2
-Number of intervals: 1000
-Integral is approximately  1.0133346421749687, Error   0.0012145977108530
-Time of calculation = 0.000097
-
-
-Number of processes: 2
-Number of intervals: 10000
-Integral is approximately  1.0122416451002614, Error   0.0001216006361456
-Time of calculation = 0.000240
-
-
-Number of processes: 2
-Number of intervals: 100000
-Integral is approximately  1.0121321913686496, Error   0.0000121469045339
-Time of calculation = 0.001541
-
-
 Number of processes: 1
 Number of intervals: 100
 Integral is approximately  1.0121248353779724, Error   0.0000047909138566
-Time of calculation = 0.000061
+Time of calculation = 0.000167
 
 
 Number of processes: 1
 Number of intervals: 1000
 Integral is approximately  1.0133346421749692, Error   0.0012145977108534
-Time of calculation = 0.000061
+Time of calculation = 0.000078
 
 
 Number of processes: 1
 Number of intervals: 10000
 Integral is approximately  1.0122416451002569, Error   0.0001216006361412
-Time of calculation = 0.000886
+Time of calculation = 0.000861
 
 
 Number of processes: 1
 Number of intervals: 100000
 Integral is approximately  1.0121321913686470, Error   0.0000121469045312
-Time of calculation = 0.006863
+Time of calculation = 0.007656
+
+
+Number of processes: 2
+Number of intervals: 100
+Integral is approximately  1.0121248353779722, Error   0.0000047909138564
+Time of calculation = 0.010037
+
+
+Number of processes: 2
+Number of intervals: 1000
+Integral is approximately  1.0133346421749687, Error   0.0012145977108530
+Time of calculation = 0.000104
+
+
+Number of processes: 2
+Number of intervals: 10000
+Integral is approximately  1.0122416451002614, Error   0.0001216006361456
+Time of calculation = 0.000365
+
+
+Number of processes: 2
+Number of intervals: 100000
+Integral is approximately  1.0121321913686496, Error   0.0000121469045339
+Time of calculation = 0.002102
+
+
+Number of processes: 3
+Number of intervals: 100
+Integral is approximately  1.0121248353779724, Error   0.0000047909138566
+Time of calculation = 0.020201
+
+
+Number of processes: 3
+Number of intervals: 1000
+Integral is approximately  1.0133346421749689, Error   0.0012145977108532
+Time of calculation = 0.000137
+
+
+Number of processes: 3
+Number of intervals: 10000
+Integral is approximately  1.0122416451002585, Error   0.0001216006361427
+Time of calculation = 0.000261
+
+
+Number of processes: 3
+Number of intervals: 100000
+Integral is approximately  1.0121321913686439, Error   0.0000121469045281
+Time of calculation = 0.001734
+
+
+Number of processes: 4
+Number of intervals: 100
+Integral is approximately  1.0121248353779722, Error   0.0000047909138564
+Time of calculation = 0.020298
+
+
+Number of processes: 4
+Number of intervals: 1000
+Integral is approximately  1.0133346421749692, Error   0.0012145977108534
+Time of calculation = 0.000138
+
+
+Number of processes: 4
+Number of intervals: 10000
+Integral is approximately  1.0122416451002598, Error   0.0001216006361441
+Time of calculation = 0.000219
+
+
+Number of processes: 4
+Number of intervals: 100000
+Integral is approximately  1.0121321913686481, Error   0.0000121469045323
+Time of calculation = 0.001086
 
