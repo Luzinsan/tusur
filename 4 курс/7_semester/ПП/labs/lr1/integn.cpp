@@ -48,8 +48,7 @@ public:
         std::cout << "\tProcess " << PID << " on " << processor_name << "\n"; fflush(stdout);
     }
 
-    template <typename T>
-    void send(T *buffer, int to_PID, 
+    void send(void *buffer, int to_PID, 
               MPI_Datatype type=MPI_INT, int count_data=1,  
               int tag = 1, MPI_Comm comm = MPI_COMM_WORLD)
     {
@@ -61,8 +60,7 @@ public:
                   comm);               /* common communicator */
     }
 
-    template <typename T>
-    MPI_Status receve(T *buffer, int from_PID, 
+    MPI_Status receive(void *buffer, int from_PID, 
                       MPI_Datatype type=MPI_INT, int count_data=1, 
                       int tag = 1, MPI_Comm comm = MPI_COMM_WORLD)
     {
@@ -75,6 +73,33 @@ public:
                   comm,                 /* common communicator */
                   &status);             /* status of errors    */
         return status;
+    }
+
+    void broadcast(void *buffer, int from_PID=Process::INIT, 
+              MPI_Datatype type=MPI_INT, int count_data=1,  
+              MPI_Comm comm = MPI_COMM_WORLD)
+    {
+        MPI_Bcast (buffer,             /* buffer              */
+                   count_data,          /* one data            */
+                   type,                /* type                */
+                   from_PID,            /* to which node       */
+                   comm);               /* common communicator */
+    }
+
+    void reduce(void *sendbuf, void *recvbuf, 
+              MPI_Datatype type=MPI_INT,
+              int to_PID=Process::INIT,
+              MPI_Op _operator=MPI_SUM, 
+              int count_data=1,  
+              MPI_Comm comm = MPI_COMM_WORLD)
+    {
+        MPI_Reduce (sendbuf,             /* buffer              */
+                    recvbuf,
+                    count_data,          /* one data            */
+                    type,                /* type                */
+                    _operator,
+                    to_PID,            /* to which node       */
+                    comm);               /* common communicator */
     }
 };
 
@@ -111,21 +136,13 @@ public:
             std::cin >> n; fflush(stdin);
             intervals = n;
             if (n != 0) 
-                {
-                    fprintf(fout, "\nNumber of processes: %d\nNumber of intervals: %d\n", 
-                                    numprocs, intervals); 
-                    fflush(NULL);
-                    }
+            {
+                fprintf(fout, "\nNumber of processes: %d\nNumber of intervals: %d\n", 
+                                numprocs, intervals);  fflush(NULL);
+            }
             startwtime = MPI_Wtime();
-            /* Sending the number of intervals to other nodes */
-            for (int to_PID = 1; to_PID < numprocs; to_PID++)
-                send(&intervals, to_PID);
         }
-        else
-        {
-            MPI_Status status = receve(&intervals, Process::INIT);
-            assert(status.MPI_ERROR); fflush(NULL);
-        }
+        broadcast(&intervals);
         return intervals;
     }
 
@@ -146,30 +163,20 @@ public:
 
     double summarazing()
     {
-        /* Sending the local sum to node 0 */
-        if (PID != Process::INIT)
-        {
-            send(&sum, Process::INIT, MPI_DOUBLE);
-            return sum;
-        }
-        else
-        {
-            double integral = sum;
-            for (int i=1; i< numprocs; i++)
-            { 
-                double recv_summ;
-                MPI_Status status = receve(&recv_summ, i, MPI_DOUBLE);
-                assert(status.MPI_ERROR); fflush(NULL);
-                integral += recv_summ;  
-            }
-            endwtime = MPI_Wtime();
+        double integral = 0;
+        reduce(&sum, &integral, MPI_DOUBLE);
+        
+        endwtime = MPI_Wtime();
 
+        if (PID == Process::INIT)
+        {
             printf("Integral is approximately  %.16f, Error   %.16f\n", integral, integral - fi(xh) + fi(xl));
             printf("Time of calculation = %f\n", endwtime-startwtime); fflush(NULL);
             fprintf(fout, "Integral is approximately  %.16f, Error   %.16f\n", integral, integral - fi(xh) + fi(xl)); fflush(NULL);
             fprintf(fout, "Time of calculation = %f\n\n", endwtime-startwtime); fflush(NULL);
             return integral;
         }
+        else return sum;
     }
 };
 
