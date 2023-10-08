@@ -6,4 +6,4 @@ Parameter: 0.9
 
 0: Integral is approximately: 1.012120e+00
 0: Error: 4.790840e-08
-0: Time of calculation: 1.623477e-02
+0: Time of calculation: 1.716316e-02
