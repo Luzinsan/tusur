@@ -220,13 +220,13 @@ public:
                 MPI_Op _operator = MPI_SUM,
                 int count_data = 1)
     {
-        MPI_Reduce(sendbuf, /* buffer              */
+        MPI_Reduce(sendbuf,
                    recvbuf,
-                   count_data, /* one data            */
-                   type,       /* type                */
+                   count_data,
+                   type,
                    _operator,
-                   root, /* to which node       */
-                   comm);  /* common communicator */
+                   root,
+                   comm);
     }
 
     /**
