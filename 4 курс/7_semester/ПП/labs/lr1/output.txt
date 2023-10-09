@@ -1,9 +1,0 @@
-
-Number of intervals: 1000
-Low border: -0.2
-Hight border: 1
-Parameter: 0.9
-
-0: Integral is approximately: 1.012120e+00
-0: Error: 4.790840e-08
-0: Time of calculation: 1.716316e-02
