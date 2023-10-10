@@ -6,7 +6,6 @@ import time
 from numpy.polynomial import Polynomial
 from collections import deque
 from constant import S_BOX, R_CON, INV_S_BOX, MATRIX_ENC, MATRIX_DEC
-import chardet
 
 sleeping = 0.0001
 
