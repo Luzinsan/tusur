@@ -51,6 +51,20 @@ public:
 
         std::generate(data, data + rows * columns, gen);
     }
+
+    void printInfo(std::string accompanying_message = "", 
+                    std::ostream &out = std::cout, T* buf=NULL, int length=0)
+    {
+        Process::printInfo("\n", out);
+        if (buf)
+            for(int i = 0; i < length/columns; i++)
+            {
+                for(int j = 0; j < columns; j++)
+                    out << std::setw(10) << buf[i*columns + j] << " ";
+                out << "\n"; fflush(NULL);
+            }
+        fflush(NULL);
+    }
 private:
     static T* reflect(T* array, int len, int cols)
     {
@@ -65,23 +79,24 @@ public:
     void scatterVec()
     {
         int count = rows / numprocs;  
-        int ost = rows % numprocs;
+        int rest = rows % numprocs;
         int *displs = new int[numprocs], 
             *rcounts = new int[numprocs];
         if (PID==Process::INIT)
             for(int i = 0; i < numprocs; i++)
             {
-                rcounts[i] = i < ost ? columns * (count+1) : columns*count;
+                rcounts[i] = i < rest ? columns * (count+1) : columns*count;
                 displs[i] = displs[i-1] + rcounts[i-1];
             }
-        int length = PID < ost ? columns * (count+1) : columns*count;
-        int startIndex = PID * length + (PID >= ost ? ost : 0);
+        int length = PID < rest ? columns * (count+1) : columns*count;
+        int startIndex = PID * length + (PID >= rest ? rest : 0);
         T *partOfArray = new T[length];
 
         MPI_Scatterv(data, rcounts, displs, MPI_FLOAT, 
                     partOfArray, length, MPI_FLOAT, Process::INIT, comm);
         
         reflect(partOfArray, length, columns);
+        printInfo("", std::cout, partOfArray, length);
                 
         MPI_Gatherv(partOfArray, length, MPI_FLOAT,
                     data, rcounts, displs, MPI_FLOAT, Process::INIT, comm);
