@@ -11,7 +11,6 @@ with dpg.window(tag="Primary Window"):
                    callback=initialize_lr2)
     dpg.add_button(label="Лабораторная работа #3",
                    callback=initialize_lr3)
-    dpg.add_button(label="Лабораторная работа #4")
 
 
 dpg.setup_dearpygui()

@@ -27,8 +27,8 @@ class RSA:
     encoding_key: str
     encoding_text: str
 
-    def __init__(self):
-        self.make_keys(19, 41)
+    def __init__(self, _p: int, _q: int, _e: int):
+        self.make_keys(_p, _q, _e)
 
     @staticmethod
     def __are_relatively_prime(a, b):
@@ -42,15 +42,9 @@ class RSA:
                 return False
         return True
 
-    def make_keys(self, _p: int, _q: int):
+    def make_keys(self, _p: int, _q: int, e: int):
         p, q = _p, _q
         phi = (p - 1) * (q - 1)
-        for e in range(3, phi, 2):
-            if self.__are_relatively_prime(e, phi):
-                break
-        else:
-            raise AssertionError("cannot find 'e' with p={!r} "
-                                 "and q={!r}".format(p, q))
 
         # Third step: find ``d`` such that ``(d * e - 1)`` is divisible by
         # ``(p - 1) * (q - 1)``.
@@ -89,7 +83,7 @@ class RSA:
 def preparing(sender, app_data, user_data):
     dpg.show_item('Cipher method')
     dpg.set_value('input data', value=get_input_data())
-    rce = RSA()
+    rce = RSA(857, 673, 5)
     input_data = get_input_data()
     rce.set_plaintext(input_data)
     fout = open('plaintext.txt', 'a')
