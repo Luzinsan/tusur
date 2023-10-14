@@ -23,13 +23,13 @@ void lab2(int argc, char *argv[])
 {
     Matrix<float> proc(argc, argv, 14, 4);
     proc.scatterVec();
-
 }
 
 
 int main(int argc, char *argv[])
 {
-    //lab1(argc, argv);
+    // lab1(argc, argv);
     lab2(argc, argv);
+    // lab3();
     return 0;
 }

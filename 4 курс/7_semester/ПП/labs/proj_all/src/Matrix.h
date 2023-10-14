@@ -21,7 +21,7 @@ public:
     Matrix(int argc, char *argv[], 
         int _rows=5, int _columns=5, 
         MPI_Comm comm = MPI_COMM_WORLD,
-        std::string filename = "output.txt")
+        std::string filename = "/home/luzinsan/TUSUR_learn/4 курс/7_semester/ПП/labs/lr2/output.txt")
         : Process(argc, argv, comm)
     {
         fout.open(filename, std::ios::out);

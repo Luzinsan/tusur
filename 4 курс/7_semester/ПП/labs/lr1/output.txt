@@ -1,0 +1,12 @@
+
+Processor name: hiuluzinsan
+Number of processes: 3
+
+Number of intervals: 100000
+Low border: -0.2
+Hight border: 1
+Parameter: 0.9
+
+0: Integral is approximately: 1.012120e+00
+0: Error: 4.786727e-12
+0: Time of calculation: 4.410027e-03

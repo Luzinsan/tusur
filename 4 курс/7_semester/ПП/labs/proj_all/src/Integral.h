@@ -22,7 +22,7 @@ private:
 
 public:
     Integral(int argc, char *argv[], MPI_Comm comm = MPI_COMM_WORLD,
-             std::string filename = "output.txt")
+             std::string filename = "/home/luzinsan/TUSUR_learn/4 курс/7_semester/ПП/labs/lr1/output.txt")
         : Process(argc, argv, comm)
     {
         fflush(NULL);
