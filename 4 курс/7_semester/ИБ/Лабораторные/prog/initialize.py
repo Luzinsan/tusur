@@ -12,7 +12,6 @@ with dpg.file_dialog(directory_selector=False, show=False, callback=set_path, ta
 
 def switch_method(sender, method):
     dpg.hide_item('Cipher method')
-    dpg.show_item('key')
     dpg.show_item('continue')
     if method == 'File':
         dpg.hide_item('Manually')

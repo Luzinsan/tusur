@@ -284,5 +284,5 @@ def initialize_lr2():
     with dpg.window(label="Лабораторная работа #2", tag='lr2', show=True, width=500, height=700, pos=(100, 100),
                     on_close=lambda: dpg.delete_item('lr2')):
         initialize()
-        dpg.add_input_text(tag='key', label='Key', default_value='passwordfbsfv', show=False, before='Manually')
+        dpg.add_input_text(tag='key', label='Key', default_value='passwordfbsfv', show=True, before='Manually')
         dpg.add_button(label="Continue: AES", callback=preparing, show=False, tag='continue')
