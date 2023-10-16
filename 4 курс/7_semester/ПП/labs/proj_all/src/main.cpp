@@ -21,15 +21,25 @@ void lab1(int argc, char *argv[])
 
 void lab2(int argc, char *argv[])
 {
-    Matrix<float> proc(argc, argv, 14, 4);
+    Matrix<float> proc(argc, argv, 14, 4, 
+    "/home/luzinsan/TUSUR_learn/4 курс/7_semester/ПП/labs/lr2/output.txt");
     proc.scatterVec();
 }
+
+
+void lab3(int argc, char *argv[])
+{
+    Matrix<float> proc(argc, argv, 9, 9, 
+    "/home/luzinsan/TUSUR_learn/4 курс/7_semester/ПП/labs/lr3/output.txt");
+    proc.selectTriangle();
+}
+
 
 
 int main(int argc, char *argv[])
 {
     // lab1(argc, argv);
-    lab2(argc, argv);
-    // lab3();
+    // lab2(argc, argv);
+    lab3(argc, argv);
     return 0;
 }

@@ -17,28 +17,44 @@ private:
     T* data = NULL;
     double startwtime, endwtime;
     std::ofstream fout;
+    MPI_Datatype MPI_TRIANGLE;
+    int len_type = 0;
+  
 public:
     Matrix(int argc, char *argv[], 
         int _rows=5, int _columns=5, 
-        MPI_Comm comm = MPI_COMM_WORLD,
-        std::string filename = "/home/luzinsan/TUSUR_learn/4 курс/7_semester/ПП/labs/lr2/output.txt")
+        std::string filename = "/home/luzinsan/TUSUR_learn/4 курс/7_semester/ПП/labs/lr3/output.txt",
+        MPI_Comm comm = MPI_COMM_WORLD)
         : Process(argc, argv, comm)
     {
-        fout.open(filename, std::ios::out);
+        fout.open(filename, std::ios::app);
         rows = _rows;
         columns = _columns;
+        data = new T[rows * columns]{0};
         if (PID==Process::INIT)
         {
             Communicator::printInfo("", fout);
-            data = new T[rows * columns];
             fillRandom();
             Process::printInfo("INITIAL RANDOM MATRIX", fout);
-            fout << *this;
+            fout << *this; fflush(NULL);
             Process::printInfo("\t--------------------------------", fout);
         }
+        createDatatype();
         startwtime=MPI_Wtime();
     }
-    ~Matrix() { fout.close(); delete data;} 
+    void setShape(int _rows, int _columns)
+    {
+        rows = _rows;
+        columns = _columns;
+        MPI_Type_free(&MPI_TRIANGLE);
+        createDatatype();
+    }
+
+    ~Matrix() { 
+        fout.close(); 
+        delete data;
+        MPI_Type_free(&MPI_TRIANGLE);
+    } 
 
     void fillRandom(T min=-100.0, T max=100.0)
     {
@@ -65,6 +81,22 @@ public:
             }
         fflush(NULL);
     }
+
+    friend std::ostream& operator<<(std::ostream& out, const Matrix<T>& matrix)
+    {
+        out << "\nNumber of rows: " << matrix.rows
+            << "\nNumber of columns: " << matrix.columns
+            << "\n";
+        for (int i = 0; i < matrix.rows; ++i) 
+        {
+            for (int j = 0; j < matrix.columns; ++j){
+                out << std::setw(10)<<matrix.data[i * matrix.columns + j] << " "; fflush(NULL);}
+            out << "\n";
+        }
+        fflush(NULL);
+        return out;
+    }
+#pragma region lab2
 private:
     static T* reflect(T* array, int len, int cols)
     {
@@ -75,7 +107,6 @@ private:
         return array;
     }
 public:
-
     void scatterVec()
     {
         int count = rows / numprocs;  
@@ -114,21 +145,67 @@ public:
             str.str("");
         }
     }
-
-    friend std::ostream& operator<<(std::ostream& out, const Matrix<T>& matrix)
+#pragma endregion
+    
+#pragma region lab3
+private:
+    void createDatatype()
     {
-        out << "\nNumber of rows: " << matrix.rows
-            << "\nNumber of columns: " << matrix.columns
-            << "\n";
-        for (int i = 0; i < matrix.rows; ++i) 
+        int length = (rows>>1) + 1;
+        int blocklens[length], indices[length];
+        /*
+
+        1 1 1 1 1 1 1
+        0 1 1 1 1 1 0
+        0 0 1 1 1 0 0
+        0 0 0 1 0 0 0
+        0 0 0 0 0 0 0
+        0 0 0 0 0 0 0
+        0 0 0 0 0 0 0
+
+        */
+        for (int i=0; i<length; i++) 
         {
-            for (int j = 0; j < matrix.columns; ++j)
-                out << std::setw(10)<<matrix.data[i * matrix.columns + j] << " ";
-            out << "\n";
+            blocklens[i] = columns - (i<<1);
+            len_type += blocklens[i];
+            indices[i]   = i*(columns + 1);
         }
-        fflush(NULL);
-        return out;
+        MPI_Type_indexed(length, blocklens, indices, 
+                         MPI_FLOAT, &MPI_TRIANGLE);
+        MPI_Type_commit(&MPI_TRIANGLE);
     }
+public:
+    void selectTriangle()
+    {
+        switch(PID){
+            case Process::INIT:
+                send(data, 1, MPI_TRIANGLE, 1, 1);
+                send(data, 1, MPI_TRIANGLE, 1, 2);
+                delete[] data;
+                data = new T[rows * columns]{0};
+                receive(data, 1, MPI_TRIANGLE);
+                Process::printInfo("", fout);
+                fout << *this; fflush(NULL);
+                break;
+            case 1:
+                receive(data, Process::INIT, MPI_TRIANGLE, 1, 1);
+                Process::printInfo("", fout);
+                fout << *this; fflush(NULL);
+
+                delete[] data;
+                data = new T[rows * columns]{0};
+                //??принять посланные данные в массив по размеру выбранных данных базового типа.
+                receive(data, Process::INIT, MPI_FLOAT, len_type, 2); 
+                
+                Process::printInfo("", fout);
+                fout << *this; fflush(NULL);
+
+                send(data, Process::INIT, MPI_FLOAT, len_type);
+                break;
+        }
+    }
+
+#pragma endregion
     
  
 };
