@@ -30,7 +30,7 @@ def initialize():
                        default_value='abcdefghklmnoprstuvwxyz', multiline=True)
     with dpg.group(horizontal=True, show=False, tag='File'):
         dpg.add_input_text(tag='file',
-                           default_value='/home/luzinsan/Documents/TUSUR_learn/3_курс/7_semester/ИБ/Лабораторные/test.txt')
+                           default_value='/home/luzinsan/TUSUR_learn/4 курс/7_semester/ИБ/Лабораторные/prog/test.txt')
         dpg.add_button(label='Select Path Manually', callback=lambda: dpg.show_item("file_dialog"))
     with dpg.group(tag='Cipher method', show=False):
         dpg.add_text(tag='input data', label='Input Data', show_label=True)

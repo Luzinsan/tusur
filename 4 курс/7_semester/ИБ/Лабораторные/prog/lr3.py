@@ -70,7 +70,7 @@ class RSA:
     def encrypt(self, input_bytes: list) -> tuple[list, str]:
         e, N = self.__public_key__
         __cipher_bytes__ = [RSA.fast_pow_module(c, e, N) for c in input_bytes]
-        return __cipher_bytes__, ''.join(map(lambda x: str(x), __cipher_bytes__))
+        return __cipher_bytes__, ''.join([chr(c) for c in __cipher_bytes__])
 
     def decrypt(self, cipher_bytes: list) -> tuple[list, str]:
         d, N = self.__private_key__
