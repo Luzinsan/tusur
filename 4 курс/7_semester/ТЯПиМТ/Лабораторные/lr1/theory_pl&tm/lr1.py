@@ -35,7 +35,7 @@ class DFSM:
         self.__DELTA__ = pd.DataFrame(columns=self.__header__,
                                       data=[[(1, 1), (self.__ERROR__, 0), (self.__ERROR__, 0), (0, 0),
                                              (self.__ERROR__, 0)],
-                                            [(1, 2), (1, 2), (0, 3), (2, 3), (self.__HALT__, 3)],
+                                            [(1, 1), (1, 1), (0, 2), (2, 2), (self.__HALT__, 2)],
                                             [(self.__ERROR__, 0), (self.__ERROR__, 0), (0, 0), (2, 0),
                                              (self.__HALT__, 0)]])
         print(f'Функция переходов: \n{self.__DELTA__}\n\n')
@@ -44,25 +44,34 @@ class DFSM:
         q = 0
         container = []
         buffer = ''
-        ticker = 0
+        row = 1
+        column = 0
         input_string += '\0'
         for symbol in input_string:
-            ticker += 1
             q, func = self.__DELTA__.iloc[q][self.__ALPHABET__[symbol]]
+            if symbol == '\n':
+                column = 0
+                row += 1
+            else:
+                column += 1
             match func:
                 case 1:
-                    buffer = symbol
-                case 2:
                     buffer += symbol
-                case 3:
+                case 2:
                     if buffer in container:
-                        raise ValueError(f'{input_string}\n{" " * ticker} ^')
+                        raise ValueError(f'Repeated id on the row={row}\tcolumn={column}'
+                                         f'\nid={buffer}'
+                                         f'\nfor container:{container}')
                     container.append(buffer)
                     buffer = ''
-            print(f'q={q}\tfunc={func}\tbuffer={buffer}\tcontainer={container}')
+
+            print(f'symbol={symbol}\tq={q}\tfunc={func}\tbuffer={buffer}\tcontainer={container}'
+                  f'\nanalyzing: row={row}\tcolumn={column}')
             match q:
                 case 'ERROR':
-                    raise ValueError(f'{input_string}\n{" " * ticker}^')
+                    raise ValueError(f'Syntax error on the row={row}\tcolumn={column}'
+                                     f'\n{input_string[:-1]}'
+                                     f'\n{" " * len(input_string[:-1])}\r^')
                 case 'HALT':
                     return True
 
