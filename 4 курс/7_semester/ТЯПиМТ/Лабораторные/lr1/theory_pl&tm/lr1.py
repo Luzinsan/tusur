@@ -1,18 +1,22 @@
 import pandas as pd
 import dearpygui.dearpygui as dpg
 from __init__ import initialize
+pd.set_option('display.max_columns', None)
 
 
 class DFSM:
     __ALPHABET__: dict[str, str]
     __HEADER__: list[str]
-    __ERROR__ = 'ERROR'
-    __HALT__ = 'HALT'
+    __ERROR__ = -1
+    __HALT__ = 99
     __DELTA__: pd.DataFrame
+    __container__: set
+    __types__: list
 
     def __init__(self,
-                 file_alphabetic: str = 'theory_pl&tm/alphabetic.txt'):
-        file = open(file_alphabetic, 'r', encoding="utf-8")
+                 file_alphabetic: str = 'theory_pl&tm/alphabetic.txt',
+                 file_transition: str = 'theory_pl&tm/transition.txt'):
+        file = open(file_alphabetic, 'r')
         alphabet_area = file.readlines()
         file.close()
 
@@ -23,56 +27,82 @@ class DFSM:
             pattern_alphabetic += item + ', '
             custom_alphabetic += [chr(symbol)
                                   for symbol in range(ord(item[0]), ord(item[-1]) + 1)]
-        self.__ALPHABET__ = {symbol: pattern_alphabetic + '_' for symbol in custom_alphabetic} \
-                            | {'_': pattern_alphabetic + '_'} \
+
+        self.__types__ = ['int', 'double', 'float', 'long']
+        self.__container__ = set(self.__types__)
+        self.__ALPHABET__ = {_type: 'type' for _type in self.__types__}\
+                            | {symbol: pattern_alphabetic + '_' for symbol in custom_alphabetic + ['_']} \
                             | {chr(symbol): '0-9' for symbol in range(ord('0'), ord('9'))} \
-                            | {',': ','} \
                             | {'\t': '└┘', '\n': '└┘', ' ': '└┘'} \
+                            | {';': ';'} \
+                            | {',': ','} \
                             | {'\0': '\0'}
-        self.__header__ = [pattern_alphabetic + '_', '0-9', ',', '└┘', '\0']
+        self.__header__ = ['type', pattern_alphabetic + '_', '0-9', '└┘', ';', ',', '\0']
         print(f"Алфавит: {self.__header__}")
 
+        file = open(file_transition, 'r')
+        transition = file.readlines()
+        file.close()
+        data = list()
+        for row in transition:
+            lst_row = row.split()
+            data.append([(int(lst_row[index]), int(lst_row[index + 1])) for index in range(0, len(lst_row) - 1, 2)])
+        print(data)
         self.__DELTA__ = pd.DataFrame(columns=self.__header__,
-                                      data=[[(1, 1), (self.__ERROR__, 0), (self.__ERROR__, 0), (0, 0),
-                                             (self.__ERROR__, 0)],
-                                            [(1, 1), (1, 1), (0, 2), (2, 2), (self.__HALT__, 2)],
-                                            [(self.__ERROR__, 0), (self.__ERROR__, 0), (0, 0), (2, 0),
-                                             (self.__HALT__, 0)]])
+            data=data)
         print(f'Функция переходов: \n{self.__DELTA__}\n\n')
 
     def analyze(self, input_string: str):
         q = 0
-        container = []
-        buffer = ''
+        buffer: str = ''
         row = 1
         column = 0
         input_string += '\0'
-        for symbol in input_string:
-            q, func = self.__DELTA__.iloc[q][self.__ALPHABET__[symbol]]
+        iterator = iter(input_string)
+        index = -1
+        for symbol in iterator:
+            index += 1
+            print(f"CURR: {symbol}")
             if symbol == '\n':
                 column = 0
                 row += 1
             else:
                 column += 1
+
+            if q == 0 and symbol.isalpha():
+                print(f'q=={q} and symbol as alpha\n')
+                symbol = input_string[index:].split()[0]
+                [next(iterator) for interator in range(len(symbol) - 1)]
+                index += len(symbol) - 1
+            try:
+                print(f'\t=>>>q={q}\tsymbol={symbol}\talphabet={self.__ALPHABET__[symbol]}')
+                q, func = self.__DELTA__.iloc[q][self.__ALPHABET__[symbol]]
+                print(f'\nq={q}\tfunc={func}')
+            except KeyError as err:
+                raise ValueError(f'Invalid type on the row={row}\tcolumn={column}'
+                                 f'\nid={symbol}')
+
             match func:
                 case 1:
                     buffer += symbol
                 case 2:
-                    if buffer in container:
-                        raise ValueError(f'Repeated id on the row={row}\tcolumn={column}'
+                    if buffer in self.__container__:
+                        raise ValueError(f'Repeated id or using reserved name on the row={row}\tcolumn={column}'
                                          f'\nid={buffer}'
-                                         f'\nfor container:{container}')
-                    container.append(buffer)
+                                         f'\nfor container:{self.__container__ - set(self.__types__)}'
+                                         f'\nand types: {self.__types__}')
+                    self.__container__ |= {buffer}
                     buffer = ''
 
-            print(f'symbol={symbol}\tq={q}\tfunc={func}\tbuffer={buffer}\tcontainer={container}'
+            print(f'symbol={symbol}\tq={q}\tfunc={func}\tbuffer={buffer}\tcontainer={self.__container__ - set(self.__types__)}'
                   f'\nanalyzing: row={row}\tcolumn={column}')
             match q:
-                case 'ERROR':
+                case self.__ERROR__:
                     raise ValueError(f'Syntax error on the row={row}\tcolumn={column}'
                                      f'\n{input_string[:-1]}'
                                      f'\n{" " * len(input_string[:-1])}\r^')
-                case 'HALT':
+                case self.__HALT__:
+                    self.__container__ -= set(self.__types__)
                     return True
 
 

@@ -27,7 +27,7 @@ def initialize():
                          callback=switch_method,
                          horizontal=True)
     dpg.add_input_text(label='Input Text', tag='Manually', show=False,
-                       default_value='x1, x2', multiline=True)
+                       default_value='      int x1, x2;', multiline=True)
     with dpg.group(horizontal=True, show=False, tag='File'):
         dpg.add_input_text(tag='file',
                            default_value='/home/luzinsan/TUSUR_learn/4 курс/7_semester/ТЯПиМТ/Лабораторные/lr1/test.txt')
