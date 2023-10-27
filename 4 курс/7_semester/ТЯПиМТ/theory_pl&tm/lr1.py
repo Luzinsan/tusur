@@ -3,6 +3,9 @@ import dearpygui.dearpygui as dpg
 from __init__ import initialize
 pd.set_option('display.max_columns', None)
 
+# TODO:
+# указание файла алфавита
+# указание файла таблицы преобразования
 
 class DFSM:
     __ALPHABET__: dict[str, str]
@@ -14,8 +17,8 @@ class DFSM:
     __types__: list
 
     def __init__(self,
-                 file_alphabetic: str = 'theory_pl&tm/alphabetic.txt',
-                 file_transition: str = 'theory_pl&tm/transition.txt'):
+                 file_alphabetic: str = 'alphabetic.txt',
+                 file_transition: str = 'transition.txt'):
         file = open(file_alphabetic, 'r')
         alphabet_area = file.readlines()
         file.close()

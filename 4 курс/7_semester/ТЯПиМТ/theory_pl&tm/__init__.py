@@ -27,10 +27,10 @@ def initialize():
                          callback=switch_method,
                          horizontal=True)
     dpg.add_input_text(label='Input Text', tag='Manually', show=False,
-                       default_value='      int x1, x2;', multiline=True)
+                       default_value=' float   b2 , sint , int_[sdf[3], ds[2]], int7  ; ', multiline=True)
     with dpg.group(horizontal=True, show=False, tag='File'):
         dpg.add_input_text(tag='file',
-                           default_value='/home/luzinsan/TUSUR_learn/4 курс/7_semester/ТЯПиМТ/Лабораторные/lr1/test.txt')
+                           default_value='test.txt')
         dpg.add_button(label='Select Path Manually', callback=lambda: dpg.show_item("file_dialog"))
     with dpg.group(tag='Analyzing', show=False):
         dpg.add_text(tag='input data', label='Input Data', show_label=True)
