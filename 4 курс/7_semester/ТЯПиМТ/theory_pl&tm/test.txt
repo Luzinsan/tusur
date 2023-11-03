@@ -1,1 +1,2 @@
-x1, 2x2
+double a[10], b, c;
+int x_q[5][5];

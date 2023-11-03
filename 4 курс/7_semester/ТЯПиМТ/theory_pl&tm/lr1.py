@@ -11,40 +11,39 @@ class DFSM:
     __HALT__ = 99
     __DELTA__: pd.DataFrame
     __container__: set
-    __types__: str
+    __buffer__: str
     __header__: re
 
     def __init__(self,
                  file_transition: str = 'transition.ods'):
         self.__DELTA__ = pd.read_excel(file_transition, index_col=0, engine="odf", dtype=str)
-        self.__types__ = '|'.join(self.__DELTA__.columns[:5])
-        self.__container__ = set(self.__types__.split('|'))
+        self.__container__ = set()
+        self.__buffer__ = str()
         self.__header__ = re.compile('(' + ')|('.join([str(column) for column in self.__DELTA__.columns]) + ')')
         print(f'Функция переходов: \n{self.__DELTA__}\n\n')
 
-    def func(self, _func: int, row: int, column: int, buffer: str, symbol: str) -> str:
+    def func(self, _func: int, row: int, column: int, symbol: str):
         match _func:
             case 1:
-                buffer += symbol
+                self.__buffer__ += symbol
             case 2:
-                if buffer in self.__container__:
+                if self.__buffer__ in self.__container__:
                     raise ValueError(f'Repeated id on the row={row}\tcolumn={column}'
-                                     f'\nid={buffer}'
-                                     f'\nfor container:{self.__container__ - set(self.__types__.split("|"))}')
-                self.__container__ |= {buffer}
-                buffer = ''
-        return buffer
+                                     f'\nid={self.__buffer__}'
+                                     f'\nfor container:{self.__container__}')
+                self.__container__ |= {self.__buffer__}
+                self.__buffer__ = ''
+        print(f'row={row}\tcolumn={column}'
+              f'\nbuffer={self.__buffer__}'
+              f'\ncontainer:{self.__container__}')
 
     def analyze(self, input_string: str):
-        q = 0
-        buffer: str = ''
-        row = 1
-        column = 0
+        q, row, column = 0, 1, 0
         input_string += '\0'
-        iterator = iter(input_string)
-        index = 0
         print(f"PATTERN: {self.__header__}")
-        for symbol in iterator:
+        index = 0
+        while True:
+            symbol = input_string[index]
             print(f"CURR: {symbol}")
             if symbol == '\n':
                 column = 0
@@ -59,22 +58,19 @@ class DFSM:
                 print('column: ', self.__DELTA__.columns[match], ' index of col: ', match)
                 data_zp = self.__DELTA__.iloc[int(q), int(match)]
                 if data_zp == 'HALT':
-                    self.__container__ -= set(self.__types__)
                     return True
                 elif type(data_zp) is str:
                     if len(data_zp.split()) == 2:
                         q, _func = map(int, data_zp.split())
-                        buffer = self.func(_func, row, column, buffer, symbol)
+                        self.func(_func, row, column, symbol)
                     else:
                         q = int(data_zp)
-                    [next(iterator) for interator in range(len_shift - 1)]
                     index += len_shift
                     column += len_shift
-                    print(f"next index={index}\titerator={iterator}")
                 else:
                     raise ValueError(f'Syntax error on the row={row}\tcolumn={column}'
                                      f'\n{input_string[:-1]}'
-                                     f'\nsymbol={symbol}\tq={q}\tbuffer={buffer}\t\ncontainer={self.__container__ - set(self.__types__.split("|"))}')
+                                     f'\nsymbol={symbol}\tq={q}\tbuffer={self.__buffer__}\t\ncontainer={self.__container__}')
             else:
                 raise ValueError(f'Syntax error on the row={row}\tcolumn={column}'
                                  f'\n{input_string[:-1]}')
