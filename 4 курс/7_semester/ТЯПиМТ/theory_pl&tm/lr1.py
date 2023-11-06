@@ -7,8 +7,6 @@ pd.set_option('display.max_columns', None)
 
 
 class DFSM:
-    __ERROR__ = -1
-    __HALT__ = 99
     __DELTA__: pd.DataFrame
     __container__: set
     __buffer__: str
@@ -49,7 +47,7 @@ class DFSM:
                 column = 0
                 row += 1
             print(f"current string: {input_string[index:]}")
-            match = re.match(self.__header__, input_string[index:])
+            match = self.__header__.match(input_string, pos=index)
             if match:
                 print('match: ', match.groups())
                 symbol = match.group()
