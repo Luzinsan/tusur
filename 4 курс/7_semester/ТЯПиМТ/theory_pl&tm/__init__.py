@@ -32,6 +32,12 @@ def initialize():
         dpg.add_input_text(tag='file',
                            default_value='test.txt')
         dpg.add_button(label='Select Path Manually', callback=lambda: dpg.show_item("file_dialog"))
-    with dpg.group(tag='Analyzing', show=False):
-        dpg.add_text(tag='input data', label='Input Data', show_label=True)
-        dpg.add_text(tag='test', label='Output Data', show_label=True)
+    with dpg.group(tag='Analyzing', show=False, horizontal=True):
+        with dpg.group():
+            dpg.add_text('Input Data')
+            dpg.add_text(tag='input data', label='Input Data')
+        with dpg.group():
+            dpg.add_text('Output Data')
+            dpg.add_text(tag='test', label='Output Data')
+
+

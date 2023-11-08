@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 
 dpg.create_context()
-dpg.create_viewport(title='Лабораторные работы по Теории языков программирования и методов трансляции')
+dpg.create_viewport(title='Лабораторные работы по Теории языков программирования и методам трансляции', width=1920, height=1080)
 
 with dpg.theme() as global_theme:
     with dpg.theme_component(dpg.mvAll):
@@ -17,7 +17,7 @@ dpg.bind_theme(global_theme)
 
 
 with dpg.font_registry():
-    with dpg.font(f'/usr/share/fonts/noto/NotoSerif-Regular.ttf', 20, default_font=True, tag="Default font"):
+    with dpg.font(f'/usr/share/fonts/TTF/OpenSans-Regular.ttf', 24, default_font=True, tag="Default font"):
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Chinese_Full)
 dpg.bind_font("Default font")

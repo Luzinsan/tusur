@@ -78,7 +78,7 @@ def get_input_data():
     if dpg.get_value('input_method') == 'File':
         file_path = dpg.get_value('file')
         file = open(file_path, 'r', encoding="utf-8")
-        input_data = '\n'.join(file.readlines())
+        input_data = ''.join(file.readlines())
         file.close()
         return input_data
     else:
@@ -98,7 +98,7 @@ def main():
 
 
 def initialize_lr1():
-    with dpg.window(label="Лабораторная работа #1", tag='lr1', show=True, width=500, height=700, pos=(100, 100),
+    with dpg.window(label="Лабораторная работа #1", tag='lr1', show=True, autosize=True, min_size=(1000, 800), pos=(480, 0),  modal=True,
                     on_close=lambda: dpg.delete_item('lr1')):
         initialize()
         dpg.add_button(label="Analyze", callback=main, show=False, tag='continue')

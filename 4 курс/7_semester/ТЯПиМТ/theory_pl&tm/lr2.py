@@ -1,50 +1,40 @@
 import dearpygui.dearpygui as dpg
-import re
+import regex as re
 from __init__ import initialize
 
 
 class RegexAnalyze:
     __TYPES__: frozenset = {'int', 'double', 'float'}
+    pattern: re
     __CONTAINER__: set
 
-    def __init__(self):
-        self.__CONTAINER__ = set(self.__TYPES__)
+    def __init__(self, file_path_regex: str = "regex.txt"):
+        with open(file_path_regex) as file:
+            self.pattern = re.compile(''.join(file.readlines()).replace(" ", '').replace("\n", ''))
+
+        self.__CONTAINER__ = set()
 
     def analyze(self, input_string: str):
-        types_str = '|'.join(self.__TYPES__)
-        print(types_str)
-        pattern = re.compile(
-            f"(\s*(?:(?P<type>{types_str})\\b|(?P<id>[a-zA-Z_]\w*(?P<op>\[\s*(?:(?:[a-zA-Z_]\w*\[\d+\]|\d+)(?:\s*,\s*(?:[a-zA-Z_]\w*\[\d+\]|\d+))*)\s*\])?)\s*[,;])\s*)")
+        row = 1
+        error_message = str()
+        for match in re.finditer(self.pattern, input_string, partial=True):
+            print('capturesdict: ', match.capturesdict())
+            capture_dict = match.capturesdict()
+            for error in ['error_type', 'error_id_like_type', 'error_id', 'error_op', 'error_punc']:
+                if len(capture_dict[error]):
+                    for index, capture in enumerate(capture_dict[error]):
+                        pos = match.spans(error)[index][0] - match.start()
+                        search_n = re.search('\n', match[0], endpos=pos)
+                        if search_n:
+                            spaces = [_match for _match in re.finditer('\n', match[0], endpos=pos)]
+                            pos -= spaces[-1].span()[1]
+                        error_message += f'{error}: {capture}\n' \
+                                      + f'row={row}\tpos={pos+ 1}\n\n' \
+                                    #  + f'{match.spans(error)[index]}\n\n'
+            row += len(re.findall('\n', match[0]))
+        if error_message is not '':
+            raise SyntaxError(error_message)
 
-        # if ''.join([match[0] for match in re.findall(pattern, input_string)]) != input_string:
-        iterator = re.finditer(pattern, input_string)
-        desired_type = next(iterator)
-        index = desired_type.end()
-
-        if desired_type['type'] not in self.__TYPES__:
-            raise TypeError(f"Invalid type on the row={1}; column={desired_type.start()}")
-        for match in iterator:
-            print(f"index in orig string: {index}\trest_str={input_string[index:]}")
-            if not match['id']:
-                raise KeyError("Using a reserved name in an identifier\n"
-                               f" on the row={1}; column={match.start()}")
-            print(f"index of match: {match.start()}\tmatch={match['id']}\n")
-            if index != match.start():
-                raise KeyError(
-                    f"Invalid id on the row={1}; column={index}\nmatch={match['id']}\trest_str={input_string[index:]}")
-            elif match['id'] in self.__CONTAINER__:
-                raise KeyError(f'Repeated id or using reserved name on the row={1}\tcolumn={match.start()}'
-                                     f'\nid={match["id"]}'
-                                     f'\nfor container:{self.__CONTAINER__ - set(self.__TYPES__)}'
-                                     f'\nand types: {self.__TYPES__}')
-            else:
-                self.__CONTAINER__ |= set(match['id'])
-                index = match.end()
-        print(f"index in orig string: {index}\trest_str={input_string[index:]}")
-        print(f"index of match: {len(input_string) - 1}\n")
-        if index != len(input_string) :
-            raise SyntaxError("Reference to an unresolved external character\n"
-                              f"on the row={1}; column={len(input_string)}")
 
 
 def main():
@@ -60,7 +50,7 @@ def main():
 
 
 def initialize_lr2():
-    with dpg.window(label="Лабораторная работа #2", tag='lr2', show=True, width=500, height=700, pos=(100, 100),
+    with dpg.window(label="Лабораторная работа #2", tag='lr2', show=True, autosize=True, min_size=(1000, 800), modal=True, pos=(480, 0),
                     on_close=lambda: dpg.delete_item('lr2')):
         initialize()
         dpg.add_button(label="Analyze", callback=main, show=False, tag='continue')
@@ -69,8 +59,8 @@ def initialize_lr2():
 def get_input_data():
     if dpg.get_value('input_method') == 'File':
         file_path = dpg.get_value('file')
-        file = open(file_path, 'r', encoding="utf-8")
-        input_data = '\n'.join(file.readlines())
+        file = open(file_path, 'r')
+        input_data = ''.join(file.readlines())
         file.close()
         return input_data
     else:
