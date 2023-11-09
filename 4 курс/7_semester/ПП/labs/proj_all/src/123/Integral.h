@@ -11,7 +11,7 @@
 class Integral : public Process
 {
 private:
-    int intervals = 0;
+    int intervals = 0; 
     double xl = -0.2, // low  bordert
         xh = 1.0;     // high border
     double c = 0.9;

@@ -14,17 +14,9 @@ void lab4(int argc, char *argv[])
     fout << "\n\n-------------------------------------------------------------";
     int intervals = 100000000;
     fout << "\nNumber of intervals: " << intervals;
-    // std::cout << "\nEnter the number of intervals (0 quit): ";
-    // std::cin >> intervals;
-    if (!intervals) return;
 
     double xl=-0.2, xh=1.0, c=0.9;
-    // std::cout << "\nEnter the low border: ";
-    // std::cin >> xl;
-    // std::cout << "\nEnter the hight border: ";
-    // std::cin >> xh;
-    // std::cout << "\nEnter the parameter of function: ";
-    // std::cin >> c;
+
 
     int max_threads = omp_get_max_threads();
     fout << "\nMaximum number of threads: " << max_threads;
