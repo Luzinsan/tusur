@@ -194,7 +194,6 @@ public:
 
                 delete[] data;
                 data = new T[rows * columns]{0};
-                //??принять посланные данные в массив по размеру выбранных данных базового типа.
                 receive(data, Process::INIT, MPI_FLOAT, len_type, 2); 
                 
                 Process::printInfo("", fout);
