@@ -13,7 +13,7 @@ class DFSM:
     __header__: re
 
     def __init__(self,
-                 file_transition: str = 'transition.ods'):
+                 file_transition: str = 'lr1/transition.ods'):
         self.__DELTA__ = pd.read_excel(file_transition, index_col=0, engine="odf", dtype=str)
         self.__container__ = set()
         self.__buffer__ = str()
@@ -88,7 +88,10 @@ def get_input_data():
 def main():
     dpg.show_item('Analyzing')
     input_data = get_input_data()
-    dpg.set_value('input data', value=input_data)
+    data_with_numering = '\n'.join([f'{index}\t{row}'
+                                    for index, row
+                                    in enumerate(input_data.split('\n'), 1)])
+    dpg.set_value('input data', value=data_with_numering)
     try:
         engine: DFSM = DFSM()
         engine.analyze(input_data)

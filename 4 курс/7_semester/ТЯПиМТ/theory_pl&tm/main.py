@@ -1,6 +1,6 @@
 from settings import *
-from lr1 import *
-from lr2 import *
+from lr1.lr1 import *
+from lr2.lr2 import *
 # from lr3 import *
 
 

@@ -9,7 +9,7 @@ class RegexAnalyze:
     __container__: set
     __errors__: str
 
-    def __init__(self, file_path_regex: str = "regex.txt"):
+    def __init__(self, file_path_regex: str = "lr2/regex.txt"):
         with open(file_path_regex) as file:
             self.pattern = re.compile(''.join(file.readlines()).replace(" ", '').replace("\n", ''))
 
