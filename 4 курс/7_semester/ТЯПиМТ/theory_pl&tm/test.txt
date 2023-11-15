@@ -11,15 +11,9 @@ char _a[1], fi [
     ] [ 10] [   5   ]  ,g[1];
 int hjk, s,
 j,
-sd, sdf, q%w, &;
-int 3abc;
-float average marks;
-char# symbol;
-long 42value;
-float percent%;
-short int 2small;
-double double;
-long, int fghj [9];
-int x[ , fdf[f];
-double ghj[1;
-char name[-10  ];
+sd, sdf, qw ;
+float average, marks;
+char symbol;
+short int _2small ;
+long _int, fghj [9];
+int x[1] , fdf[10];

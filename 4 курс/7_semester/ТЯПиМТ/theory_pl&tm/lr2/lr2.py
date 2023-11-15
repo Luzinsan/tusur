@@ -1,7 +1,6 @@
 import dearpygui.dearpygui as dpg
 import regex as re
 from __init__ import initialize
-from typing import AnyStr
 
 
 class RegexAnalyze:
@@ -12,7 +11,6 @@ class RegexAnalyze:
     def __init__(self, file_path_regex: str = "lr2/regex.txt"):
         with open(file_path_regex) as file:
             self.pattern = re.compile(''.join(file.readlines()).replace(" ", '').replace("\n", ''))
-
         self.__container__ = set()
         self.__errors__ = ''
 
@@ -37,7 +35,6 @@ class RegexAnalyze:
                 row_error = curr_row + len(spaces)
                 start_row = spaces[-1].end()
                 pos -= start_row
-            print("curr_match:", curr_match, re.search('\n', curr_match, pos=start_row))
             last_n = re.search('\n', curr_match, pos=start_row)
             str_row = curr_match[start_row:last_n.start()] if last_n else curr_match[start_row:]
             self.__errors__ += f'{str_row}\n' \
