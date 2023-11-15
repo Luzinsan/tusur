@@ -17,7 +17,7 @@ dpg.bind_theme(global_theme)
 
 
 with dpg.font_registry():
-    with dpg.font(f'/usr/share/fonts/TTF/OpenSans-Regular.ttf', 24, default_font=True, tag="Default font"):
+    with dpg.font('UbuntuMono-R.ttf', 20, default_font=True, tag="Default font"):
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Cyrillic)
         dpg.add_font_range_hint(dpg.mvFontRangeHint_Chinese_Full)
 dpg.bind_font("Default font")

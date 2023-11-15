@@ -26,8 +26,10 @@ def initialize():
                          items=["Manually", "File"],
                          callback=switch_method,
                          horizontal=True)
-    dpg.add_input_text(label='Input Text', tag='Manually', show=False,
-                       default_value=' float   b2 , sint , int_, ds[2], int7  ; ', multiline=True)
+    with dpg.group(tag='Manually', show=False):
+        dpg.add_text('Input Data')
+        dpg.add_input_text(tag='Manually_text', default_value=' float   b2 , sint , int_, ds[2], int7  ; ', tab_input=True, multiline=True, width=500)
+
     with dpg.group(horizontal=True, show=False, tag='File'):
         dpg.add_input_text(tag='file',
                            default_value='test.txt')

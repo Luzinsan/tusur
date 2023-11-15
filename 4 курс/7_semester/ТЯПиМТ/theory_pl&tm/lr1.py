@@ -82,7 +82,7 @@ def get_input_data():
         file.close()
         return input_data
     else:
-        return dpg.get_value('Manually')
+        return dpg.get_value('Manually_text')
 
 
 def main():
