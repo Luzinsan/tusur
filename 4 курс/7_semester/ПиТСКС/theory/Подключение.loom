@@ -1,0 +1,187 @@
+{
+  "model": {
+    "columns": [
+      {
+        "id": "8683bc65-67cd-4136-92fd-b18a6c82c894",
+        "sortDir": "default",
+        "isVisible": true,
+        "width": "190px",
+        "type": "text",
+        "numberPrefix": "",
+        "numberSuffix": "",
+        "numberSeparator": "",
+        "content": "Порт на компьютере",
+        "numberFormat": "number",
+        "currencyType": "USD",
+        "dateFormat": "mmddyyyy",
+        "dateFormatSeparator": "-",
+        "hour12": true,
+        "includeTime": false,
+        "shouldWrapOverflow": true,
+        "tags": [],
+        "calculationType": "none",
+        "aspectRatio": "unset",
+        "horizontalPadding": "unset",
+        "verticalPadding": "unset",
+        "frontmatterKey": null
+      },
+      {
+        "id": "813295ce-adac-4e44-9ce4-932cfdf82767",
+        "sortDir": "default",
+        "isVisible": true,
+        "width": "204px",
+        "type": "text",
+        "numberPrefix": "",
+        "numberSuffix": "",
+        "numberSeparator": "",
+        "content": "Кабель",
+        "numberFormat": "number",
+        "currencyType": "USD",
+        "dateFormat": "mmddyyyy",
+        "dateFormatSeparator": "-",
+        "hour12": true,
+        "includeTime": false,
+        "shouldWrapOverflow": true,
+        "tags": [],
+        "calculationType": "none",
+        "aspectRatio": "unset",
+        "horizontalPadding": "unset",
+        "verticalPadding": "unset",
+        "frontmatterKey": null
+      },
+      {
+        "id": "a339c033-d53a-44dd-b882-93937f0163e9",
+        "sortDir": "default",
+        "isVisible": true,
+        "width": "230px",
+        "type": "text",
+        "numberPrefix": "",
+        "numberSuffix": "",
+        "numberSeparator": "",
+        "content": "Порт на маршрутизаторе",
+        "numberFormat": "number",
+        "currencyType": "USD",
+        "dateFormat": "mmddyyyy",
+        "dateFormatSeparator": "-",
+        "hour12": true,
+        "includeTime": false,
+        "shouldWrapOverflow": true,
+        "tags": [],
+        "calculationType": "none",
+        "aspectRatio": "unset",
+        "horizontalPadding": "unset",
+        "verticalPadding": "unset",
+        "frontmatterKey": null
+      }
+    ],
+    "rows": [
+      {
+        "id": "fd616bb8-9c4b-46f0-a410-471ec44413a9",
+        "index": 0,
+        "sourceId": null,
+        "creationDateTime": "2023-11-24T15:34:02.228Z",
+        "lastEditedDateTime": "2023-11-24T15:43:51.552Z",
+        "cells": [
+          {
+            "id": "1952c7c8-dd86-4eee-8120-9ff3f8e349a1",
+            "isExternalLink": false,
+            "columnId": "8683bc65-67cd-4136-92fd-b18a6c82c894",
+            "dateTime": null,
+            "content": "Serial (последовательный) port   ",
+            "tagIds": []
+          },
+          {
+            "id": "2f9f60bb-0931-4165-8cd3-e701c05819da",
+            "isExternalLink": false,
+            "columnId": "813295ce-adac-4e44-9ce4-932cfdf82767",
+            "dateTime": null,
+            "content": "Console RJ-45 -- DB9",
+            "tagIds": []
+          },
+          {
+            "id": "ba6b73bd-3f3a-4efb-a072-f901b00ab908",
+            "isExternalLink": false,
+            "columnId": "a339c033-d53a-44dd-b882-93937f0163e9",
+            "dateTime": null,
+            "content": "Console RJ-25",
+            "tagIds": []
+          }
+        ]
+      },
+      {
+        "id": "06781fcc-da0c-41c2-a05a-4a54d4f14d24",
+        "index": 1,
+        "sourceId": null,
+        "creationDateTime": "2023-11-24T15:37:42.980Z",
+        "lastEditedDateTime": "2023-11-24T15:41:07.854Z",
+        "cells": [
+          {
+            "id": "e95de444-b544-4004-84b4-a8b15e727ae0",
+            "isExternalLink": false,
+            "columnId": "8683bc65-67cd-4136-92fd-b18a6c82c894",
+            "dateTime": null,
+            "content": "USB type-A\nУстановка драйвера",
+            "tagIds": []
+          },
+          {
+            "id": "8a55aaba-03c4-46c9-b1a0-7f3a414aa715",
+            "isExternalLink": false,
+            "columnId": "813295ce-adac-4e44-9ce4-932cfdf82767",
+            "dateTime": null,
+            "content": "Serial USB -- RS-232\nConsole RJ-25 -- DB-9\n",
+            "tagIds": []
+          },
+          {
+            "id": "d1323664-ca23-4595-8120-398324619dd5",
+            "isExternalLink": false,
+            "columnId": "a339c033-d53a-44dd-b882-93937f0163e9",
+            "dateTime": null,
+            "content": "Console RJ-25",
+            "tagIds": []
+          }
+        ]
+      },
+      {
+        "id": "540c08d4-039c-4b39-9d3e-26cbdb10bd9b",
+        "index": 2,
+        "sourceId": null,
+        "creationDateTime": "2023-11-24T15:40:04.470Z",
+        "lastEditedDateTime": "2023-11-24T15:41:30.220Z",
+        "cells": [
+          {
+            "id": "f84f1e9f-9e1d-4c12-b67a-a91614534ac5",
+            "isExternalLink": false,
+            "columnId": "8683bc65-67cd-4136-92fd-b18a6c82c894",
+            "dateTime": null,
+            "content": "",
+            "tagIds": []
+          },
+          {
+            "id": "a81d78a9-f1ce-4321-9e59-821de12e3439",
+            "isExternalLink": false,
+            "columnId": "813295ce-adac-4e44-9ce4-932cfdf82767",
+            "dateTime": null,
+            "content": "USB type-A -- USB mini-B\n",
+            "tagIds": []
+          },
+          {
+            "id": "adaf3508-3dfc-454e-a4ae-1299de4f723f",
+            "isExternalLink": false,
+            "columnId": "a339c033-d53a-44dd-b882-93937f0163e9",
+            "dateTime": null,
+            "content": "USB mini-B",
+            "tagIds": []
+          }
+        ]
+      }
+    ],
+    "filters": [],
+    "sources": [],
+    "settings": {
+      "numFrozenColumns": 1,
+      "showCalculationRow": false
+    },
+    "externalRowOrder": []
+  },
+  "pluginVersion": "8.12.2"
+}
