@@ -1,5 +1,0 @@
-Компиляция .lisp файла в .fasl:
-sbcl --noinform --eval '(compile-file "task.lisp")'
-
-Запуск программы:
-sbcl --load task.fasl
