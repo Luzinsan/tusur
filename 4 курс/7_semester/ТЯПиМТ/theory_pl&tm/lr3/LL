@@ -1,0 +1,35 @@
+K0 -> S INIT                                  
+S -> REQ_S | e                                         
+													  
+REQ_S -> \s S                                          
+
+INIT -> namespace REQ_S ID { REST } K0 | MOD_TYPE REQ_S ID ( S PARAMS ) S BODY K0
+
+REST -> INIT | REQ_S REST2 | e
+REST2 -> INIT | e										  
+BODY -> ; | { S }                                    
+
+MOD_TYPE -> MOD_TYPE_NONVOID | VOID                   
+MOD_TYPE_NONVOID -> MOD REQ_S TYPE | TYPE             
+VOID -> void                                          
+TYPE -> int INT|double DOUBLE|float|char|long LONG|short SHORT
+INT -> REQ_S LENGTH | e                              
+DOUBLE -> REQ_S long | e                               
+LONG -> REQ_S LONGTYPES | e                           
+SHORT -> REQ_S int | e                                 
+
+LENGTH -> long | short                               
+LONGTYPES -> int | double                             
+MOD -> unsigned | signed                             
+
+ID -> [a-zA-Z_] INNERID                               
+INNERID -> [a-zA-Z0-9_] INNERID | S ARRAY             
+ARRAY -> [ S OP S ] S ARRAY | e                       
+OP -> [1-9] OP1                                        
+OP1 -> [0-9] OP1 | e                                  
+
+PARAMS -> MOD_TYPE_NONVOID PARAM_NAME | VOID S | e
+PARAM_NAME -> REQ_S ID_NON | COMMA_NON     
+ID_NON -> ID S COMMA_NON | COMMA_NON               
+COMMA_NON ->  , S TAIL | e                             
+TAIL -> PARAMS | ...                                   
