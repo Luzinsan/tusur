@@ -69,28 +69,28 @@ while True:
 def review_next(key, nodes, index_node, follows, base_col):
     try:
         next_node = nodes[index_node + 1]
-        print("next node: ", next_node)
+        # print("next node: ", next_node)
         # итерация по правилам следующего узла для поиска его символов-предсшественников
         for start_index_row in dict_LL[next_node].keys():
             # print("start_index: ", start_index_row)
-            start_terms = list_ods.cell(row=start_index_row + 2, column=start_col).value
-            print("start_terms: ", start_terms)
-            if start_terms == 'e':
+            start_terms: list = list_ods.cell(row=start_index_row + 2, column=start_col).value.split(" ")
+            # print("start_terms: ", start_terms)
+            if 'e' in start_terms:
+                start_terms.remove('e')
                 follows += review_next(key, nodes, index_node + 1, follows, base_col)
                 # follows += list_ods.cell(row=min(dict_LL[next_node].keys()) + 2, column=base_col).value.split(" ")
-                print("1: new_starts after replacing 'e': ", follows)
+                # print("1: new_starts after replacing 'e': ", follows)
             else:
-                start_terms = start_terms.split(" ")
                 follows += start_terms
-                print("2: new_starts: ", start_terms)
+                # print("2: new_starts: ", start_terms)
     except IndexError as _:
-        print("index_error: ", _)
-        print(f"append: row={min(dict_LL[key].keys()) + 2}\tcolumn={base_col}")
+        # print("index_error: ", _)
+        # print(f"append: row={min(dict_LL[key].keys()) + 2}\tcolumn={base_col}")
         follow_terms = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=base_col).value.split(" ")
         follows += follow_terms
-        print("new_follows: ", follows)
+        # print("new_follows: ", follows)
     except KeyError as _:
-        print("key_error:", _)
+        # print("key_error:", _)
         follows.append(next_node)
     return list(set(follows))
 
@@ -99,7 +99,7 @@ def put_follows(col: int):
     list_ods.cell(row=1, column=col, value=f"FOLLOWS{col - start_col - 1}")
     # итерация по нетерминалам
     for key in dict_LL.keys():
-        print(f"\n\t\tkey:{key}\tvalues:{dict_LL[key]}")
+        # print(f"\n\t\tkey:{key}\tvalues:{dict_LL[key]}")
         # итерация по правилам нетерминала
         for index_rule, rule in dict_LL[key].items():
             nodes = rule.split(" ")
@@ -107,14 +107,14 @@ def put_follows(col: int):
             for index_node, node in enumerate(nodes):
                 # для каждого нетерминала определяем последующие узлы
                 if is_nonterm(node):
-                    print(node, " - ", dict_LL[node])
+                    # print(node, " - ", dict_LL[node])
                     old_follows = list_ods.cell(row=min(dict_LL[node].keys()) + 2, column=col).value
                     if not (follows := old_follows.split(" ")):
                         follows = []
-                    print("Already having follows: ", follows)
+                    # print("Already having follows: ", follows)
                     follows = review_next(key, nodes, index_node, follows, col)
-                    print("Finale FOLLOWS: ", follows)
-                    print("PUT FOLLOWS AT: row=", min(dict_LL[node].keys()) + 2, " column=", col)
+                    # print("Finale FOLLOWS: ", follows)
+                    # print("PUT FOLLOWS AT: row=", min(dict_LL[node].keys()) + 2, " column=", col)
                     list_ods.cell(row=min(dict_LL[node].keys()) + 2, column=col, value=" ".join(follows))
     return list_ods
 
@@ -138,5 +138,19 @@ while True:
     if is_equal_cols(num_rows_sheet, list_ods, follow_col - 1, follow_col):
         break
     follow_col += 1
+
+list_ods.cell(row=1, column=follow_col + 1, value="DIRECTIONS")
+for key in dict_LL.keys():
+    # print(f"\n\t\tkey:{key}\tvalues:{dict_LL[key]}")
+    for index, rule in dict_LL[key].items():
+        direction_terms: list = list_ods.cell(row=index + 2, column=start_col).value.split(" ")
+        print("start_terms: ", direction_terms)
+        if 'e' in direction_terms:
+            direction_terms.remove("e")
+            follow_e = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col).value.split(" ")
+            print("replacing E: ", follow_e)
+            direction_terms += follow_e
+        list_ods.cell(row=index + 2, column=follow_col + 1, value=" ".join(direction_terms))
+
 
 wb.save('LL.xlsx')
