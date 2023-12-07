@@ -3,6 +3,8 @@ import openpyxl
 is_nonterm = lambda s: s[0].isupper()
 
 file_path_LL: str = "test1"
+example_string = "begin d comma d semi s semi end ⊥"
+
 dict_LL = dict()
 wb = openpyxl.Workbook()
 list_ods: openpyxl.Workbook = wb.create_sheet("List1", 0)
@@ -22,6 +24,7 @@ with open(file_path_LL) as file:
                 index += 1
             dict_LL[left] = rules
             # print(rules)
+
 
 # print(dict_LL)
 
@@ -131,7 +134,7 @@ while True:
     for key in dict_LL.keys():
         list_ods.merge_cells(start_row=min(dict_LL[key].keys()) + 2, start_column=follow_col,
                              end_row=max(dict_LL[key].keys()) + 2, end_column=follow_col)
-        old_value = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col-1).value
+        old_value = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col - 1).value
         list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col, value=old_value)
     list_ods = put_follows(follow_col)
     if is_equal_cols(num_rows_sheet, list_ods, follow_col - 1, follow_col):
@@ -162,9 +165,17 @@ def next_starts(key, starts, nodes, index_node):
     return starts
 
 
+def is_last_node(current_index, rule_nodes):
+    try:
+        if rule_nodes[current_index + 1]:
+            return False
+    except IndexError as _:
+        return True
+
+
 list_ods.cell(row=1, column=follow_col + 1, value="DIRECTIONS")
 parse_table: openpyxl.Workbook = wb.create_sheet("List2", 1)
-parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept"))
+parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept", "stack", "return", "error"))
 index_term = 1
 dict_M = dict()
 for key in dict_LL.keys():
@@ -182,7 +193,8 @@ for key in dict_LL.keys():
         list_ods.cell(row=index + 2, column=follow_col + 1, value=" ".join(direction_terms))
         dict_M.update({(key, index_term): {}})
         # print("dict_M: ", dict_M)
-        parse_table.append(("left: " + key, " ".join(direction_terms), "", "false"))
+        parse_table.append(("left: " + key, " ".join(direction_terms), "", "False", "False", "False", "False"))
+    parse_table.cell(row=index_term, column=7, value="True")
     last_left_term = index_term - 1
     # поиск направляющих символов в правой части правил
     # B -> aACg
@@ -199,8 +211,10 @@ for key in dict_LL.keys():
             index_term += 1
             # print("right term: ", node, "\tindex right term: ", index_term - 1)
             # для каждого нетерминала определяем направляющие узлы
-            accept = "false"
+            accept = "False"
+            stack = "False"
             if is_nonterm(node):
+                stack = str(not is_last_node(index_node, nodes))
                 starts = []
                 for start_index_row in dict_LL[node].keys():
                     # print("start_index: ", start_index_row)
@@ -213,36 +227,39 @@ for key in dict_LL.keys():
                 starts = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col).value.split(" ")
             else:
                 starts = [node]
-                accept = "true"
+                accept = "True"
             global_index_rule = index_rule - min(dict_LL[key].keys())
             # print("number of rules: ", len(dict_LL[key]), "\tglobal index rule: ", global_index_rule, "\tindex of term: ", index_term - 1)
             dict_M[(key, last_left_term - len(dict_LL[key]) + 2 + global_index_rule)].update({index_term: node})
             # print("dict_M: ", dict_M)
             # print("FINALE starts: ", starts)
-            parse_table.append(("right: " + node, " ".join(starts), "", accept))
+            parse_table.append(("right: " + node, " ".join(starts), "", accept, stack, "False", "True"))
 
 # jumps
 for key, values in dict_M.items():
-    print("key: ", key, "\tvalue", values)
+    # print("key: ", key, "\tvalue", values)
     parse_table.cell(row=key[1], column=3, value=min(values.keys()))
     for index_node, node in values.items():
         if is_nonterm(node):
-            print(f"loop\t\tindex_node={index_node}\tnode={node}")
+            # print(f"loop\t\tindex_node={index_node}\tnode={node}")
             for root_key in dict_M.keys():
-                print(f"loop\t\troot_key={root_key}\tnode={node}")
+                # print(f"loop\t\troot_key={root_key}\tnode={node}")
                 if root_key[0] == node:
-                    print(f"root_key[0]={root_key[0]}")
+                    # print(f"root_key[0]={root_key[0]}")
                     parse_table.cell(row=index_node, column=3, value=root_key[1])
                     break
         else:
             try:
-                print(f"try: index_node={index_node + 1}")
+                # print(f"try: index_node={index_node + 1}")
                 next_node = values[index_node + 1]
-                print("success: ", next_node)
+                # print("success: ", next_node)
                 parse_table.cell(row=index_node, column=3, value=index_node + 1)
             except KeyError as _:
-                print("is last node -> 0")
+                # print("is last node -> 0")
                 parse_table.cell(row=index_node, column=3, value=0)
-
+                parse_table.cell(row=index_node, column=6, value="True")
 
 wb.save('LL.xlsx')
+
+
+
