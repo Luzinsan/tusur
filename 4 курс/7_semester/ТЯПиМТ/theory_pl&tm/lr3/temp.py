@@ -166,6 +166,7 @@ list_ods.cell(row=1, column=follow_col + 1, value="DIRECTIONS")
 parse_table: openpyxl.Workbook = wb.create_sheet("List2", 1)
 parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump"))
 index_term = 1
+dict_M = dict()
 for key in dict_LL.keys():
     print(f"\n\t\tkey:{key}\tvalues:{dict_LL[key]}")
     for index in dict_LL[key].keys():
@@ -179,15 +180,19 @@ for key in dict_LL.keys():
             print("replacing E: ", follow_e)
             direction_terms += follow_e
         list_ods.cell(row=index + 2, column=follow_col + 1, value=" ".join(direction_terms))
-        parse_table.append(("left: " + key, " ".join(direction_terms)))
+        dict_M.update({(key, index_term - 1): {}})
+        print("dict_M: ", dict_M)
+        parse_table.append(("left: " + key, " ".join(direction_terms), index_term + 1))
+    last_left_term = index_term - 1
     # поиск направляющих символов в правой части правил
     # B -> aACg
     # T(Ai) = S(A)
     # if 'e' in S(A)
     #     remove 'e'
     #     + S(C)
+
     for index_rule, rule in dict_LL[key].items():
-        print("Current rule: ", key)
+        print("Current key: ", key, "\tindex rule: ", index_rule)
         nodes = rule.split(" ")
         # итерация по терминальным и нетерминальным узлам
         for index_node, node in enumerate(nodes):
@@ -207,6 +212,10 @@ for key in dict_LL.keys():
                 starts = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col).value.split(" ")
             else:
                 starts = [node]
+            global_index_rule = index_rule - min(dict_LL[key].keys())
+            print("number of rules: ", len(dict_LL[key]), "\tglobal index rule: ", global_index_rule, "\tindex of term: ", index_term - 1)
+            dict_M[(key, last_left_term - len(dict_LL[key]) + 1 + global_index_rule)].update({node: index_term - 1})
+            print("dict_M: ", dict_M)
             print("FINALE starts: ", starts)
             parse_table.append(("right: " + node, " ".join(starts)))
 
