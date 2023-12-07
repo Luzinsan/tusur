@@ -142,22 +142,22 @@ while True:
 def next_starts(key, starts, nodes, index_node):
     try:
         next_node = nodes[index_node + 1]
-        print("next node: ", next_node)
+        # print("next node: ", next_node)
         for start_index_row in dict_LL[next_node].keys():
-            print("start_index: ", start_index_row)
+            # print("start_index: ", start_index_row)
             starts += list_ods.cell(row=start_index_row + 2, column=start_col).value.split(" ")
             if 'e' in starts:
                 starts.remove("e")
                 starts = next_starts(key, starts, nodes, index_node + 1)
-            print("new_starts: ", starts)
+            # print("new_starts: ", starts)
     except IndexError as _:
-        print("index_error: ", _)
-        print(f"append: row={min(dict_LL[key].keys()) + 2}\tcolumn={follow_col}")
+        # print("index_error: ", _)
+        # print(f"append: row={min(dict_LL[key].keys()) + 2}\tcolumn={follow_col}")
         follow_terms = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col).value.split(" ")
         starts += follow_terms
-        print("new_starts: ", follow_terms)
+        # print("new_starts: ", follow_terms)
     except KeyError as _:
-        print("key_error:", _)
+        # print("key_error:", _)
         starts.append(next_node)
     return starts
 
@@ -168,21 +168,21 @@ parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump"))
 index_term = 1
 dict_M = dict()
 for key in dict_LL.keys():
-    print(f"\n\t\tkey:{key}\tvalues:{dict_LL[key]}")
+    # print(f"\n\t\tkey:{key}\tvalues:{dict_LL[key]}")
     for index in dict_LL[key].keys():
         index_term += 1
-        print("left term: ", key, "\tindex left term: ", index_term - 1)
+        # print("left term: ", key, "\tindex left term: ", index_term - 1)
         direction_terms: list = list_ods.cell(row=index + 2, column=start_col).value.split(" ")
-        print("start_terms: ", direction_terms)
+        # print("start_terms: ", direction_terms)
         if 'e' in direction_terms:
             direction_terms.remove("e")
             follow_e = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col).value.split(" ")
-            print("replacing E: ", follow_e)
+            # print("replacing E: ", follow_e)
             direction_terms += follow_e
         list_ods.cell(row=index + 2, column=follow_col + 1, value=" ".join(direction_terms))
-        dict_M.update({(key, index_term - 1): {}})
-        print("dict_M: ", dict_M)
-        parse_table.append(("left: " + key, " ".join(direction_terms), index_term + 1))
+        dict_M.update({(key, index_term): {}})
+        # print("dict_M: ", dict_M)
+        parse_table.append(("left: " + key, " ".join(direction_terms)))
     last_left_term = index_term - 1
     # поиск направляющих символов в правой части правил
     # B -> aACg
@@ -192,19 +192,19 @@ for key in dict_LL.keys():
     #     + S(C)
 
     for index_rule, rule in dict_LL[key].items():
-        print("Current key: ", key, "\tindex rule: ", index_rule)
+        # print("Current key: ", key, "\tindex rule: ", index_rule)
         nodes = rule.split(" ")
         # итерация по терминальным и нетерминальным узлам
         for index_node, node in enumerate(nodes):
             index_term += 1
-            print("right term: ", node, "\tindex right term: ", index_term - 1)
+            # print("right term: ", node, "\tindex right term: ", index_term - 1)
             # для каждого нетерминала определяем направляющие узлы
             if is_nonterm(node):
                 starts = []
                 for start_index_row in dict_LL[node].keys():
-                    print("start_index: ", start_index_row)
+                    # print("start_index: ", start_index_row)
                     starts += list_ods.cell(row=start_index_row + 2, column=start_col).value.split(" ")
-                    print("starts: ", starts)
+                    # print("starts: ", starts)
                     if 'e' in starts:
                         starts.remove("e")
                         starts = next_starts(key, starts, nodes, index_node)
@@ -213,11 +213,33 @@ for key in dict_LL.keys():
             else:
                 starts = [node]
             global_index_rule = index_rule - min(dict_LL[key].keys())
-            print("number of rules: ", len(dict_LL[key]), "\tglobal index rule: ", global_index_rule, "\tindex of term: ", index_term - 1)
-            dict_M[(key, last_left_term - len(dict_LL[key]) + 1 + global_index_rule)].update({node: index_term - 1})
-            print("dict_M: ", dict_M)
-            print("FINALE starts: ", starts)
+            # print("number of rules: ", len(dict_LL[key]), "\tglobal index rule: ", global_index_rule, "\tindex of term: ", index_term - 1)
+            dict_M[(key, last_left_term - len(dict_LL[key]) + 2 + global_index_rule)].update({index_term: node})
+            # print("dict_M: ", dict_M)
+            # print("FINALE starts: ", starts)
             parse_table.append(("right: " + node, " ".join(starts)))
+
+for key, values in dict_M.items():
+    print("key: ", key, "\tvalue", values)
+    parse_table.cell(row=key[1], column=3, value=min(values.keys()))
+    for index_node, node in values.items():
+        if is_nonterm(node):
+            print(f"loop\t\tindex_node={index_node}\tnode={node}")
+            for root_key in dict_M.keys():
+                print(f"loop\t\troot_key={root_key}\tnode={node}")
+                if root_key[0] == node:
+                    print(f"root_key[0]={root_key[0]}")
+                    parse_table.cell(row=index_node, column=3, value=root_key[1])
+                    break
+        else:
+            try:
+                print(f"try: index_node={index_node + 1}")
+                next_node = values[index_node + 1]
+                print("success: ", next_node)
+                parse_table.cell(row=index_node, column=3, value=index_node + 1)
+            except KeyError as _:
+                print("is last node -> 0")
+                parse_table.cell(row=index_node, column=3, value=0)
 
 
 wb.save('LL.xlsx')
