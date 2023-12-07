@@ -76,15 +76,17 @@ def main():
 
 def initialize_lr2():
     with dpg.window(label="Лабораторная работа #2", tag='lr2', show=True, autosize=True, min_size=(1000, 800),
-                    modal=True, pos=(480, 0),
+                    pos=(480, 0),
                     on_close=lambda: dpg.delete_item('lr2')):
         initialize()
+        dpg.configure_item('file_grammar', default_value='lr2/regex.txt')
+        dpg.configure_item('input_file', default_value='test.txt')
         dpg.add_button(label="Analyze", callback=main, show=False, tag='continue')
 
 
 def get_input_data():
     if dpg.get_value('input_method') == 'File':
-        file_path = dpg.get_value('file')
+        file_path = dpg.get_value('input_file')
         file = open(file_path, 'r')
         input_data = ''.join(file.readlines())
         file.close()

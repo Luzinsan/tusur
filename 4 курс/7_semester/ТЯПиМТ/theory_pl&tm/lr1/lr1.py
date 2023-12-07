@@ -13,7 +13,7 @@ class DFSM:
     __header__: re
 
     def __init__(self,
-                 file_transition: str = 'lr1/transition.ods'):
+                 file_transition):
         self.__DELTA__ = pd.read_excel(file_transition, index_col=0, engine="odf", dtype=str)
         self.__container__ = set()
         self.__buffer__ = str()
@@ -76,7 +76,7 @@ class DFSM:
 
 def get_input_data():
     if dpg.get_value('input_method') == 'File':
-        file_path = dpg.get_value('file')
+        file_path = dpg.get_value('input_file')
         file = open(file_path, 'r', encoding="utf-8")
         input_data = ''.join(file.readlines())
         file.close()
@@ -93,7 +93,7 @@ def main():
                                     in enumerate(input_data.split('\n'), 1)])
     dpg.set_value('input data', value=data_with_numering)
     try:
-        engine: DFSM = DFSM()
+        engine: DFSM = DFSM(dpg.get_value('file_grammar'))
         engine.analyze(input_data)
         dpg.configure_item('test', default_value=input_data, color=(0, 255, 0, 255))
     except ValueError as err:
@@ -101,7 +101,9 @@ def main():
 
 
 def initialize_lr1():
-    with dpg.window(label="Лабораторная работа #1", tag='lr1', show=True, autosize=True, min_size=(1000, 800), pos=(480, 0),  modal=True,
+    with dpg.window(label="Лабораторная работа #1", tag='lr1', show=True, autosize=True, min_size=(1000, 800), pos=(480, 0),
                     on_close=lambda: dpg.delete_item('lr1')):
         initialize()
+        dpg.configure_item('file_grammar', default_value='lr1/transition.ods')
+        dpg.configure_item('input_file', default_value='test.txt')
         dpg.add_button(label="Analyze", callback=main, show=False, tag='continue')
