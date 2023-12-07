@@ -164,7 +164,7 @@ def next_starts(key, starts, nodes, index_node):
 
 list_ods.cell(row=1, column=follow_col + 1, value="DIRECTIONS")
 parse_table: openpyxl.Workbook = wb.create_sheet("List2", 1)
-parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump"))
+parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept"))
 index_term = 1
 dict_M = dict()
 for key in dict_LL.keys():
@@ -182,7 +182,7 @@ for key in dict_LL.keys():
         list_ods.cell(row=index + 2, column=follow_col + 1, value=" ".join(direction_terms))
         dict_M.update({(key, index_term): {}})
         # print("dict_M: ", dict_M)
-        parse_table.append(("left: " + key, " ".join(direction_terms)))
+        parse_table.append(("left: " + key, " ".join(direction_terms), "", "false"))
     last_left_term = index_term - 1
     # поиск направляющих символов в правой части правил
     # B -> aACg
@@ -199,6 +199,7 @@ for key in dict_LL.keys():
             index_term += 1
             # print("right term: ", node, "\tindex right term: ", index_term - 1)
             # для каждого нетерминала определяем направляющие узлы
+            accept = "false"
             if is_nonterm(node):
                 starts = []
                 for start_index_row in dict_LL[node].keys():
@@ -212,13 +213,15 @@ for key in dict_LL.keys():
                 starts = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col).value.split(" ")
             else:
                 starts = [node]
+                accept = "true"
             global_index_rule = index_rule - min(dict_LL[key].keys())
             # print("number of rules: ", len(dict_LL[key]), "\tglobal index rule: ", global_index_rule, "\tindex of term: ", index_term - 1)
             dict_M[(key, last_left_term - len(dict_LL[key]) + 2 + global_index_rule)].update({index_term: node})
             # print("dict_M: ", dict_M)
             # print("FINALE starts: ", starts)
-            parse_table.append(("right: " + node, " ".join(starts)))
+            parse_table.append(("right: " + node, " ".join(starts), "", accept))
 
+# jumps
 for key, values in dict_M.items():
     print("key: ", key, "\tvalue", values)
     parse_table.cell(row=key[1], column=3, value=min(values.keys()))
