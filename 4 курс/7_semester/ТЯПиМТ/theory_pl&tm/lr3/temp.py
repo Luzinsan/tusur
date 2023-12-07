@@ -2,8 +2,8 @@ import openpyxl
 
 is_nonterm = lambda s: s[0].isupper()
 
-file_path_LL: str = "test1"
-example_string = "begin d comma d semi s semi end ⊥"
+file_path_LL: str = "test3"
+example_string = "begin d comma d semi s comma s end ⊥"
 
 dict_LL = dict()
 wb = openpyxl.Workbook()
@@ -262,4 +262,41 @@ for key, values in dict_M.items():
 wb.save('LL.xlsx')
 
 
+M_stack = [0]
+i = 2
+k = 0
+example_string = example_string.split(" ")
+while True:
+    print("\ncurrent i: ", i-1)
+    print("current token: ", example_string[k], "\tk=", k)
+    print("terminals: ", parse_table.cell(row=i, column=2).value.split(" "))
+    if example_string[k] in parse_table.cell(row=i, column=2).value.split(" "):
+        print("accepts: ", parse_table.cell(row=i, column=4).value)
+        print("stack: ", parse_table.cell(row=i, column=5).value)
+        print("returns: ", parse_table.cell(row=i, column=6).value)
+        print("jumps: ", parse_table.cell(row=i, column=3).value - 1)
+        if parse_table.cell(row=i, column=4).value == "True":
+            k += 1
+        if parse_table.cell(row=i, column=5).value == "True":
+            M_stack.append(i + 1)
+        if parse_table.cell(row=i, column=6).value == "True":
+            i = M_stack.pop()
+            if i == 0:
+                break
+            else:
+                continue
+        else:  # parse_table.cell(row=i, column=3).value != 0:
+            i = parse_table.cell(row=i, column=3).value
+        print("Stack: ", M_stack)
+    elif parse_table.cell(row=i, column=7).value == "False":
+        i += 1
+    else:
+        print("error: ", parse_table.cell(row=i, column=7).value)
+        break
+
+print("\t\tlength of stack: ", len(M_stack), "\tstack:", M_stack, "\t string[k]:", example_string[k])
+if len(M_stack) == 0 and example_string[k] == '⊥':
+    print("SUCCESS PARSED!")
+else:
+    print("FAILED PARSED! at: ", k, " - ", example_string[k])
 
