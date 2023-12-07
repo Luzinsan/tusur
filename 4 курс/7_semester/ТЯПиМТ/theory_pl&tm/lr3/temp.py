@@ -2,7 +2,7 @@ import openpyxl
 
 is_nonterm = lambda s: s[0].isupper()
 
-file_path_LL: str = "test"
+file_path_LL: str = "test1"
 dict_LL = dict()
 wb = openpyxl.Workbook()
 list_ods: openpyxl.Workbook = wb.create_sheet("List1", 0)
@@ -109,8 +109,7 @@ def put_follows(col: int):
                 if is_nonterm(node):
                     # print(node, " - ", dict_LL[node])
                     old_follows = list_ods.cell(row=min(dict_LL[node].keys()) + 2, column=col).value
-                    if not (follows := old_follows.split(" ")):
-                        follows = []
+                    follows = old_follows.split(" ") if old_follows else []
                     # print("Already having follows: ", follows)
                     follows = review_next(key, nodes, index_node, follows, col)
                     # print("Finale FOLLOWS: ", follows)
@@ -124,7 +123,7 @@ follow_col = start_col + 1
 for key in dict_LL.keys():
     list_ods.merge_cells(start_row=min(dict_LL[key].keys()) + 2, start_column=follow_col,
                          end_row=max(dict_LL[key].keys()) + 2, end_column=follow_col)
-    list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col, value="⊥")
+list_ods.cell(row=2, column=follow_col, value="⊥")
 
 list_ods = put_follows(follow_col)
 follow_col += 1
@@ -139,10 +138,39 @@ while True:
         break
     follow_col += 1
 
+
+def next_starts(key, starts, nodes, index_node):
+    try:
+        next_node = nodes[index_node + 1]
+        print("next node: ", next_node)
+        for start_index_row in dict_LL[next_node].keys():
+            print("start_index: ", start_index_row)
+            starts += list_ods.cell(row=start_index_row + 2, column=start_col).value.split(" ")
+            if 'e' in starts:
+                starts.remove("e")
+                starts = next_starts(key, starts, nodes, index_node + 1)
+            print("new_starts: ", starts)
+    except IndexError as _:
+        print("index_error: ", _)
+        print(f"append: row={min(dict_LL[key].keys()) + 2}\tcolumn={follow_col}")
+        follow_terms = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col).value.split(" ")
+        starts += follow_terms
+        print("new_starts: ", follow_terms)
+    except KeyError as _:
+        print("key_error:", _)
+        starts.append(next_node)
+    return starts
+
+
 list_ods.cell(row=1, column=follow_col + 1, value="DIRECTIONS")
+parse_table: openpyxl.Workbook = wb.create_sheet("List2", 1)
+parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump"))
+index_term = 1
 for key in dict_LL.keys():
-    # print(f"\n\t\tkey:{key}\tvalues:{dict_LL[key]}")
-    for index, rule in dict_LL[key].items():
+    print(f"\n\t\tkey:{key}\tvalues:{dict_LL[key]}")
+    for index in dict_LL[key].keys():
+        index_term += 1
+        print("left term: ", key, "\tindex left term: ", index_term - 1)
         direction_terms: list = list_ods.cell(row=index + 2, column=start_col).value.split(" ")
         print("start_terms: ", direction_terms)
         if 'e' in direction_terms:
@@ -151,6 +179,36 @@ for key in dict_LL.keys():
             print("replacing E: ", follow_e)
             direction_terms += follow_e
         list_ods.cell(row=index + 2, column=follow_col + 1, value=" ".join(direction_terms))
+        parse_table.append(("left: " + key, " ".join(direction_terms)))
+    # поиск направляющих символов в правой части правил
+    # B -> aACg
+    # T(Ai) = S(A)
+    # if 'e' in S(A)
+    #     remove 'e'
+    #     + S(C)
+    for index_rule, rule in dict_LL[key].items():
+        print("Current rule: ", key)
+        nodes = rule.split(" ")
+        # итерация по терминальным и нетерминальным узлам
+        for index_node, node in enumerate(nodes):
+            index_term += 1
+            print("right term: ", node, "\tindex right term: ", index_term - 1)
+            # для каждого нетерминала определяем направляющие узлы
+            if is_nonterm(node):
+                starts = []
+                for start_index_row in dict_LL[node].keys():
+                    print("start_index: ", start_index_row)
+                    starts += list_ods.cell(row=start_index_row + 2, column=start_col).value.split(" ")
+                    print("starts: ", starts)
+                    if 'e' in starts:
+                        starts.remove("e")
+                        starts = next_starts(key, starts, nodes, index_node)
+            elif node == 'e':
+                starts = list_ods.cell(row=min(dict_LL[key].keys()) + 2, column=follow_col).value.split(" ")
+            else:
+                starts = [node]
+            print("FINALE starts: ", starts)
+            parse_table.append(("right: " + node, " ".join(starts)))
 
 
 wb.save('LL.xlsx')

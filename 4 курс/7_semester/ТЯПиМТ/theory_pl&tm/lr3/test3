@@ -1,0 +1,5 @@
+PROGRAM -> begin DECLIST semi STARTLIST end
+DECLIST -> d X
+X -> comma DECLIST | e
+STARTLIST -> s Y
+Y -> comma STARTLIST | e
