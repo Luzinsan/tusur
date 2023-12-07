@@ -174,7 +174,7 @@ def is_last_node(current_index, rule_nodes):
 
 
 list_ods.cell(row=1, column=follow_col + 1, value="DIRECTIONS")
-parse_table: openpyxl.Workbook = wb.create_sheet("List2", 1)
+parse_table: openpyxl.Workbook = wb.create_sheet("parse_table", 1)
 parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept", "stack", "return", "error"))
 index_term = 1
 dict_M = dict()
