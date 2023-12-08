@@ -1,13 +1,13 @@
 import dearpygui.dearpygui as dpg
 import regex as re
-from __init__ import initialize
+from __init__ import initialize, select_path
 from openpyxl import load_workbook
 import openpyxl
 from enum import IntEnum
 
 
 class LL:
-    ws: openpyxl.worksheet.worksheet.Worksheet
+    table: openpyxl.worksheet.worksheet.Worksheet
 
     class Column(IntEnum):
         TERMS = 2
@@ -19,24 +19,26 @@ class LL:
 
     def open_parse_table(self, file_parse_table: str):
         try:
-            wb = load_workbook(filename=file_parse_table, read_only=True)
-            self.ws = wb['parse_table']
+            self.table = load_workbook(filename=file_parse_table, read_only=True)['parse_table']
         except BaseException as err:
             raise FileNotFoundError(err)
 
     # region Generate parse table
     class ParseTable:
-        wb: openpyxl.Workbook = openpyxl.Workbook()
+        wb: openpyxl.Workbook
         ws: openpyxl.worksheet.worksheet.Worksheet
         parse_table: openpyxl.worksheet.worksheet.Worksheet
-        dict_LL = dict()
-        dict_M = dict()
+        dict_LL: dict
+        dict_M: dict
         start_col: int
         follow_col: int
         num_rows: int
 
         def __init__(self):
-            self.ws = self.wb.create_sheet("parse_table", 0)
+            self.dict_LL = dict()
+            self.dict_M = dict()
+            self.wb = openpyxl.Workbook()
+            self.ws = self.wb.create_sheet("temp_list", 0)
             self.ws.append(('ПРАВИЛО', "START0"))
 
         def generate_parse_table(self, file_grammar: str):
@@ -45,7 +47,6 @@ class LL:
             self.find_follow_nodes()
             self.find_direction_nodes()
             self.find_jumps()
-            file_grammar = 'LL'
             self.wb.save(f"{file_grammar}.xlsx")
 
         @staticmethod
@@ -147,7 +148,7 @@ class LL:
             while True:
                 for key in self.dict_LL.keys():
                     self.ws.merge_cells(start_row=min(self.dict_LL[key].keys()) + 2, start_column=self.follow_col,
-                                         end_row=max(self.dict_LL[key].keys()) + 2, end_column=self.follow_col)
+                                        end_row=max(self.dict_LL[key].keys()) + 2, end_column=self.follow_col)
                     old_value = self.ws.cell(row=min(self.dict_LL[key].keys()) + 2, column=self.follow_col - 1).value
                     self.ws.cell(row=min(self.dict_LL[key].keys()) + 2, column=self.follow_col, value=old_value)
                 self.put_follows(self.follow_col)
@@ -179,12 +180,12 @@ class LL:
 
         def find_direction_nodes(self):
             self.ws.cell(row=1, column=self.follow_col + 1, value="DIRECTIONS")
-            self.parse_table = self.wb.create_sheet("parse_table", 1)
+            self.parse_table = self.wb.create_sheet("parse_table", 0)
             self.parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept", "stack", "return", "error"))
             index_term = 1
             for key in self.dict_LL.keys():
                 index_term = self.find_left_direction_nodes(key, index_term)
-                self.find_right_direction_nodes(key, index_term, index_term - 1)
+                index_term = self.find_right_direction_nodes(key, index_term, index_term - 1)
 
         def find_left_direction_nodes(self, key, index_term):
             for index in self.dict_LL[key].keys():
@@ -227,6 +228,7 @@ class LL:
                     self.dict_M[(key, last_left_term - len(self.dict_LL[key]) + 2 + global_index_rule)].update(
                         {index_term: node})
                     self.parse_table.append(("right: " + node, " ".join(starts), "", accept, stack, "False", "True"))
+            return index_term
 
         def find_jumps(self):
             for key, values in self.dict_M.items():
@@ -247,7 +249,7 @@ class LL:
     # endregion
 
     def parse_value(self, row, name_col: Column):
-        return self.ws.cell(row=row, column=name_col).value
+        return self.table.cell(row=row, column=name_col).value
 
     def analyze(self, input_string: str):
         input_string = input_string.split(" ")
@@ -287,8 +289,6 @@ def main():
     dpg.set_value('input data', value=data_with_numering)
     try:
         engine: LL = LL()
-        parse_table = LL.ParseTable()
-        parse_table.generate_parse_table("lr3/test1")
         engine.open_parse_table(dpg.get_value('file_grammar'))
         engine.analyze(input_data)
         dpg.configure_item('test', default_value=input_data, color=(0, 255, 0, 255))
@@ -296,12 +296,30 @@ def main():
         dpg.configure_item('test', default_value=f"Exception error during analyzing:\n{err}", color=(255, 0, 0, 255))
 
 
+def generate_parse_table():
+    try:
+        parse_table = LL.ParseTable()
+        path_parse = dpg.get_value('file_from_grammar')
+        parse_table.generate_parse_table(path_parse)
+        dpg.configure_item('result_generating', default_value=f"Parse table was successfully generated to file: {path_parse}.xlsx",
+                           color=(0, 255, 0, 255))
+    except BaseException as err:
+        dpg.configure_item('result_generating', default_value=f"Exception error during generated table:\n{err}",
+                           color=(255, 0, 0, 255))
+
+
 def initialize_lr3():
     with dpg.window(label="Лабораторная работа #3", tag='lr3', show=True, autosize=True, min_size=(1000, 800),
                     pos=(480, 0), on_close=lambda: dpg.delete_item('lr3')):
         initialize()
+        with dpg.child_window(before='select_file_grammar', autosize_x=True, height=150):
+            dpg.add_text('Generate new table with grammar')
+            with dpg.group(horizontal=True):
+                dpg.add_input_text(tag='file_from_grammar', default_value='lr3/test1')
+                dpg.add_button(label='Select file with grammar', callback=select_path, user_data='file_from_grammar')
+            dpg.add_text(tag='result_generating')
+            dpg.add_button(label='Generate', callback=generate_parse_table)
         dpg.configure_item('file_grammar', default_value='lr3/LL.xlsx')
-        # dpg.configure_item('file_parse_table', default_value='lr3/LL')
         dpg.configure_item('input_file', default_value='lr3/test.txt')
         dpg.add_button(label="Analyze", callback=main, show=False, tag='continue')
 

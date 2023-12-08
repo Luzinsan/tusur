@@ -13,8 +13,8 @@ def set_path(sender, app_data):
 
 with dpg.file_dialog(directory_selector=False, show=False, callback=set_path, tag="file_dialog",
                      width=700, height=400, modal=True):
+    dpg.add_file_extension(".xlsx", color=(0, 255, 0, 255), custom_text="[Calc]")
     dpg.add_file_extension(".txt", color=(0, 255, 0, 255), custom_text="[Text]")
-    dpg.add_file_extension(".ods", color=(0, 255, 0, 255), custom_text="[Calc]")
 
 
 def switch_method(sender, method):
@@ -29,8 +29,8 @@ def switch_method(sender, method):
 
 
 def initialize():
-    with dpg.group(horizontal=True, show=True):
-        dpg.add_input_text(tag='file_grammar',
+    with dpg.group(horizontal=True, show=True, tag='select_file_grammar'):
+        dpg.add_input_text(tag='file_grammar', width=700,
                            default_value='grammar.txt')
         dpg.add_button(label='Select file with grammar', callback=select_path, user_data='file_grammar')
     dpg.add_radio_button(tag='input_method',
