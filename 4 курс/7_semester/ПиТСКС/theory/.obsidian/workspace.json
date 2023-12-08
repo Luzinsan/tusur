@@ -1,0 +1,205 @@
+{
+  "main": {
+    "id": "ffc82b40efe98337",
+    "type": "split",
+    "children": [
+      {
+        "id": "bab6c6b2c2b313db",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6cb94bf36bc8efa4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "content/Списки контроля доступа (ACL).md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "82f55c29242c51a0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Context.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "2a64d88f73400c83",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "content/DHCP.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "d66a12c52c1ebabe",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "характеристики, терминология и общие принципы работы NAT.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "52e4c22259955ee1",
+    "type": "split",
+    "children": [
+      {
+        "id": "1e2e3621e3cc6978",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f9aa14d7e062f31e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "byCreatedTime"
+              }
+            }
+          },
+          {
+            "id": "76088e5c5e6dee82",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "108ff5ebc9dcf906",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200,
+    "collapsed": true
+  },
+  "right": {
+    "id": "4e7ca359e17da154",
+    "type": "split",
+    "children": [
+      {
+        "id": "d7346b9553c8954a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4ec1a78cf40d00e3",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "характеристики, терминология и общие принципы работы NAT.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "9999e0df8670c424",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "характеристики, терминология и общие принципы работы NAT.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "2ebfe03b53bfa291",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "c27a2e2a2cc83f13",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "характеристики, терминология и общие принципы работы NAT.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "d66a12c52c1ebabe",
+  "lastOpenFiles": [
+    "Глава 9 - NAT для IPv4.md",
+    "характеристики, терминология и общие принципы работы NAT.md",
+    "Untitled.md",
+    "Context.md",
+    "content/PC.md",
+    "content/DHCP.md",
+    "content",
+    "images/Pasted image 20231124224913.png",
+    "images/Pasted image 20231124224517.png",
+    "content/Сети VLAN.md",
+    "images",
+    "content/Списки контроля доступа (ACL).md",
+    "content/Глава 1.md",
+    "images/Pasted image 20231124205345.png",
+    "content/Динамическая маршрутизация.md"
+  ]
+}

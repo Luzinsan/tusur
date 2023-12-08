@@ -1,6 +1,11 @@
 __ACL-список__ - определяет, пересылать или сбрасывать пакеты, исходя из информации в заголовке пакета
 - это последовательность разрешающих или запрещающих операторов - записей контроля доступа (ACE) (_правил ACL-списка_)
 ---
+ACL: 
+- стандартный, расширенный; 
+- именованный и нумерованный; 
+- входящий и исходящий
+---
 __Фильтрация пакетов__ - во время прохождения сетевого трафика через интерфейс, маршрутизатор сопоставляет информацию из пакета с каждой ACE.
 _Функции:_
 - снижение нагрузки на сеть (пример: запрет видеотрафика в предприятии)
@@ -33,3 +38,49 @@ R(config): access-list 10 permit 192.168.10.0     0.0.1.255
 ```
 
 
+
+R2(config): access-list 1  192.168.11.0 0.0.0.255
+R2(config): access-list 1 permit any
+R2(config): interface G0/0
+R2(config-if): ip access-group 1 out
+
+R3(config): access-list 1 deny 192.168.10.0 0.0.0.255
+R3(config): access-list 1 permit any
+R3(config): interface G0/0
+R3(config): ip access-group 1 out
+
+
+
+Из L2 не должно быть доступа до Server3 и L3 (была ошибка: вместо in - out)
+R1(config): interface G0/0
+R1(config-if): ip access-group FROM_192 out
+
+L3 не должен достигать до Server2 и L2 (была ошибка в адресе: 10.0.0.22)
+R1(config): ip access-list standard FROM_10
+R1(config-std-nacl):no 10
+R1(config-std-nacl): 10 deny host 10.0.0.2
+
+L3 не должен достигать Server1 и Server2 
+R1(config): interface G0/1
+R1(config): no ip access-group FROM_172 in
+
+
+----------------------------------------------------------------------------------------
+Branch(config)# interface G0/0
+Branch(config-if)# ip address 172.16.159.254 255.255.240.0
+
+Branch(config)# interface G0/1
+Branch(config-if)# ip address 172.16.143.254 255.255.240.0 
+
+Branch(config)# ip access-list standard BranchServer
+Branch(config-std-nacl)# deny 172.16.64.0 0.0.63.255
+Brabch(config-std-nacl)# permit any
+
+Branch(config)# interface G0/1
+Branch(config-if)# ip access-group BranchServer out
+
+Branch(config)# router rip
+Branch(config-router)# version 2
+Branch(config-router)# no auto-summary
+Branch(config-router)#passive-interface G0/0
+Branch(config-router)#passive-interface G0/1

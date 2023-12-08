@@ -37,3 +37,16 @@ S(config-if)# switchport mode access # переводит порт в режим
 S(config-if)# switchport access vlan vlan_id # назначает порт сети VLAN
 S(config-if)# end
 ```
+- Указание промежутка: 
+```bash
+S(config)# interface range Fa0/5-9
+```
+
+
+#### Конфигурация магистрального канала
+```bash
+S(config)# interface interface_id
+S(config-if)# switchport mode trunk
+S(config-if)# switchport trunk native vlan vlan_id
+S(config-if)# switchport trunk allowed vlan vlan-list
+```
