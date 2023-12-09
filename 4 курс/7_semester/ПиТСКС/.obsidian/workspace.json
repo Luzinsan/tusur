@@ -1,34 +1,18 @@
 {
   "main": {
-    "id": "ffc82b40efe98337",
+    "id": "252268a0c4c482fd",
     "type": "split",
     "children": [
       {
-        "id": "bab6c6b2c2b313db",
+        "id": "b595d798d4812f93",
         "type": "tabs",
         "children": [
           {
-            "id": "82f55c29242c51a0",
+            "id": "55b26a124995f568",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Cтатический NAT.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "d66a12c52c1ebabe",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "характеристики, терминология и общие принципы работы NAT.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -37,25 +21,25 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "52e4c22259955ee1",
+    "id": "e5742262a08597e5",
     "type": "split",
     "children": [
       {
-        "id": "1e2e3621e3cc6978",
+        "id": "ad58365175e77df7",
         "type": "tabs",
         "children": [
           {
-            "id": "f9aa14d7e062f31e",
+            "id": "e864f26134a35c4b",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "byCreatedTime"
+                "sortOrder": "alphabetical"
               }
             }
           },
           {
-            "id": "76088e5c5e6dee82",
+            "id": "2f2337de2b9da502",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -70,7 +54,7 @@
             }
           },
           {
-            "id": "108ff5ebc9dcf906",
+            "id": "cb43c89c922c91f5",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -81,24 +65,22 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 300
   },
   "right": {
-    "id": "4e7ca359e17da154",
+    "id": "61c23e9a38ccb0f4",
     "type": "split",
     "children": [
       {
-        "id": "d7346b9553c8954a",
+        "id": "60db181de85d07e9",
         "type": "tabs",
         "children": [
           {
-            "id": "4ec1a78cf40d00e3",
+            "id": "ba0593617442f6fd",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Cтатический NAT.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -110,19 +92,18 @@
             }
           },
           {
-            "id": "9999e0df8670c424",
+            "id": "519b238a0491d289",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Cтатический NAT.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
             }
           },
           {
-            "id": "2ebfe03b53bfa291",
+            "id": "a1a6b01ccec038b8",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -133,13 +114,11 @@
             }
           },
           {
-            "id": "c27a2e2a2cc83f13",
+            "id": "446d152dd22d1b30",
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Cтатический NAT.md"
-              }
+              "state": {}
             }
           }
         ]
@@ -159,29 +138,16 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "82f55c29242c51a0",
+  "active": "e864f26134a35c4b",
   "lastOpenFiles": [
-    "Типы NAT.md",
-    "PAT) (NAT с перегрузкой).md",
-    "PAT.md",
-    "Динамический NAT.md",
-    "Cтатический NAT.md",
-    "характеристики, терминология и общие принципы работы NAT.md",
-    "Глава 9 - NAT для IPv4.md",
-    "различные типы преобразования, включая статический NAT, динамический NAT и NAT с перегрузкой.md",
-    "Context.md",
-    "Pasted image 20231209114858.png",
-    "content/Списки контроля доступа (ACL).md",
-    "content/DHCP.md",
-    "Untitled.md",
-    "content/PC.md",
-    "content",
-    "images/Pasted image 20231124224913.png",
-    "images/Pasted image 20231124224517.png",
-    "content/Сети VLAN.md",
-    "images",
-    "content/Глава 1.md",
-    "images/Pasted image 20231124205345.png",
-    "content/Динамическая маршрутизация.md"
+    "theory/PAT) (NAT с перегрузкой).md",
+    "theory/PAT.md",
+    "theory/Динамический NAT.md",
+    "theory/динамический NAT.md",
+    "theory/Cтатический NAT.md",
+    "theory/статический NAT.md",
+    "theory/различные типы преобразования, включая статический NAT, динамический NAT и NAT с перегрузкой.md",
+    "theory/Типы NAT.md",
+    "theory/Pasted image 20231209114858.png"
   ]
 }
