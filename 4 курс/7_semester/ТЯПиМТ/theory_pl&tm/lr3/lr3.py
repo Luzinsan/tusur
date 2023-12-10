@@ -8,8 +8,10 @@ from enum import IntEnum
 
 class LL:
     table: openpyxl.worksheet.worksheet.Worksheet
+    pattern: str
 
     class Column(IntEnum):
+        LEFT = 1
         TERMS = 2
         JUMP = 3
         ACCEPT = 4
@@ -20,6 +22,14 @@ class LL:
     def open_parse_table(self, file_parse_table: str):
         try:
             self.table = load_workbook(filename=file_parse_table, read_only=True)['parse_table']
+            terms = set()
+            for row in range(2, self.table.max_row + 1):
+                value = self.parse_value(row, LL.Column.LEFT).split(" ")[1]
+                if not LL.ParseTable.is_nonterm(value) and value != 'e':
+                    terms.add(value)
+            # print(terms)
+            self.pattern = "(?p)" + "|".join(terms) + '|⊥'
+            # print("pattern: ", self.pattern)
         except BaseException as err:
             raise FileNotFoundError(err)
 
@@ -54,6 +64,7 @@ class LL:
             return s[0].isupper()
 
         def parse_raw_rules(self, file_grammar):
+            # print("parse raw rules")
             try:
                 with open(file_grammar) as file:
                     index = 0
@@ -96,6 +107,7 @@ class LL:
                                         f"\noccurred in left term: {key}")
 
         def find_start_nodes(self):
+            # print("find_start_nodes")
             self.start_col = 2
             self.num_rows = 0
             while True:
@@ -157,9 +169,11 @@ class LL:
             self.ws.cell(row=1, column=col, value=f"FOLLOWS{col - self.start_col - 1}")
             # итерация по нетерминалам
             for key in self.dict_LL.keys():
+                # print("key: ", key)
                 # итерация по правилам нетерминала
                 for index_rule, rule in self.dict_LL[key].items():
                     nodes = rule.split(" ")
+                    # print("nodes: ", nodes)
                     # итерация по терминальным и нетерминальным узлам
                     for index_node, node in enumerate(nodes):
                         # для каждого нетерминала определяем последующие узлы
@@ -169,6 +183,7 @@ class LL:
                             self.set_follow_nodes(node, col, follows)
 
         def find_follow_nodes(self):
+            # print("find_follow_nodes")
             self.start_col += 1
             self.follow_col = self.start_col + 1
             for key in self.dict_LL.keys():
@@ -217,6 +232,7 @@ class LL:
                 return True
 
         def find_direction_nodes(self):
+            # print("find_direction_nodes")
             self.ws.cell(row=1, column=self.follow_col + 1, value="DIRECTIONS")
             self.parse_table = self.wb.create_sheet("parse_table", 0)
             self.parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept", "stack", "return", "error"))
@@ -273,6 +289,7 @@ class LL:
             return index_term
 
         def find_jumps(self):
+            # print("find_jumps")
             for key, values in self.dict_M.items():
                 self.parse_table.cell(row=key[1], column=LL.Column.JUMP, value=min(values.keys()))
                 for index_node, node in values.items():
@@ -295,17 +312,28 @@ class LL:
         return self.table.cell(row=row, column=name_col).value
 
     def analyze(self, input_string: str):
-        input_string = input_string.split(" ")
+        input_string += '⊥'
         i = 2
         k = 0
         Stack = [0]
+        regex = re.compile(self.pattern)
         while True:
-            if input_string[k] in self.parse_value(i, LL.Column.TERMS).split(" "):
+            match = regex.match(input_string, pos=k)
+            match = match[0]
+            print("match: ", match)
+            len_shift = len(match)
+            terms = re.compile("(?p)" + "|".join(self.parse_value(i, LL.Column.TERMS).split(" ")))
+            print("search in terms: ", terms)
+            if terms.fullmatch(match):
+                print(match, "was found in list")
                 if self.parse_value(i, LL.Column.ACCEPT) == 'True':
-                    k += 1
+                    print("ACCEPTED")
+                    k += len_shift
                 if self.parse_value(i, LL.Column.STACK) == "True":
+                    print("STACKED")
                     Stack.append(i + 1)
                 if self.parse_value(i, LL.Column.RETURN) == "True":
+                    print("RETURNED")
                     i = Stack.pop()
                     if i == 0:
                         break
@@ -313,14 +341,15 @@ class LL:
                         continue
                 else:  # LL.Column.JUMP
                     i = self.parse_value(i, LL.Column.JUMP)
+                    print("JUMP to ", i)
             elif self.parse_value(i, LL.Column.ERROR) == "False":
                 i += 1
             else:
                 break
-        if len(Stack) == 0 and input_string[k] == '⊥':
+        if len(Stack) == 0 and match == '⊥':
             return "SUCCESS PARSED!"
         else:
-            raise SyntaxError(f"FAILED PARSED! at: {k} - {input_string[k]}")
+            raise SyntaxError(f"FAILED PARSED! at: {k}\n->{input_string[k:]}")
 
 
 def main():
@@ -330,11 +359,12 @@ def main():
                                     for index, row
                                     in enumerate(input_data.split('\n'), 1)])
     dpg.set_value('input data', value=data_with_numering)
+    dpg.set_value('test', value="")
     try:
         engine: LL = LL()
         engine.open_parse_table(dpg.get_value('file_grammar'))
         engine.analyze(input_data)
-        dpg.configure_item('test', default_value=input_data, color=(0, 255, 0, 255))
+        dpg.configure_item('test', default_value=f"SUCCESS: {input_data}", color=(0, 255, 0, 255))
     except BaseException as err:
         dpg.configure_item('test', default_value=f"Exception error during analyzing:\n{err}", color=(255, 0, 0, 255))
 
