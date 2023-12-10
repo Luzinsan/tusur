@@ -1,5 +1,5 @@
 A -> B C D
 B -> a C x | b C d | F
 C -> z B D | c | e
-D -> F x | e
+D -> F x
 F -> y

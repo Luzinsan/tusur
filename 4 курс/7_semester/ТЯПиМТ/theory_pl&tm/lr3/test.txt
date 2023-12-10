@@ -1,1 +1,0 @@
-begin d comma d semi s comma s end ⊥

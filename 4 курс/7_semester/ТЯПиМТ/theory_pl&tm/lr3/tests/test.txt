@@ -1,0 +1,1 @@
+int f1(int a, double b, char c[10]);

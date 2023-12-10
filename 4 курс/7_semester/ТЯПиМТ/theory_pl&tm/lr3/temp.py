@@ -2,7 +2,7 @@ import openpyxl
 
 is_nonterm = lambda s: s[0].isupper()
 
-file_path_LL: str = "test3"
+file_path_LL: str = "tests/test3"
 example_string = "begin d comma d semi s comma s end ⊥"
 
 dict_LL = dict()
