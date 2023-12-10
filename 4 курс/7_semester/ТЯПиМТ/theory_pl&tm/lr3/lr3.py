@@ -50,7 +50,8 @@ class LL:
             self.wb.save(f"{file_grammar}.xlsx")
 
         @staticmethod
-        def is_nonterm(s): return s[0].isupper()
+        def is_nonterm(s):
+            return s[0].isupper()
 
         def parse_raw_rules(self, file_grammar):
             try:
@@ -60,13 +61,17 @@ class LL:
                         if len(list_splitted := row.split(" ->")) == 2:
                             left, right = list_splitted
                             rules = {}
+                            check_list = []
                             for rule in right.split('|'):
                                 rule = rule.strip()
                                 rules.update({index: rule})
                                 state0 = "∅" if LL.ParseTable.is_nonterm(rule) \
                                     else rule.split(" ")[0]
+                                check_list.append(state0)
                                 self.ws.append((f"{left} -> {rule}", state0))
                                 index += 1
+                            LL.ParseTable.check_duplicates(list(filter('∅'.__ne__, check_list)),
+                                                           left)
                             self.dict_LL[left] = rules
             except BaseException as err:
                 raise FileExistsError(err)
@@ -75,9 +80,20 @@ class LL:
         def is_equal_cols(rows: int, worksheet: openpyxl.worksheet.worksheet.Worksheet,
                           compare_col1: int, compare_col2: int) -> bool:
             for row in range(2, rows + 1):
-                if worksheet.cell(row=row, column=compare_col1).value != worksheet.cell(row=row, column=compare_col2).value:
+                if worksheet.cell(row=row, column=compare_col1).value \
+                        != worksheet.cell(row=row, column=compare_col2).value:
                     return False
             return True
+
+        @staticmethod
+        def check_duplicates(check_list: list, key: str, stage: str = 'starting'):
+            for item in check_list:
+                if check_list.count(item) > 1:
+                    check_list = " ".join([f"{i}\n" if (index+1) % 10 == 0 else i for index, i in enumerate(check_list)])
+                    raise GeneratorExit(f"Duplicates were encountered during the generation of {stage} symbols:"
+                                        f"\n[{check_list}]"
+                                        f"\nduplicated symbol: {item}"
+                                        f"\noccurred in left term: {key}")
 
         def find_start_nodes(self):
             self.start_col = 2
@@ -85,6 +101,7 @@ class LL:
             while True:
                 self.ws.cell(row=1, column=self.start_col + 1, value=f"START{self.start_col - 1}")
                 for key in self.dict_LL.keys():
+                    check_list = []
                     for index, rule in self.dict_LL[key].items():
                         new_starts = []
                         if LL.ParseTable.is_nonterm(rule):
@@ -96,13 +113,28 @@ class LL:
                                 new_starts.append('∅')
                         else:
                             new_starts = [self.ws.cell(row=index + 2, column=self.start_col).value]
+                        check_list += new_starts
                         self.ws.cell(row=index + 2, column=self.start_col + 1, value=" ".join(new_starts))
                         self.num_rows = index + 2
+                    check_list = list(filter('∅'.__ne__, check_list))
+                    LL.ParseTable.check_duplicates(check_list, key)
+
                 if LL.ParseTable.is_equal_cols(self.num_rows, self.ws, self.start_col, self.start_col + 1):
                     break
                 self.start_col += 1
 
+        def get_row_follow_node(self, key, operation=min):
+            return operation(self.dict_LL[key].keys()) + 2
+
+        def get_follow_nodes(self, key, col) -> list:
+            raw_follows = self.ws.cell(row=self.get_row_follow_node(key, min), column=col).value
+            return raw_follows.split(" ") if raw_follows else []
+
+        def set_follow_nodes(self, key, col, follows: list):
+            self.ws.cell(row=self.get_row_follow_node(key, min), column=col, value=" ".join(follows))
+
         def review_next(self, key, nodes, index_node, follows, base_col):
+            next_node = ''
             try:
                 next_node = nodes[index_node + 1]
                 # итерация по правилам следующего узла для поиска его символов-предсшественников
@@ -114,10 +146,12 @@ class LL:
                     else:
                         follows += start_terms
             except IndexError as _:
-                follows += self.ws.cell(row=min(self.dict_LL[key].keys()) + 2, column=base_col).value.split(" ")
+                follows += self.get_follow_nodes(key, base_col)
             except KeyError as _:
                 follows.append(next_node)
-            return list(set(follows))
+            follows = list(set(follows))
+            follows.sort()
+            return follows
 
         def put_follows(self, col: int):
             self.ws.cell(row=1, column=col, value=f"FOLLOWS{col - self.start_col - 1}")
@@ -130,31 +164,35 @@ class LL:
                     for index_node, node in enumerate(nodes):
                         # для каждого нетерминала определяем последующие узлы
                         if LL.ParseTable.is_nonterm(node):
-                            old_follows = self.ws.cell(row=min(self.dict_LL[node].keys()) + 2, column=col).value
-                            follows = old_follows.split(" ") if old_follows else []
+                            follows = self.get_follow_nodes(node, col)
                             follows = self.review_next(key, nodes, index_node, follows, col)
-                            self.ws.cell(row=min(self.dict_LL[node].keys()) + 2, column=col, value=" ".join(follows))
+                            self.set_follow_nodes(node, col, follows)
 
         def find_follow_nodes(self):
             self.start_col += 1
             self.follow_col = self.start_col + 1
             for key in self.dict_LL.keys():
-                self.ws.merge_cells(start_row=min(self.dict_LL[key].keys()) + 2, start_column=self.follow_col,
-                                    end_row=max(self.dict_LL[key].keys()) + 2, end_column=self.follow_col)
+                self.ws.merge_cells(start_row=self.get_row_follow_node(key, min), start_column=self.follow_col,
+                                    end_row=self.get_row_follow_node(key, max), end_column=self.follow_col)
             self.ws.cell(row=2, column=self.follow_col, value="⊥")
-
             self.put_follows(self.follow_col)
             self.follow_col += 1
+            count_interations = 0
             while True:
+                old_value = []
                 for key in self.dict_LL.keys():
-                    self.ws.merge_cells(start_row=min(self.dict_LL[key].keys()) + 2, start_column=self.follow_col,
-                                        end_row=max(self.dict_LL[key].keys()) + 2, end_column=self.follow_col)
-                    old_value = self.ws.cell(row=min(self.dict_LL[key].keys()) + 2, column=self.follow_col - 1).value
-                    self.ws.cell(row=min(self.dict_LL[key].keys()) + 2, column=self.follow_col, value=old_value)
+                    self.ws.merge_cells(start_row=self.get_row_follow_node(key, min), start_column=self.follow_col,
+                                        end_row=self.get_row_follow_node(key, max), end_column=self.follow_col)
+                    old_value = self.get_follow_nodes(key, self.follow_col - 1)
+                    self.set_follow_nodes(key, self.follow_col, old_value)
                 self.put_follows(self.follow_col)
                 if LL.ParseTable.is_equal_cols(self.num_rows, self.ws, self.follow_col - 1, self.follow_col):
                     break
                 self.follow_col += 1
+                count_interations += 1
+                if count_interations > 20:
+                    raise StopIteration("Oops, the algorithm entered an infinite loop"
+                                        f"follows: {old_value}")
 
         def next_starts(self, key, starts, nodes, index_node):
             try:
@@ -165,7 +203,7 @@ class LL:
                         starts.remove("e")
                         starts = self.next_starts(key, starts, nodes, index_node + 1)
             except IndexError as _:
-                starts += self.ws.cell(row=min(self.dict_LL[key].keys()) + 2, column=self.follow_col).value.split(" ")
+                starts += self.get_follow_nodes(key, self.follow_col)
             except KeyError as _:
                 starts.append(next_node)
             return starts
@@ -188,18 +226,22 @@ class LL:
                 index_term = self.find_right_direction_nodes(key, index_term, index_term - 1)
 
         def find_left_direction_nodes(self, key, index_term):
+            check_list = []
             for index in self.dict_LL[key].keys():
                 index_term += 1
                 direction_terms: list = self.ws.cell(row=index + 2, column=self.start_col).value.split(" ")
                 if 'e' in direction_terms:
                     direction_terms.remove("e")
-                    follow_e = self.ws.cell(row=min(self.dict_LL[key].keys()) + 2, column=self.follow_col).value.split(" ")
+                    follow_e = self.get_follow_nodes(key, self.follow_col)
                     direction_terms += follow_e
+                check_list += direction_terms
                 self.ws.cell(row=index + 2, column=self.follow_col + 1, value=" ".join(direction_terms))
                 self.dict_M.update({(key, index_term): {}})
                 self.parse_table.append(
                     ("left: " + key, " ".join(direction_terms), "", "False", "False", "False", "False"))
-            self.parse_table.cell(row=index_term, column=7, value="True")
+            check_list = list(filter('⊥'.__ne__, check_list))
+            LL.ParseTable.check_duplicates(check_list, key, 'direction')
+            self.parse_table.cell(row=index_term, column=LL.Column.ERROR, value="True")
             return index_term
 
         def find_right_direction_nodes(self, key, index_term, last_left_term):
@@ -220,7 +262,7 @@ class LL:
                                 starts.remove("e")
                                 starts = self.next_starts(key, starts, nodes, index_node)
                     elif node == 'e':
-                        starts = self.ws.cell(row=min(self.dict_LL[key].keys()) + 2, column=self.follow_col).value.split(" ")
+                        starts = self.get_follow_nodes(key, self.follow_col)
                     else:
                         starts = [node]
                         accept = "True"
@@ -232,20 +274,21 @@ class LL:
 
         def find_jumps(self):
             for key, values in self.dict_M.items():
-                self.parse_table.cell(row=key[1], column=3, value=min(values.keys()))
+                self.parse_table.cell(row=key[1], column=LL.Column.JUMP, value=min(values.keys()))
                 for index_node, node in values.items():
                     if LL.ParseTable.is_nonterm(node):
                         for root_key in self.dict_M.keys():
                             if root_key[0] == node:
-                                self.parse_table.cell(row=index_node, column=3, value=root_key[1])
+                                self.parse_table.cell(row=index_node, column=LL.Column.JUMP, value=root_key[1])
                                 break
                     else:
                         try:
                             next_node = values[index_node + 1]
-                            self.parse_table.cell(row=index_node, column=3, value=index_node + 1)
+                            self.parse_table.cell(row=index_node, column=LL.Column.JUMP, value=index_node + 1)
                         except KeyError as _:
-                            self.parse_table.cell(row=index_node, column=3, value=0)
-                            self.parse_table.cell(row=index_node, column=6, value="True")
+                            self.parse_table.cell(row=index_node, column=LL.Column.JUMP, value=0)
+                            self.parse_table.cell(row=index_node, column=LL.Column.RETURN, value="True")
+
     # endregion
 
     def parse_value(self, row, name_col: Column):
@@ -301,10 +344,11 @@ def generate_parse_table():
         parse_table = LL.ParseTable()
         path_parse = dpg.get_value('file_from_grammar')
         parse_table.generate_parse_table(path_parse)
-        dpg.configure_item('result_generating', default_value=f"Parse table was successfully generated to file: {path_parse}.xlsx",
+        dpg.configure_item('result_generating',
+                           default_value=f"Parse table was successfully generated to file: {path_parse}.xlsx",
                            color=(0, 255, 0, 255))
     except BaseException as err:
-        dpg.configure_item('result_generating', default_value=f"Exception error during generated table:\n{err}",
+        dpg.configure_item('result_generating', default_value=f"Exception occurred during table generation:\n{err}",
                            color=(255, 0, 0, 255))
 
 
@@ -312,15 +356,15 @@ def initialize_lr3():
     with dpg.window(label="Лабораторная работа #3", tag='lr3', show=True, autosize=True, min_size=(1000, 800),
                     pos=(480, 0), on_close=lambda: dpg.delete_item('lr3')):
         initialize()
-        with dpg.child_window(before='select_file_grammar', autosize_x=True, height=150):
+        with dpg.child_window(before='select_file_grammar', autosize_x=True, height=250):
             dpg.add_text('Generate new table with grammar')
             with dpg.group(horizontal=True):
-                dpg.add_input_text(tag='file_from_grammar', default_value='lr3/test1')
+                dpg.add_input_text(tag='file_from_grammar', default_value='lr3/tests/LL')
                 dpg.add_button(label='Select file with grammar', callback=select_path, user_data='file_from_grammar')
             dpg.add_text(tag='result_generating')
             dpg.add_button(label='Generate', callback=generate_parse_table)
-        dpg.configure_item('file_grammar', default_value='lr3/LL.xlsx')
-        dpg.configure_item('input_file', default_value='lr3/test.txt')
+        dpg.configure_item('file_grammar', default_value='lr3/tests/LL.xlsx')
+        dpg.configure_item('input_file', default_value='lr3/tests/test.txt')
         dpg.add_button(label="Analyze", callback=main, show=False, tag='continue')
 
 
