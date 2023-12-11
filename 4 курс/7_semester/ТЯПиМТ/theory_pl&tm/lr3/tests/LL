@@ -3,14 +3,13 @@ K0 -> REQ_S INIT | INIT
 S -> REQ_S | e											  
 REQ_S -> \s S                                          
 
-INIT -> namespace REQ_S ID_FUNC S \{ K0 \} K0 | MOD_TYPE ID_FUNC S \( PARAMS0 \) S BODY K0 | e
+INIT -> namespace REQ_S ID_FUNC* S \{ <APPEND> K0 \} <RW_DOWN> K0 | MOD_TYPE ID_FUNC* S \( <APPEND> PARAMS0 \) S BODY K0 | e
 									  
-BODY -> ; | \{ S \}
+BODY -> ; <RW_DOWN> | \{ <A1> S \} <APPEND_DOWN>
 
-MOD_TYPE -> MOD_TYPE_NONVOID | VOID REQ_S
-MOD -> unsigned | signed                
-MOD_TYPE_NONVOID -> MOD REQ_S TYPE | TYPE  
-VOID -> void                                          
+MOD_TYPE -> MOD_TYPE_NONVOID | void REQ_S
+MOD -> unsigned <A1> | signed <A1>             
+MOD_TYPE_NONVOID -> MOD REQ_S TYPE | TYPE                                
 TYPE -> int REQ_S INT|double REQ_S DOUBLE|float REQ_S|char REQ_S|long REQ_S LONG|short REQ_S SHORT
 INT -> LENGTH REQ_S | e                              
 DOUBLE -> long REQ_S | e                               
@@ -18,41 +17,43 @@ LONG -> LONGTYPES REQ_S | e
 SHORT -> int REQ_S | e 
 
 
-MOD_TYPE_NONVOID_PARAMS -> MOD REQ_S TYPE_PARAMS | TYPE_PARAMS
-TYPE_PARAMS -> int INT_PARAMS | double DOUBLE_PARAMS |float TAIL_TYPES |char TAIL_TYPES |long LONG_PARAMS | short SHORT_PARAMS
-TAIL_TYPES -> REQ_S ID_NON | COMMA_NON
+MOD_TYPE_NONVOID_PARAMS -> MOD REQ_S <A1> TYPE_PARAMS | TYPE_PARAMS
+TYPE_PARAMS -> int <A1> INT_PARAMS | double <A1> DOUBLE_PARAMS |float <A1> TAIL_TYPES |char <A1> TAIL_TYPES |long <A1> LONG_PARAMS | short <A1> SHORT_PARAMS
+TAIL_TYPES -> REQ_S ID_NON | COMMA_NON2
 
-INT_PARAMS -> REQ_S INT_REQ_S | COMMA_NON
+
+COMMA_NON2 <ADD> -> , S TAIL | e
+INT_PARAMS -> REQ_S <A1> INT_REQ_S | COMMA_NON2
 INT_REQ_S -> LENGTH TAIL_TYPES | ID_NON   
 
-DOUBLE_PARAMS -> REQ_S DOUBLE_REQ_S  | COMMA_NON  
-DOUBLE_REQ_S -> long TAIL_TYPES | ID_NON    
+DOUBLE_PARAMS -> REQ_S <A1> DOUBLE_REQ_S  | COMMA_NON2  
+DOUBLE_REQ_S -> long <A1> TAIL_TYPES | ID_NON    
 
 
-LONG_PARAMS -> REQ_S LONG_REQ_S  | COMMA_NON
+LONG_PARAMS -> REQ_S <A1> LONG_REQ_S | COMMA_NON2
 LONG_REQ_S -> LONGTYPES TAIL_TYPES | ID_NON  
 
 
-SHORT_PARAMS -> REQ_S SHORT_REQ_S | COMMA_NON    
-SHORT_REQ_S -> int TAIL_TYPES | ID_NON  
+SHORT_PARAMS -> REQ_S <A1> SHORT_REQ_S | COMMA_NON2    
+SHORT_REQ_S -> int <A1> TAIL_TYPES | ID_NON  
                        
 
-LENGTH -> long | short                               
-LONGTYPES -> int | double  
+LENGTH -> long <A1> | short <A1>                               
+LONGTYPES -> int <A1> | double <A1>  
 
                             
 
-ID_FUNC -> [a-zA-Z_] TAIL_ID_FUNC
-TAIL_ID_FUNC -> [a-zA-Z0-9_] TAIL_ID_FUNC | e
-ID -> [a-zA-Z_] INNERID                               
-INNERID -> [a-zA-Z0-9_] INNERID | REQ_S ARRAY | ARRAY             
-ARRAY -> \[ S OP S \] S ARRAY | e
-OP -> [1-9] OP1                                        
-OP1 -> [0-9] OP1 | e                                  
+ID_FUNC* <A2> -> [a-zA-Z_] <A1> TAIL_ID_FUNC*
+TAIL_ID_FUNC* -> [a-zA-Z0-9_] <A1> TAIL_ID_FUNC* | e
+ID* -> [a-zA-Z_] <A1> INNERID*                               
+INNERID* -> [a-zA-Z0-9_] <A1> INNERID* | REQ_S ARRAY | ARRAY             
+ARRAY -> \[ S OP* S \] S ARRAY | e <ADD>
+OP* -> [1-9] OP1*                                       
+OP1* -> [0-9] OP1* | e                                  
 
 PARAMS0 -> REQ_S PARAMS | PARAMS | e
-PARAMS -> MOD_TYPE_NONVOID_PARAMS | VOID S
+PARAMS -> MOD_TYPE_NONVOID_PARAMS | void <RW> S
 PARAMS_NONVOID -> MOD_TYPE_NONVOID_PARAMS    
-ID_NON -> ID COMMA_NON | COMMA_NON               
-COMMA_NON ->  , S TAIL | e
-TAIL -> PARAMS_NONVOID | \.\.\.
+ID_NON <APPEND> -> ID* COMMA_NON | COMMA_NON               
+COMMA_NON <\APPEND> -> , S TAIL | e
+TAIL -> PARAMS_NONVOID | \.\.\. <RW>

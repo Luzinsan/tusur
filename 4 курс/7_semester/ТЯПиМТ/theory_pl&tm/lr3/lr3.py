@@ -4,11 +4,19 @@ from __init__ import initialize, select_path
 from openpyxl import load_workbook
 import openpyxl
 from enum import IntEnum
+from anytree import Node, RenderTree
 
 
 class LL:
     table: openpyxl.worksheet.worksheet.Worksheet
-    pattern: str
+    buffer: str
+    root: Node
+    current_node: Node
+
+    def __init__(self):
+        self.buffer = ""
+        self.root = Node('root')
+        self.current_node = self.root
 
     class Column(IntEnum):
         LEFT = 1
@@ -18,18 +26,11 @@ class LL:
         STACK = 5
         RETURN = 6
         ERROR = 7
+        ACTION = 8
 
     def open_parse_table(self, file_parse_table: str):
         try:
             self.table = load_workbook(filename=file_parse_table, read_only=True)['parse_table']
-            terms = set()
-            for row in range(2, self.table.max_row + 1):
-                value = self.parse_value(row, LL.Column.LEFT).split(" ")[1]
-                if not LL.ParseTable.is_nonterm(value) and value != 'e':
-                    terms.add(value)
-            # print(terms)
-            self.pattern = "(?p)" + "|".join(terms) + '|⊥'
-            # print("pattern: ", self.pattern)
         except BaseException as err:
             raise FileNotFoundError(err)
 
@@ -38,6 +39,7 @@ class LL:
         wb: openpyxl.Workbook
         ws: openpyxl.worksheet.worksheet.Worksheet
         parse_table: openpyxl.worksheet.worksheet.Worksheet
+        actions: openpyxl.worksheet.worksheet.Worksheet
         dict_LL: dict
         dict_M: dict
         start_col: int
@@ -48,8 +50,12 @@ class LL:
             self.dict_LL = dict()
             self.dict_M = dict()
             self.wb = openpyxl.Workbook()
-            self.ws = self.wb.create_sheet("temp_list", 0)
+            self.parse_table = self.wb.create_sheet("parse_table", 0)
+            self.parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept", "stack", "return", "error", "action"))
+            self.ws = self.wb.create_sheet("temp_list", 1)
             self.ws.append(('ПРАВИЛО', "START0"))
+            self.actions = self.wb.create_sheet("actions", 2)
+            self.actions.append(('ПРАВИЛО', "action"))
 
         def generate_parse_table(self, file_grammar: str):
             self.parse_raw_rules(file_grammar)
@@ -57,6 +63,7 @@ class LL:
             self.find_follow_nodes()
             self.find_direction_nodes()
             self.find_jumps()
+            self.put_actions()
             self.wb.save(f"{file_grammar}.xlsx")
 
         @staticmethod
@@ -68,17 +75,38 @@ class LL:
             try:
                 with open(file_grammar) as file:
                     index = 0
+                    global_index = 1
                     for row in file.readlines():
                         if len(list_splitted := row.split(" ->")) == 2:
                             left, right = list_splitted
+                            action = ''
+                            if len(left_list := left.split(" ")) == 2:
+                                left, action = left_list
+                            for rule in right.split('|'):
+                                global_index += 1
+                                self.actions.append((f"{left} -> ", action))
+                            # left_term, action = left.split(" ")
                             rules = {}
                             check_list = []
                             for rule in right.split('|'):
                                 rule = rule.strip()
+                                nodes = rule.split(" ")
+                                rule = re.sub(r'\s<.*?>', '', rule)
+                                for node in nodes:
+                                    global_index += 1
+                                    value = f"{node}"
+                                    if node[0] == '<':
+                                        global_index -= 1
+                                        action = node
+                                        self.actions.cell(row=global_index, column=2, value=action)
+                                        # print(value, action)
+                                    else:
+                                        self.actions.append((value, ""))
                                 rules.update({index: rule})
                                 state0 = "∅" if LL.ParseTable.is_nonterm(rule) \
                                     else rule.split(" ")[0]
                                 check_list.append(state0)
+                                # print("left tert: ", left_term)
                                 self.ws.append((f"{left} -> {rule}", state0))
                                 index += 1
                             LL.ParseTable.check_duplicates(list(filter('∅'.__ne__, check_list)),
@@ -86,6 +114,11 @@ class LL:
                             self.dict_LL[left] = rules
             except BaseException as err:
                 raise FileExistsError(err)
+
+        def put_actions(self):
+            for row in range(2, self.actions.max_row + 1):
+                value = self.actions.cell(row=row, column=2).value
+                self.parse_table.cell(row=row, column=LL.Column.ACTION, value=value)
 
         @staticmethod
         def is_equal_cols(rows: int, worksheet: openpyxl.worksheet.worksheet.Worksheet,
@@ -130,7 +163,6 @@ class LL:
                         self.num_rows = index + 2
                     check_list = list(filter('∅'.__ne__, check_list))
                     LL.ParseTable.check_duplicates(check_list, key)
-
                 if LL.ParseTable.is_equal_cols(self.num_rows, self.ws, self.start_col, self.start_col + 1):
                     break
                 self.start_col += 1
@@ -234,8 +266,6 @@ class LL:
         def find_direction_nodes(self):
             # print("find_direction_nodes")
             self.ws.cell(row=1, column=self.follow_col + 1, value="DIRECTIONS")
-            self.parse_table = self.wb.create_sheet("parse_table", 0)
-            self.parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept", "stack", "return", "error"))
             index_term = 1
             for key in self.dict_LL.keys():
                 index_term = self.find_left_direction_nodes(key, index_term)
@@ -269,6 +299,7 @@ class LL:
                     # для каждого нетерминала определяем направляющие узлы
                     accept = "False"
                     stack = "False"
+                    # has_action = True
                     if LL.ParseTable.is_nonterm(node):
                         stack = str(not LL.ParseTable.is_last_node(index_node, nodes))
                         starts = []
@@ -282,9 +313,11 @@ class LL:
                     else:
                         starts = [node]
                         accept = "True"
+
                     global_index_rule = index_rule - min(self.dict_LL[key].keys())
                     self.dict_M[(key, last_left_term - len(self.dict_LL[key]) + 2 + global_index_rule)].update(
                         {index_term: node})
+                    # print(self.dict_M)
                     self.parse_table.append(("right: " + node, " ".join(starts), "", accept, stack, "False", "True"))
             return index_term
 
@@ -311,29 +344,125 @@ class LL:
     def parse_value(self, row, name_col: Column):
         return self.table.cell(row=row, column=name_col).value
 
+    @staticmethod
+    def what_is_node(node: Node):
+        is_node = 'node'
+        for child in node.children:
+            if re.match(r"{\s*}", child.name):
+                is_node = 'implementation'
+            elif child.name == ';':
+                is_node = 'prototype'
+            elif child.name == '}':
+                is_node = 'namespace'
+        return is_node
+
+    @staticmethod
+    def check_semantics(node: Node):
+        names = {'implementation': [],
+                 'prototype': [],
+                 'namespace': [],
+                 'node': []}
+        implementation = list()
+        for child in node.children:
+            print("node: ", child.name)
+            print("what is node: ", LL.what_is_node(child))
+            type_node = LL.what_is_node(child)
+            if type_node == 'implementation':
+                ids = []
+                types_func = []
+                for type_id in child.children:
+                    if re.match("{\s*}", type_id.name):
+                        break
+                    id_node = type_id.children
+                    if id_node:
+                        ids.append(type_id.children[0].name)
+                    else:
+                        raise NameError(f"Missing identifiers in implementation argument list. Function: {child.name}")
+                    types_func.append(type_id.name)
+                func_args = [child.name] + types_func
+                for item in implementation:
+                    print("is equal?: ", func_args, item)
+                    if func_args == item:
+                        raise TypeError(f"Duplication in function overloads: {child.name}")
+                implementation += [func_args]
+                print(implementation)
+
+                names['node'] = ids
+                print("ids: ", ids)
+                for id_name in ids:
+                    if names['node'].count(id_name) > 1:
+                        raise NameError(f"Duplicated id: {id_name}")
+            elif type_node == 'namespace':
+                LL.check_semantics(child)
+                print("names: ", names)
+            elif type_node == 'prototype':
+                ids = []
+                for type_id in child.children:
+                    if type_id == ';':
+                        break
+                    id_node = type_id.children
+                    if id_node:
+                        ids.append(type_id.children[0].name)
+                names['node'] = ids
+                print("ids: ", ids)
+                for id_name in ids:
+                    if names['node'].count(id_name) > 1:
+                        raise NameError(f"Duplicated id: {id_name}")
+            names[LL.what_is_node(child)] += [child.name]
+
+        for name in names['namespace']:
+            if name in names['prototype'] + names['implementation']:
+                raise NameError(f"Duplicated name: {name}")
+        print("names: ", names)
+
+    def apply_func(self, token: str, action: str):
+        match action:
+            case '<A1>':
+                self.buffer += token
+            case '<A2>':
+                self.buffer = ''
+            case '<APPEND>':
+                self.current_node = Node(self.buffer, parent=self.current_node)
+                self.buffer = ''
+            case '<ADD>':
+                Node(self.buffer, parent=self.current_node)
+                self.buffer = ''
+            case '<\APPEND>':
+                self.current_node = self.current_node.parent
+            case '<RW>':
+                Node(token, parent=self.current_node)
+                self.buffer = ''
+            case '<RW_DOWN>':
+                Node(token, parent=self.current_node)
+                self.current_node = self.current_node.parent
+                self.buffer = ''
+            case '<APPEND_DOWN>':
+                self.buffer += token
+                Node(self.buffer, parent=self.current_node)
+                self.buffer = ''
+                self.current_node = self.current_node.parent
+
     def analyze(self, input_string: str):
         input_string += '⊥'
         i = 2
         k = 0
         Stack = [0]
-        regex = re.compile(self.pattern)
         while True:
-            match = regex.match(input_string, pos=k)
-            match = match[0]
-            print("match: ", match)
-            len_shift = len(match)
-            terms = re.compile("(?p)" + "|".join(self.parse_value(i, LL.Column.TERMS).split(" ")))
-            print("search in terms: ", terms)
-            if terms.fullmatch(match):
-                print(match, "was found in list")
+            terms_str = "|".join(self.parse_value(i, LL.Column.TERMS).split(" "))
+            terms = re.compile(terms_str)
+            if match := terms.match(input_string, pos=k):
+                match = match[0]
+                len_shift = len(match)
+                self.apply_func(match, self.parse_value(i, LL.Column.ACTION))
                 if self.parse_value(i, LL.Column.ACCEPT) == 'True':
-                    print("ACCEPTED")
+                    # print("ACCEPTED")
+                    # print("match: ", match)
                     k += len_shift
                 if self.parse_value(i, LL.Column.STACK) == "True":
-                    print("STACKED")
+                    # print("STACKED")
                     Stack.append(i + 1)
                 if self.parse_value(i, LL.Column.RETURN) == "True":
-                    print("RETURNED")
+                    # print("RETURNED")
                     i = Stack.pop()
                     if i == 0:
                         break
@@ -341,13 +470,17 @@ class LL:
                         continue
                 else:  # LL.Column.JUMP
                     i = self.parse_value(i, LL.Column.JUMP)
-                    print("JUMP to ", i)
+                    # print("JUMP to ", i)
             elif self.parse_value(i, LL.Column.ERROR) == "False":
                 i += 1
             else:
                 break
         if len(Stack) == 0 and match == '⊥':
-            return "SUCCESS PARSED!"
+            print("tree:\n")
+            for pre, fill, node in RenderTree(self.root):
+                print("%s%s" % (pre, node.name))
+            self.check_semantics(self.root)
+            return f"SUCCESS PARSED!"
         else:
             raise SyntaxError(f"FAILED PARSED! at: {k}\n->{input_string[k:]}")
 
@@ -363,8 +496,8 @@ def main():
     try:
         engine: LL = LL()
         engine.open_parse_table(dpg.get_value('file_grammar'))
-        engine.analyze(input_data)
-        dpg.configure_item('test', default_value=f"SUCCESS: {input_data}", color=(0, 255, 0, 255))
+        message = engine.analyze(input_data)
+        dpg.configure_item('test', default_value=f"{message}\n{input_data}", color=(0, 255, 0, 255))
     except BaseException as err:
         dpg.configure_item('test', default_value=f"Exception error during analyzing:\n{err}", color=(255, 0, 0, 255))
 
@@ -395,6 +528,7 @@ def initialize_lr3():
             dpg.add_button(label='Generate', callback=generate_parse_table)
         dpg.configure_item('file_grammar', default_value='lr3/tests/LL.xlsx')
         dpg.configure_item('input_file', default_value='lr3/tests/test.txt')
+        dpg.set_value('Manually_text', value=" float   b2( int sint , float int_, char ds[2], long double int7)  ; ")
         dpg.add_button(label="Analyze", callback=main, show=False, tag='continue')
 
 
