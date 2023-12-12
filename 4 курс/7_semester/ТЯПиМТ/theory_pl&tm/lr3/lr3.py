@@ -348,7 +348,7 @@ class LL:
     def what_is_node(node: Node):
         is_node = 'node'
         for child in node.children:
-            if re.match(r"{\s*}", child.name):
+            if child.name[0] == '{' and child.name[-1] == '}':
                 is_node = 'implementation'
             elif child.name == ';':
                 is_node = 'prototype'
@@ -357,63 +357,83 @@ class LL:
         return is_node
 
     @staticmethod
+    def check_implementation(node: Node, implementation: list):
+        """
+            Проверка на:
+            - уникальность идентификаторов с списке параметров
+            - отсутствие конфликтов в перегрузках функций
+        """
+        ids = []
+        # идентификатор функции и типы данных, перечисленные в параметрах функции
+        func_args = [node.name]
+        # перебираем типы данных параметров функции (реализации)
+        for type_id in node.children:
+            # узел '{}' был заглушкой для определения того, что родительский узел это реализация функции
+            if type_id.name[0] == '{' and type_id.name[-1] == '}':
+                break
+            func_args.append(type_id.name)
+            if type_id.name == '...':
+                break
+            # узнаём id параметра этого типа
+            id_node = type_id.children
+            if id_node:
+                ids.append(type_id.children[0].name)
+            else:  # если в реализации оно не было указано - Абшибка!
+                raise NameError(f"Missing identifiers in implementation argument list. Function: {node.name}")
+        # проверка на уникальность ids в списке параметров
+        for id_name in ids:
+            if ids.count(id_name) > 1:
+                raise NameError(f"Duplicated id: {id_name}")
+        # пробуем добавить список [id_функции1, тип2, тип1, ...]
+        # используется полное соответствие, поэтому, если уже была перегрузка [id_функции1, тип1, тип2, ...],
+        # то добавляемый список релевантный
+        for item in implementation:
+            if func_args == item:
+                raise TypeError(f"Duplication in function overloads. Function: {node.name}")
+        return [func_args]
+
+    @staticmethod
+    def check_prototype(node: Node):
+        """
+            Проверка на:
+            - уникальность идентификаторов, если они есть
+        """
+        ids = []
+        for type_id in node.children:
+            if type_id == ';':
+                break
+            id_node = type_id.children
+            if id_node:
+                ids.append(type_id.children[0].name)
+        for id_name in ids:
+            if ids.count(id_name) > 1:
+                raise NameError(f"Duplicated id: {id_name}")
+
+    @staticmethod
     def check_semantics(node: Node):
+        """
+            Проверка семантики:
+            - Несовпадение имён пространств и имён функций (прототип или реализация)
+            - Уникальность идентификаторов в рамках одной функции (прототип или реализация)
+            - Уникальность перегрузок реализаций (проверяется имя функции и типы списка параметров)
+        """
         names = {'implementation': [],
                  'prototype': [],
                  'namespace': [],
                  'node': []}
         implementation = list()
         for child in node.children:
-            print("node: ", child.name)
-            print("what is node: ", LL.what_is_node(child))
-            type_node = LL.what_is_node(child)
-            if type_node == 'implementation':
-                ids = []
-                types_func = []
-                for type_id in child.children:
-                    if re.match("{\s*}", type_id.name):
-                        break
-                    id_node = type_id.children
-                    if id_node:
-                        ids.append(type_id.children[0].name)
-                    else:
-                        raise NameError(f"Missing identifiers in implementation argument list. Function: {child.name}")
-                    types_func.append(type_id.name)
-                func_args = [child.name] + types_func
-                for item in implementation:
-                    print("is equal?: ", func_args, item)
-                    if func_args == item:
-                        raise TypeError(f"Duplication in function overloads: {child.name}")
-                implementation += [func_args]
-                print(implementation)
-
-                names['node'] = ids
-                print("ids: ", ids)
-                for id_name in ids:
-                    if names['node'].count(id_name) > 1:
-                        raise NameError(f"Duplicated id: {id_name}")
-            elif type_node == 'namespace':
-                LL.check_semantics(child)
-                print("names: ", names)
-            elif type_node == 'prototype':
-                ids = []
-                for type_id in child.children:
-                    if type_id == ';':
-                        break
-                    id_node = type_id.children
-                    if id_node:
-                        ids.append(type_id.children[0].name)
-                names['node'] = ids
-                print("ids: ", ids)
-                for id_name in ids:
-                    if names['node'].count(id_name) > 1:
-                        raise NameError(f"Duplicated id: {id_name}")
             names[LL.what_is_node(child)] += [child.name]
-
+            match LL.what_is_node(child):
+                case 'implementation':
+                    implementation += LL.check_implementation(child, implementation)
+                case 'namespace':
+                    LL.check_semantics(child)
+                case 'prototype':
+                    LL.check_prototype(child)
         for name in names['namespace']:
             if name in names['prototype'] + names['implementation']:
                 raise NameError(f"Duplicated name: {name}")
-        print("names: ", names)
 
     def apply_func(self, token: str, action: str):
         match action:
