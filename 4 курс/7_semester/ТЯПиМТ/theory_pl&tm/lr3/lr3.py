@@ -51,7 +51,8 @@ class LL:
             self.dict_M = dict()
             self.wb = openpyxl.Workbook()
             self.parse_table = self.wb.create_sheet("parse_table", 0)
-            self.parse_table.append(('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept", "stack", "return", "error", "action"))
+            self.parse_table.append(
+                ('НЕТЕРМИНАЛЫ', "terminals", "jump", "accept", "stack", "return", "error", "action"))
             self.ws = self.wb.create_sheet("temp_list", 1)
             self.ws.append(('ПРАВИЛО', "START0"))
             self.actions = self.wb.create_sheet("actions", 2)
@@ -133,7 +134,8 @@ class LL:
         def check_duplicates(check_list: list, key: str, stage: str = 'starting'):
             for item in check_list:
                 if check_list.count(item) > 1:
-                    check_list = " ".join([f"{i}\n" if (index+1) % 10 == 0 else i for index, i in enumerate(check_list)])
+                    check_list = " ".join(
+                        [f"{i}\n" if (index + 1) % 10 == 0 else i for index, i in enumerate(check_list)])
                     raise GeneratorExit(f"Duplicates were encountered during the generation of {stage} symbols:"
                                         f"\n[{check_list}]"
                                         f"\nduplicated symbol: {item}"
@@ -357,33 +359,46 @@ class LL:
         return is_node
 
     @staticmethod
+    def is_prototype(token):
+        return token == ';'
+
+    @staticmethod
+    def is_implementation(token):
+        return token[0] == '{' and token[-1] == '}'
+
+    @staticmethod
+    def check_ids(node: Node, check_end=is_prototype):
+        """
+            Проверка на:
+            - уникальность идентификаторов, если они есть
+        """
+        ids = []
+        for type_id in node.children:
+            if check_end(type_id.name):
+                break
+            id_node = type_id.children
+            if id_node:
+                ids.append(type_id.children[0].name)
+        for id_name in ids:
+            if ids.count(id_name) > 1:
+                raise NameError(f"Duplicated id: {id_name}")
+
+    @staticmethod
     def check_implementation(node: Node, implementation: list):
         """
             Проверка на:
             - уникальность идентификаторов с списке параметров
             - отсутствие конфликтов в перегрузках функций
         """
-        ids = []
+        LL.check_ids(node, LL.is_implementation)
         # идентификатор функции и типы данных, перечисленные в параметрах функции
         func_args = [node.name]
         # перебираем типы данных параметров функции (реализации)
         for type_id in node.children:
             # узел '{}' был заглушкой для определения того, что родительский узел это реализация функции
-            if type_id.name[0] == '{' and type_id.name[-1] == '}':
+            if LL.is_implementation(type_id.name):
                 break
             func_args.append(type_id.name)
-            if type_id.name == '...':
-                break
-            # узнаём id параметра этого типа
-            id_node = type_id.children
-            if id_node:
-                ids.append(type_id.children[0].name)
-            else:  # если в реализации оно не было указано - Абшибка!
-                raise NameError(f"Missing identifiers in implementation argument list. Function: {node.name}")
-        # проверка на уникальность ids в списке параметров
-        for id_name in ids:
-            if ids.count(id_name) > 1:
-                raise NameError(f"Duplicated id: {id_name}")
         # пробуем добавить список [id_функции1, тип2, тип1, ...]
         # используется полное соответствие, поэтому, если уже была перегрузка [id_функции1, тип1, тип2, ...],
         # то добавляемый список релевантный
@@ -391,23 +406,6 @@ class LL:
             if func_args == item:
                 raise TypeError(f"Duplication in function overloads. Function: {node.name}")
         return [func_args]
-
-    @staticmethod
-    def check_prototype(node: Node):
-        """
-            Проверка на:
-            - уникальность идентификаторов, если они есть
-        """
-        ids = []
-        for type_id in node.children:
-            if type_id == ';':
-                break
-            id_node = type_id.children
-            if id_node:
-                ids.append(type_id.children[0].name)
-        for id_name in ids:
-            if ids.count(id_name) > 1:
-                raise NameError(f"Duplicated id: {id_name}")
 
     @staticmethod
     def check_semantics(node: Node):
@@ -430,7 +428,7 @@ class LL:
                 case 'namespace':
                     LL.check_semantics(child)
                 case 'prototype':
-                    LL.check_prototype(child)
+                    LL.check_ids(child)
         for name in names['namespace']:
             if name in names['prototype'] + names['implementation']:
                 raise NameError(f"Duplicated name: {name}")
@@ -442,6 +440,15 @@ class LL:
             case '<A2>':
                 self.buffer = ''
             case '<APPEND>':
+                self.current_node = Node(self.buffer, parent=self.current_node)
+                self.buffer = ''
+            case '<NAMESPASE>':
+                for child in self.current_node.children:
+                    if self.buffer == child.name:
+                        child.children = child.children[:-1]
+                        self.current_node = child
+                        self.buffer = ''
+                        return
                 self.current_node = Node(self.buffer, parent=self.current_node)
                 self.buffer = ''
             case '<ADD>':
