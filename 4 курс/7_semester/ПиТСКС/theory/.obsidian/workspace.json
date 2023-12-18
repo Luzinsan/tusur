@@ -8,7 +8,19 @@
         "type": "tabs",
         "children": [
           {
-            "id": "82f55c29242c51a0",
+            "id": "6cb94bf36bc8efa4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "content/Сети VLAN.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ce06590ef7ea7ae5",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -20,12 +32,24 @@
             }
           },
           {
-            "id": "d66a12c52c1ebabe",
+            "id": "daa33507afc40a50",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "характеристики, терминология и общие принципы работы NAT.md",
+                "file": "Динамический NAT.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "82f55c29242c51a0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "PAT) (NAT с перегрузкой).md",
                 "mode": "source",
                 "source": false
               }
@@ -81,8 +105,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "4e7ca359e17da154",
@@ -98,7 +121,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Cтатический NAT.md",
+                "file": "content/Сети VLAN.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +138,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Cтатический NAT.md",
+                "file": "content/Сети VLAN.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Cтатический NAT.md"
+                "file": "content/Сети VLAN.md"
               }
             }
           }
@@ -159,29 +182,30 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "82f55c29242c51a0",
+  "active": "6cb94bf36bc8efa4",
   "lastOpenFiles": [
-    "Типы NAT.md",
-    "PAT) (NAT с перегрузкой).md",
-    "PAT.md",
-    "Динамический NAT.md",
-    "Cтатический NAT.md",
+    "Context.md",
+    "content/Списки контроля доступа (ACL).md",
+    "content/Динамическая маршрутизация.md",
+    "content/Статическая маршрутизация.md",
     "характеристики, терминология и общие принципы работы NAT.md",
+    "Cтатический NAT.md",
+    "Динамический NAT.md",
+    "PAT) (NAT с перегрузкой).md",
+    "Типы NAT.md",
     "Глава 9 - NAT для IPv4.md",
     "различные типы преобразования, включая статический NAT, динамический NAT и NAT с перегрузкой.md",
-    "Context.md",
     "Pasted image 20231209114858.png",
-    "content/Списки контроля доступа (ACL).md",
-    "content/DHCP.md",
+    "PAT.md",
     "Untitled.md",
     "content/PC.md",
+    "content/DHCP.md",
     "content",
     "images/Pasted image 20231124224913.png",
     "images/Pasted image 20231124224517.png",
     "content/Сети VLAN.md",
     "images",
     "content/Глава 1.md",
-    "images/Pasted image 20231124205345.png",
-    "content/Динамическая маршрутизация.md"
+    "images/Pasted image 20231124205345.png"
   ]
 }
