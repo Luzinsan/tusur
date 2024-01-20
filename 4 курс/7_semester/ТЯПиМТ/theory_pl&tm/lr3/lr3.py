@@ -394,14 +394,14 @@ class LL:
         # идентификатор функции и типы данных, перечисленные в параметрах функции
         func_args = [node.name]
         # перебираем типы данных параметров функции (реализации)
-        for type_id in node.children:
-            # узел '{}' был заглушкой для определения того, что родительский узел это реализация функции
-            if LL.is_implementation(type_id.name):
-                break
-            func_args.append(type_id.name)
+        func_args += [type_id.name for type_id in node.children[:-1]]
+        # print(f'firstly func_args: {func_args}')
+        if len(func_args) == 1:
+            func_args.append("void")
         # пробуем добавить список [id_функции1, тип2, тип1, ...]
         # используется полное соответствие, поэтому, если уже была перегрузка [id_функции1, тип1, тип2, ...],
         # то добавляемый список релевантный
+        # print(f"implementations: {implementation}\tfunc_args: {func_args}")
         for item in implementation:
             if func_args == item:
                 raise TypeError(f"Duplication in function overloads. Function: {node.name}")

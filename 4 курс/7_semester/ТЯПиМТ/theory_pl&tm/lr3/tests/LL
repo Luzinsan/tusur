@@ -3,7 +3,7 @@ K0 -> REQ_S INIT | INIT
 S -> REQ_S | e											  
 REQ_S -> \s S                                          
 
-INIT -> namespace REQ_S ID_FUNC* S \{ <APPEND> K0 \} <RW_DOWN> K0 | MOD_TYPE ID_FUNC* S \( <APPEND> PARAMS0 \) S BODY K0 | e
+INIT -> namespace REQ_S ID_FUNC* S \{ <NAMESPASE> K0 \} <RW_DOWN> K0 | MOD_TYPE ID_FUNC* S \( <APPEND> PARAMS0 \) S BODY K0 | e
 									  
 BODY -> ; <RW_DOWN> | \{ <A1> S \} <APPEND_DOWN>
 

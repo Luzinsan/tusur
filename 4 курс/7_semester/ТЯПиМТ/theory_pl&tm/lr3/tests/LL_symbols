@@ -1,0 +1,63 @@
+K0 -> REQ_S INIT | INIT                               
+
+S -> REQ_S | e*											  
+REQ_S -> \s S                                          
+
+INIT -> n a m e s p a c e REQ_S ID_FUNC* S \{ <NAMESPASE> K0 \} <RW_DOWN> K0 | MOD_TYPE ID_FUNC* S \( <APPEND> PARAMS0 \) S BODY K0 | e*
+									  
+BODY -> ; <RW_DOWN> | \{ <A1> S \} <APPEND_DOWN>
+
+MOD_TYPE -> MOD_TYPE_NONVOID | v o i d REQ_S
+MOD -> u n s i g n e d <A1>
+MOD_TYPE_CONFLICT -> i g n e d <A1> | h o r t REQ_S SHORT
+MOD_TYPE_NONVOID -> MOD REQ_S TYPE | TYPE | s MOD_TYPE_CONFLICT
+TYPE -> i n t REQ_S INT | d o u b l e REQ_S DOUBLE | f l o a t REQ_S|c h a r REQ_S|l o n g REQ_S LONG
+INT -> LENGTH REQ_S | e*                              
+DOUBLE -> l o n g REQ_S | e*
+LONG -> LONGTYPES REQ_S | e*                           
+SHORT -> i n t REQ_S | e*
+
+
+MOD_TYPE_NONVOID_PARAMS -> MOD REQ_S <A1> TYPE_PARAMS | TYPE_PARAMS | s MOD_TYPE_PARAMS_CONFLICT
+MOD_TYPE_PARAMS_CONFLICT -> i g n e d <A1> | h o r t <A1> SHORT_PARAMS
+TYPE_PARAMS -> i n t <A1> INT_PARAMS | d o u b l e <A1> DOUBLE_PARAMS |f l o a t <A1> TAIL_TYPES |c h a r <A1> TAIL_TYPES |l o n g <A1> LONG_PARAMS
+TAIL_TYPES -> REQ_S ID_NON | COMMA_NON2
+
+
+COMMA_NON2 <ADD> -> , S TAIL | e*
+INT_PARAMS -> REQ_S <A1> INT_REQ_S | COMMA_NON2
+INT_REQ_S -> LENGTH TAIL_TYPES | ID_NON   
+
+DOUBLE_PARAMS -> REQ_S <A1> DOUBLE_REQ_S  | COMMA_NON2  
+DOUBLE_REQ_S -> l o n g <A1> TAIL_TYPES | ID_NON
+
+
+LONG_PARAMS -> REQ_S <A1> LONG_REQ_S | COMMA_NON2
+LONG_REQ_S -> LONGTYPES TAIL_TYPES | ID_NON  
+
+
+SHORT_PARAMS -> REQ_S <A1> SHORT_REQ_S | COMMA_NON2    
+SHORT_REQ_S -> i n t <A1> TAIL_TYPES | ID_NON
+                       
+
+LENGTH -> l o n g <A1> | s h o r t <A1>
+LONGTYPES -> i n t <A1> | d o u b l e <A1>
+
+ALPHABET -> q|w|e|r|t|y|u|i|o|p|a|s|d|f|g|h|j|k|l|z|x|c|v|b|n|m|Q_|W_|E_|R_|T_|Y_|U_|I_|O_|P_|A_|S_|D_|F_|G_|H_|J_|K_|L_|Z_|X_|C_|V_|B_|N_|M_|_ 
+NUMERIC_NONZERO -> 1|2|3|4|5|6|7|8|9
+NUMERIC -> 0|NUMERIC_NONZERO
+
+ID_FUNC* <A2> -> ALPHABET <A1> TAIL_ID_FUNC*
+TAIL_ID_FUNC* -> ALPHABET <A1> TAIL_ID_FUNC* | NUMERIC <A1> TAIL_ID_FUNC* | e*
+ID* -> ALPHABET <A1> INNERID*
+INNERID* -> ALPHABET <A1> INNERID* | NUMERIC <A1> INNERID* | REQ_S ARRAY | ARRAY
+ARRAY -> \[ S OP* S \] S ARRAY | e* <ADD>
+OP* -> NUMERIC_NONZERO OP1*
+OP1* -> NUMERIC OP1* | e*
+
+PARAMS0 -> REQ_S PARAMS | PARAMS | e*
+PARAMS -> MOD_TYPE_NONVOID_PARAMS | void <RW> S
+PARAMS_NONVOID -> MOD_TYPE_NONVOID_PARAMS    
+ID_NON <APPEND> -> ID* COMMA_NON | COMMA_NON               
+COMMA_NON <\APPEND> -> , S TAIL | e*
+TAIL -> PARAMS_NONVOID | \.\.\. <RW>
